@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <!-- Redirect bin and obj builds to project root -->
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)build</ArtifactsPath>
+    
+    <!-- Common configurations across App.csproj and Core.csproj -->
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+</Project>

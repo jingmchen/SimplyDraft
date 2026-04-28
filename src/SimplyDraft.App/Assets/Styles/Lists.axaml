@@ -1,0 +1,71 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  LISTBOX                                                     -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="ListBox">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="4"/>
+    </Style>
+
+    <Style Selector="ListBoxItem">
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+    </Style>
+
+    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ThemeHoverBrush}"/>
+    </Style>
+
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="TextBlock.Foreground" Value="{DynamicResource AccentForegroundBrush}"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  MENU                                                        -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="Menu">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+    </Style>
+
+    <Style Selector="MenuItem">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="Padding" Value="10,6"/>
+    </Style>
+
+    <Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+        <Setter Property="Background" Value="{DynamicResource ThemeHoverBrush}"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  TABCONTROL                                                  -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="TabControl">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <Style Selector="TabItem">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg2Brush}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Padding" Value="14,8"/>
+        <Setter Property="MinHeight" Value="36"/>
+    </Style>
+
+    <Style Selector="TabItem:selected">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+    </Style>
+
+    <Style Selector="TabItem:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+    </Style>
+
+</Styles>

@@ -1,0 +1,87 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  BORDER — utility classes                                    -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <Style Selector="Border.panel">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="12"/>
+    </Style>
+
+    <Style Selector="Border.separator">
+        <Setter Property="Background" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="Height" Value="1"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  EXPANDER                                                    -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="Expander">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  SCROLLBAR                                                   -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="ScrollBar">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ThemeBorderStrongBrush}"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  PROGRESSBAR                                                 -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="ProgressBar">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg2Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="MinHeight" Value="6"/>
+        <Setter Property="CornerRadius" Value="3"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  TOOLTIP                                                     -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg3Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Padding" Value="8,5"/>
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  CONTEXTMENU                                                 -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="ContextMenu">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="4"/>
+    </Style>
+
+</Styles>

@@ -1,0 +1,49 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ── Base surfaces ── -->
+    <Color x:Key="ThemeBg0">#FFFFFF</Color>
+    <Color x:Key="ThemeBg1">#F5F5F5</Color>
+    <Color x:Key="ThemeBg2">#EBEBEB</Color>
+    <Color x:Key="ThemeBg3">#E0E0E0</Color>
+
+    <!-- ── Foreground ── -->
+    <Color x:Key="ThemeFg0">#111111</Color>
+    <Color x:Key="ThemeFg1">#333333</Color>
+    <Color x:Key="ThemeFg2">#666666</Color>
+    <Color x:Key="ThemeFg3">#999999</Color>
+
+    <!-- ── Borders ── -->
+    <Color x:Key="ThemeBorder">#CCCCCC</Color>
+    <Color x:Key="ThemeBorderStrong">#AAAAAA</Color>
+
+    <!-- ── State overlays ── -->
+    <Color x:Key="ThemeHover">#18000000</Color>
+    <Color x:Key="ThemePressed">#28000000</Color>
+    <Color x:Key="ThemeSelected">#20000000</Color>
+    <Color x:Key="ThemeDisabled">#60FFFFFF</Color>
+
+    <!-- ── Semantic ── -->
+    <Color x:Key="ThemeError">#D32F2F</Color>
+    <Color x:Key="ThemeWarning">#F57C00</Color>
+    <Color x:Key="ThemeSuccess">#388E3C</Color>
+
+    <!-- ── Brushes ── -->
+    <SolidColorBrush x:Key="ThemeBg0Brush"        Color="{StaticResource ThemeBg0}"/>
+    <SolidColorBrush x:Key="ThemeBg1Brush"        Color="{StaticResource ThemeBg1}"/>
+    <SolidColorBrush x:Key="ThemeBg2Brush"        Color="{StaticResource ThemeBg2}"/>
+    <SolidColorBrush x:Key="ThemeBg3Brush"        Color="{StaticResource ThemeBg3}"/>
+    <SolidColorBrush x:Key="ThemeFg0Brush"        Color="{StaticResource ThemeFg0}"/>
+    <SolidColorBrush x:Key="ThemeFg1Brush"        Color="{StaticResource ThemeFg1}"/>
+    <SolidColorBrush x:Key="ThemeFg2Brush"        Color="{StaticResource ThemeFg2}"/>
+    <SolidColorBrush x:Key="ThemeFg3Brush"        Color="{StaticResource ThemeFg3}"/>
+    <SolidColorBrush x:Key="ThemeBorderBrush"     Color="{StaticResource ThemeBorder}"/>
+    <SolidColorBrush x:Key="ThemeBorderStrongBrush" Color="{StaticResource ThemeBorderStrong}"/>
+    <SolidColorBrush x:Key="ThemeHoverBrush"      Color="{StaticResource ThemeHover}"/>
+    <SolidColorBrush x:Key="ThemePressedBrush"    Color="{StaticResource ThemePressed}"/>
+    <SolidColorBrush x:Key="ThemeSelectedBrush"   Color="{StaticResource ThemeSelected}"/>
+    <SolidColorBrush x:Key="ThemeErrorBrush"      Color="{StaticResource ThemeError}"/>
+    <SolidColorBrush x:Key="ThemeWarningBrush"    Color="{StaticResource ThemeWarning}"/>
+    <SolidColorBrush x:Key="ThemeSuccessBrush"    Color="{StaticResource ThemeSuccess}"/>
+
+</ResourceDictionary>

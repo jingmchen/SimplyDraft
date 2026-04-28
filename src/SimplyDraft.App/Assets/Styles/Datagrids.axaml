@@ -1,0 +1,32 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  DATAGRID                                                    -->
+    <!--  Note: requires the Avalonia.Controls.DataGrid NuGet package -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="DataGrid">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg0Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource ThemeBorderBrush}"/>
+    </Style>
+
+    <Style Selector="DataGridColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg2Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="12,8"/>
+    </Style>
+
+    <Style Selector="DataGridRow:pointerover /template/ Rectangle#BackgroundRectangle">
+        <Setter Property="Fill" Value="{DynamicResource ThemeHoverBrush}"/>
+    </Style>
+
+    <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+        <Setter Property="Fill" Value="{DynamicResource ThemeSelectedBrush}"/>
+    </Style>
+
+</Styles>
