@@ -1,0 +1,101 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  TEXTBOX                                                     -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="MinHeight" Value="32"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource ThemeFg0Brush}"/>
+    </Style>
+
+    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderStrongBrush}"/>
+    </Style>
+
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+    </Style>
+
+    <Style Selector="TextBox:disabled">
+        <Setter Property="Opacity" Value="0.5"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  CHECKBOX                                                    -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="CheckBox">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="Padding" Value="8,0,0,0"/>
+    </Style>
+
+    <Style Selector="CheckBox:checked /template/ Border#NormalRectangle">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  RADIOBUTTON                                                 -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="RadioButton">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="Padding" Value="8,0,0,0"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  TOGGLESWITCH                                                -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="ToggleSwitch">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  COMBOBOX                                                    -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="ComboBox">
+        <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="MinHeight" Value="32"/>
+    </Style>
+
+    <Style Selector="ComboBox:pointerover /template/ Border#Background">
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderStrongBrush}"/>
+    </Style>
+
+    <Style Selector="ComboBox:focus /template/ Border#Background">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem">
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ThemeHoverBrush}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ThemeSelectedBrush}"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  SLIDER                                                      -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <Style Selector="Slider">
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+
+</Styles>

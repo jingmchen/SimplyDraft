@@ -1,0 +1,17 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  Aggregates all control styles into a single include.        -->
+    <!--  Order: Base first (fonts/typography), then controls,        -->
+    <!--  then surfaces/containers, then specialized (DataGrid).      -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+
+    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Base.axaml"/>
+    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Buttons.axaml"/>
+    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Inputs.axaml"/>
+    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Lists.axaml"/>
+    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Surfaces.axaml"/>
+    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/DataGrids.axaml"/>
+
+</Styles>
