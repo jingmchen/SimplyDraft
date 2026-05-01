@@ -45,7 +45,7 @@ public sealed class ThemeService : IThemeService
         _settings = settings;
     }
     
-    // ─── EXPOSED METHODS ───────────────────────
+    // ─── INTERFACE IMPLEMENTATION ──────────────
     /// <summary>
     /// Wires up Avalonia dependencies and applies the iniital theme and accent.
     /// <para> Throws an error if not called after <c>OnFrameworkInitializationCompleted</c> due to <c>Application.Current</c> not being set yet.</para>

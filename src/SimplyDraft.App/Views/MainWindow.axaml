@@ -1,6 +1,145 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:SimplyDraft.App.ViewModels"
-        x:DataType="vm:MainWindowViewModel"
-        x:Class="SimplyDraft.App.Views.MainWindow">
+        xmlns:controls="using:SimplyDraft.App.Controls"
+        x:Class="SimplyDraft.App.Views.MainWindow"
+        Title="SimplyDraft"
+        Width="1100" Height="680"
+        MinWidth="800" MinHeight="500"
+        Background="{DynamicResource ThemeBg0Brush}">
+
+  <DockPanel>
+
+    <!-- ── Header ────────────────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource ThemeBg3Brush}"
+            BorderBrush="{DynamicResource ThemeBorderBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="20,14">
+      <Grid ColumnDefinitions="*,Auto">
+
+        <StackPanel Grid.Column="0">
+          <TextBlock Text="DocForge"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{DynamicResource AccentForegroundBrush}"/>
+          <TextBlock Text="Word document template manager"
+                     FontSize="12"
+                     Foreground="{DynamicResource ThemeFg2Brush}"
+                     Margin="0,2,0,0"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+          <Button Content="＋ Import Template"
+                  Click="OnImportClick"
+                  Classes="accent"
+                  Padding="14,8"
+                  CornerRadius="6"
+                  FontWeight="SemiBold"/>
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- ── Status bar ─────────────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Bottom"
+            Background="{DynamicResource ThemeBg2Brush}"
+            BorderBrush="{DynamicResource ThemeBorderBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="16,5">
+      <TextBlock Text="{Binding StatusMessage}"
+                 FontSize="12"
+                 Foreground="{DynamicResource ThemeFg1Brush}"/>
+    </Border>
+
+    <!-- ── Body ───────────────────────────────────────────────────────── -->
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="280" MinWidth="160" MaxWidth="420"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <!-- ─── Left: Template list ────────────────────────────────────── -->
+      <Border Grid.Column="0"
+              Background="{DynamicResource ThemeBg0Brush}"
+              BorderBrush="{DynamicResource ThemeBorderBrush}"
+              BorderThickness="0,0,1,0">
+        <DockPanel>
+
+          <!-- Section header -->
+          <Border DockPanel.Dock="Top"
+                  Padding="16,10"
+                  Background="{DynamicResource ThemeBg2Brush}"
+                  BorderBrush="{DynamicResource ThemeBorderBrush}"
+                  BorderThickness="0,0,0,1">
+            <TextBlock Text="Templates"
+                       FontWeight="SemiBold"
+                       FontSize="13"
+                       Foreground="{DynamicResource ThemeFg0Brush}"/>
+          </Border>
+
+          <!-- Template list box -->
+          <ListBox x:Name="TemplateList"
+                   ItemsSource="{Binding Templates}"
+                   SelectedItem="{Binding SelectedTemplate}"
+                   Background="{DynamicResource ThemeBg0Brush}"
+                   BorderThickness="0"
+                   SelectionChanged="OnTemplateSelected">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Margin="6,7">
+                  <TextBlock Text="{Binding DisplayName}"
+                             FontWeight="SemiBold"
+                             FontSize="13"
+                             Foreground="{DynamicResource ThemeFg0Brush}"/>
+                  <TextBlock Text="{Binding SubText}"
+                             FontSize="11"
+                             Foreground="{DynamicResource ThemeFg2Brush}"
+                             Margin="0,2,0,0"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+        </DockPanel>
+      </Border>
+
+      <!-- ─── GridSplitter ──────────────────────────────────────────── -->
+      <GridSplitter Grid.Column="1"
+                    ResizeDirection="Columns"
+                    Background="{DynamicResource ThemeBorderBrush}"
+                    HorizontalAlignment="Stretch"/>
+
+      <!-- ─── Right: File explorer / welcome panel ───────────────────── -->
+      <Grid Grid.Column="2">
+
+        <!-- Welcome state (no template selected) -->
+        <Border IsVisible="{Binding SelectedTemplate, Converter={x:Static ObjectConverters.IsNull}}"
+                Padding="32,28">
+          <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="📄"
+                       FontSize="52"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="Select a template to browse its files"
+                       FontSize="16"
+                       Foreground="{DynamicResource ThemeFg2Brush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,14,0,0"/>
+            <TextBlock Text="or import a new .docx to get started"
+                       FontSize="13"
+                       Foreground="{DynamicResource ThemeFg3Brush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,6,0,0"/>
+          </StackPanel>
+        </Border>
+
+        <!-- File explorer (template selected) -->
+        <controls:FileExplorerControl
+            IsVisible="{Binding SelectedTemplate, Converter={x:Static ObjectConverters.IsNotNull}}"
+            DataContext="{Binding FileExplorer}"/>
+
+      </Grid>
+
+    </Grid>
+  </DockPanel>
 </Window>

@@ -1,15 +1,21 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
+using SimplyDraft.App.Services.FileExplorer;
 
 namespace SimplyDraft.App.ViewModels;
 
-public sealed class NavigationBarItems
+/// <summary>
+/// Root ViewModel for <c>MainWindow</c>.
+/// Owns the template list, the file explorer, and the global status bar.
+/// </summary>
+public partial class MainWindowViewModel : ObservableObject
 {
-    public string Label {get; init;} = string.Empty;
-    public string Icon {get; init;} = string.Empty;
-    public string Key {get; init;} = string.Empty;
-}
+    private FileExplorerViewModel fileExplorerVM {get;}
 
-public sealed partial class MainWindowViewModel : ObservableObject
-{
-    
+    public MainWindowViewModel(IFileExplorerService explorerService)
+    {
+        var explorerService = new FileExplorerService(
+            
+        );
+    }
 }

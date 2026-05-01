@@ -1,14 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
-using Gdk;
 using Microsoft.Extensions.Logging;
+using SimplyDraft.App.Models;
 
 namespace SimplyDraft.App.Services.FileExplorer;
 
 public sealed class FileExplorerService : IFileExplorerService, IDisposable
 {
     // ─── DI-INJECTED ───────────────────────────
-    private readonly ILogger<FileExplorerService> _logger;
     private readonly FileWatcherService _watcher;
 
     // ─── PRIVATE ───────────────────────────────
@@ -28,12 +27,10 @@ public sealed class FileExplorerService : IFileExplorerService, IDisposable
 
     // ─── CONSTRUCTOR ───────────────────────────
     public FileExplorerService(
-        ILogger<FileExplorerService> logger,
         FileWatcherService watcher,
         FileExplorerOptions? options = null
     )
     {
-        _logger = logger;
         _watcher = watcher;
         Options = options ?? new FileExplorerOptions();
         
@@ -82,7 +79,170 @@ public sealed class FileExplorerService : IFileExplorerService, IDisposable
         return item;
     }
 
-    public void RenameItem(FileExplorerItem item)
+    public void RenameItem(FileExplorerItem item, string newName)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        if (string.IsNullOrWhiteSpace(newName) || newName == item.Name) return;
+
+        var parentPath = Path.GetDirectoryName(item.FullPath)!;
+        var newFullPath = Path.Combine(parentPath, newName);
+
+        if (item.IsDirectory)
+            Directory.Move(item.FullPath, newFullPath);
+        else
+            File.Move(item.FullPath, newFullPath);
+        
+        item.FullPath = newFullPath;
+        item.Name = Path.GetFileName(newFullPath);
+        item.Extension = item.IsFile ? Path.GetExtension(newFullPath).ToLowerInvariant() : string.Empty;
+        item.IsEditing = false;
+
+        ItemRenamed?.Invoke(this, item);
+    }
+
+    public FileExplorerItem CreateFile(FileExplorerItem? parent, string name)
+    {
+        var parentPath = parent?.FullPath ?? _rootPath;
+        var fullPath = GetUniquePath(parentPath, name, isFile:true);
+
+        File.WriteAllText(fullPath, string.Empty);
+
+        var item = FileExplorerItem.FromPath(fullPath, parent);
+        InsertSorted(parent is not null ? parent.Children : RootItems, item);
+        ItemCreated?.Invoke(this, item);
+        return item;
+    }
+
+    public void DeleteItem(FileExplorerItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        var path = item.FullPath;
+
+        if (item.IsDirectory && Directory.Exists(path))
+            Directory.Delete(path, recursive:true);
+        else if (item.IsFile && File.Exists(path))
+            File.Delete(path);
+        
+        RemoveFromParent(item);
+        SelectedItems.Remove(item);
+        ItemDeleted?.Invoke(this, path);
+    }
+
+    public void DeleteMultipleItems(IEnumerable<FileExplorerItem> items)
+    {
+        foreach (var item in items.ToList())
+            DeleteItem(item);
+    }
+
+    public void ExpandItem(FileExplorerItem item)
+    {
+        if (item.IsDirectory)
+            item.IsExpanded = true;
+    }
+
+    public void CollapseItem(FileExplorerItem item)
+    {
+        if (item.IsDirectory)
+            item.IsExpanded = false;
+    }
+
+    public void ExpandAll(FileExplorerItem item)
+    {
+        if (!item.IsDirectory) return;
+        item.IsExpanded = true;
+        foreach (var child in item.Children)
+            ExpandAll(child);
+    }
+
+    public void CollapseAll(FileExplorerItem item)
+    {
+        if (!item.IsDirectory) return;
+        item.IsExpanded = false;
+        foreach(var child in item.Children)
+            CollapseAll(child);
+    }
+
+    public bool CanDrop(FileExplorerItem source, FileExplorerItem? targetFolder)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+
+        if (targetFolder is null) return true;
+        if (!targetFolder.IsDirectory) return false;
+        if (source == targetFolder) return false;
+        return !IsAncestor(ancestor: source, candidate: targetFolder);
+    }
+
+    public void MoveItem(FileExplorerItem source, FileExplorerItem? targetFolder)
+    {
+        if (!CanDrop(source, targetFolder)) return;
+
+        var targetPath = targetFolder?.FullPath ?? _rootPath;
+        var newPath = GetUniquePath(targetPath, source.Name, isFile:source.IsFile);
+
+        if (source.IsDirectory)
+            Directory.Move(source.FullPath, newPath);
+        else
+            File.Move(source.FullPath, newPath);
+        
+        RemoveFromParent(source);
+
+        source.FullPath = newPath;
+        source.Name = Path.GetFileName(newPath);
+        source.Extension = source.IsFile ? Path.GetExtension(newPath).ToLowerInvariant() : string.Empty;
+        
+        source.Parent = targetFolder;
+
+        var targetCollection = targetFolder is not null ? targetFolder.Children : RootItems;
+        
+        InsertSorted(targetCollection, source);
+
+        if (targetFolder is not null)
+            targetFolder.IsExpanded = true;
+    }
+
+    public void ClipboardCopyItems(IEnumerable<FileExplorerItem> items)
+        => Clipboard.SetCopy(items);
+    
+    public void ClipboardCutItems(IEnumerable<FileExplorerItem> items)
+        => Clipboard.SetCut(items);
+    
+    public void ClipboardPasteItems(FileExplorerItem? targetFolder)
+    {
+        if (!Clipboard.HasItems) return;
+
+        var targetPath = targetFolder?.FullPath ?? _rootPath;
+
+        foreach (var item in Clipboard.Snapshot())
+        {
+            var newPath = GetUniquePath(targetPath, item.Name, isFile:item.IsFile);
+
+            if (Clipboard.Operation == ClipboardOperation.Copy)
+            {
+                if (item.IsDirectory)
+                    CopyDirectory(item.FullPath, newPath);
+                else
+                    File.Copy(item.FullPath, newPath);
+                
+                var copy = BuildSingleItem(newPath, targetFolder);
+                InsertSorted(targetFolder is not null ? targetFolder.Children : RootItems, copy);
+                ItemCreated?.Invoke(this, copy);
+            }
+            else
+            {
+                MoveItem(item, targetFolder);
+                item.IsCut = false;
+            }
+        }
+
+        if (Clipboard.Operation == ClipboardOperation.Cut)
+            Clipboard.SetNone();
+        
+        if (targetFolder is not null)
+            targetFolder.IsExpanded = true;
+    }
+
     public void Dispose()
         => _watcher.Dispose();
     

@@ -5,10 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using SimplyDraft.App.Services.Themes;
-using SimplyDraft.App.ViewModels;
 using SimplyDraft.App.Views;
+using SimplyDraft.App.ViewModels;
+using SimplyDraft.App.Services;
+using SimplyDraft.App.Services.Themes;
 using SimplyDraft.App.Services.Settings;
+using SimplyDraft.App.Services.FileExplorer;
+using SimplyDraft.App.Configuration;
 
 namespace SimplyDraft.App;
 
@@ -60,10 +63,20 @@ public sealed partial class App : Application
         // ViewModels
         services.AddSingleton<MainWindowViewModel>();
 
-        // Services
-
-        // Utils
+        // Services - SettingsProvider
         services.AddSingleton<ISettingsProvider, SettingsProvider>();
+
+        // Services - Theme
         services.AddSingleton<IThemeService, ThemeService>();
+
+        // Services - FileExplorerService related
+        services.AddSingleton<FileWatcherService>(
+            sp => new FileWatcherService(
+                sp.GetRequiredService<ILogger<FileWatcherService>>(),
+                TimeSpan.FromMilliseconds(AppConstants.Service.FileWatcher.DebounceMs)
+            )
+        );
+        services.AddSingleton<IFileExplorerService, FileExplorerService>();
+        services.AddSingleton<FileExplorerViewModel>();
     }
 }
