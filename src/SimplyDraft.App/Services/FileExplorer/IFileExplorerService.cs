@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using SimplyDraft.App.Models;
 
 namespace SimplyDraft.App.Services.FileExplorer;
 
@@ -12,8 +13,8 @@ public interface IFileExplorerService
     // Methods
     void LoadDirectory(string rootPath); // Load directory tree, create if not exists. Start/ restart File Watcher for rootPath
     void RefreshDirectory();
-    FileExplorerItem CreateFolder(FileExplorerItem? parent, string name);
     FileExplorerItem CreateFile(FileExplorerItem? parent, string name);
+    FileExplorerItem CreateFolder(FileExplorerItem? parent, string name);
     void RenameItem(FileExplorerItem item, string newName);
     void DeleteItem(FileExplorerItem item);
     void DeleteMultipleItems(IEnumerable<FileExplorerItem> items);
@@ -25,7 +26,7 @@ public interface IFileExplorerService
     void MoveItem(FileExplorerItem source, FileExplorerItem? targetFolder);
     void ClipboardCopyItems(IEnumerable<FileExplorerItem> items);
     void ClipboardCutItems(IEnumerable<FileExplorerItem> items);
-    void PasteItems(FileExplorerItem? targetFolder);
+    void ClipboardPasteItems(FileExplorerItem? targetFolder);
 
     // Events
     event EventHandler<FileExplorerItem>? ItemCreated;

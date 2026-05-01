@@ -17,7 +17,6 @@ public enum DocumentBlockType
 public sealed record TableCell(string Text, bool IsHeader);
 public sealed record TableRow(List<TableCell> Cells);
 
-// Parsed block from the document
 public sealed class DocumentBlock
 {
     public int Index {get; init;}

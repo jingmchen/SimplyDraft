@@ -95,4 +95,45 @@ public static class AppConstants
         public static readonly string AppStyles = 
             $"avares://{AppConstants.AppInfo.AssemblyName}/{AppConstants.Directory.Name.Assets}/{AppConstants.Directory.Name.Styles}/{{0}}.axaml";
     }
+
+    public static class Service
+    {
+        public static class Logger
+        {
+            public const string LoggingTemplate = "[{@t:dd-MMM-yyyy}] [{@t:HH:mm:ss}] [{@l:u3}]" +
+                "{#if SourceContext is not null} [{SourceContext}]{#end}" +
+                " [{@m}]" +
+                "{#if @x is not null} [{@x}]{#end}" +
+                "\n";
+        }
+
+        public static class FileExplorer
+        {
+            public static class KeyboardShortcuts
+            {
+                public const string CopyCommand = "C";
+                public const string CutCommand = "X";
+                public const string PasteCommand = "V";
+                public const string DeleteCommand = "Delete";
+                public const string RenameCommand = "F2";
+                public const string RefreshCommand = "F5";
+                public const string CancelCommand = "Escape";
+            }
+        }
+
+        public static class FileWatcher
+        {
+            public const int DebounceMs = 400;
+        }
+    }
+
+    public static class Control
+    {
+        public static class FileExplorer
+        {
+            public const double DragThreshold = 6.0; // Minimum pointer travel in pixels before a drag is initiated
+            public const int AutoExpandDelayMs = 600; // How long (ms) the pointer must hover over a collapsed folder before it auto-expands during a drag
+
+        }
+    }
 }

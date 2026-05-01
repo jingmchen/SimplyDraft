@@ -7,11 +7,11 @@
     <!--  then surfaces/containers, then specialized (DataGrid).      -->
     <!-- ═══════════════════════════════════════════════════════════ -->
 
-    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Base.axaml"/>
-    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Buttons.axaml"/>
-    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Inputs.axaml"/>
-    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Lists.axaml"/>
-    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/Surfaces.axaml"/>
-    <StyleInclude Source="avares://HamsterTrades/Assets/Styles/DataGrids.axaml"/>
+    <StyleInclude Source="avares://SimplyDraft/Assets/Styles/Base.axaml"/>
+    <StyleInclude Source="avares://SimplyDraft/Assets/Styles/Buttons.axaml"/>
+    <StyleInclude Source="avares://SimplyDraft/Assets/Styles/Inputs.axaml"/>
+    <StyleInclude Source="avares://SimplyDraft/Assets/Styles/Lists.axaml"/>
+    <StyleInclude Source="avares://SimplyDraft/Assets/Styles/Surfaces.axaml"/>
+    <StyleInclude Source="avares://SimplyDraft/Assets/Styles/DataGrids.axaml"/>
 
 </Styles>

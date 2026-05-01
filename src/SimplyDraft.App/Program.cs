@@ -17,29 +17,23 @@ internal sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var loggingTemplate = "[{@t:dd-MMM-yyyy}] [{@t:HH:mm:ss}] [{@l:u3}]" +
-            "{#if SourceContext is not null} [{SourceContext}]{#end}" +
-            " [{@m}]" +
-            "{#if @x is not null} [{@x}]{#end}" +
-            "\n";
-        
         // ─── BOOTSTRAP LOGGER ──────────────────────
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
-            .WriteTo.Console(formatter: new ExpressionTemplate(loggingTemplate))
+            .WriteTo.Console(formatter: new ExpressionTemplate(AppConstants.Service.Logger.LoggingTemplate))
             .WriteTo.File(
                 path: AppConstants.File.Path.BootstrapLog,
                 rollingInterval: RollingInterval.Day,
-                formatter: new ExpressionTemplate(loggingTemplate)
+                formatter: new ExpressionTemplate(AppConstants.Service.Logger.LoggingTemplate)
             )
             .CreateBootstrapLogger();
 
         Log.Information("Application starting");
 
         // ─── LOAD SETTINGS ─────────────────────────
-        ILoggerFactory factory = new SerilogLoggerFactory(Log.Logger);
-        var settingsLogger = factory.CreateLogger<SettingsProvider>();
-        var settings = new SettingsProvider(settingsLogger);
+        var settings = new SettingsProvider(
+            new SerilogLoggerFactory(Log.Logger).CreateLogger<SettingsProvider>()
+        );
 
         Directory.CreateDirectory(AppConstants.Directory.Path.Logs);
         LogsHandler.CleanOldLogs(7);
@@ -53,7 +47,7 @@ internal sealed class Program
         #if DEBUG
             loggerConfig = loggerConfig
                 .MinimumLevel.Verbose()
-                .WriteTo.Console(formatter: new ExpressionTemplate(loggingTemplate));
+                .WriteTo.Console(formatter: new ExpressionTemplate(AppConstants.Service.Logger.LoggingTemplate));
         #else
             loggerConfig = loggerConfig
                 .MinimumLevel.Is(settings.Current.LoggingSection.MinimumLevel);
@@ -64,7 +58,7 @@ internal sealed class Program
             loggerConfig = loggerConfig.WriteTo.File(
                     path: AppConstants.File.Path.LatestLog,
                     retainedFileCountLimit: settings.Current.LoggingSection.RetainedFileCountLimit,
-                    formatter: new ExpressionTemplate(loggingTemplate)
+                    formatter: new ExpressionTemplate(AppConstants.Service.Logger.LoggingTemplate)
                 );
         }
 
@@ -79,6 +73,10 @@ internal sealed class Program
         try
         {
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex) when (ex is not SimplyDraftException)
+        {
+            Log.Fatal(ex, "Unhandled exception");
         }
         catch (SimplyDraftException ex)
         {

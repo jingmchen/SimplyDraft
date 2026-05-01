@@ -1,0 +1,337 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SimplyDraft.App.ViewModels"
+             xmlns:models="using:SimplyDraft.App.Models"
+             xmlns:conv="using:SimplyDraft.App.Converters"
+             x:Class="SimplyDraft.App.Controls.FileExplorerControl"
+             x:DataType="vm:FileExplorerViewModel">
+
+  <UserControl.Resources>
+    <conv:BoolToOpacityConverter x:Key="CutOpacity"/>
+  </UserControl.Resources>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       Styles: all component-specific styles are scoped to this control.
+       Token references (ThemeBg*, ThemeFg*, etc.) resolve from the host
+       application's resource dictionaries.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <UserControl.Styles>
+
+    <!-- Toolbar button -->
+    <Style Selector="Button.toolBtn">
+      <Setter Property="Background"    Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding"       Value="7,4"/>
+      <Setter Property="CornerRadius"  Value="5"/>
+      <Setter Property="Cursor"        Value="Hand"/>
+      <Setter Property="FontSize"      Value="13"/>
+    </Style>
+    <Style Selector="Button.toolBtn:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ThemeBg2Brush}"/>
+    </Style>
+    <Style Selector="Button.toolBtn:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ThemeBg3Brush}"/>
+    </Style>
+
+    <!-- Inline creation / rename input -->
+    <Style Selector="TextBox.inlineInput">
+      <Setter Property="FontSize"          Value="12"/>
+      <Setter Property="Height"            Value="24"/>
+      <Setter Property="Padding"           Value="4,2"/>
+      <Setter Property="CornerRadius"      Value="4"/>
+      <Setter Property="Background"        Value="{DynamicResource ThemeBg0Brush}"/>
+      <Setter Property="BorderBrush"       Value="{DynamicResource AccentForegroundBrush}"/>
+      <Setter Property="BorderThickness"   Value="1"/>
+      <Setter Property="SelectionBrush"    Value="{DynamicResource AccentForegroundBrush}"/>
+    </Style>
+    <Style Selector="TextBox.renameBox">
+      <Setter Property="FontSize"          Value="12"/>
+      <Setter Property="Height"            Value="22"/>
+      <Setter Property="Padding"           Value="3,1"/>
+      <Setter Property="CornerRadius"      Value="3"/>
+      <Setter Property="Background"        Value="{DynamicResource ThemeBg0Brush}"/>
+      <Setter Property="BorderBrush"       Value="{DynamicResource AccentForegroundBrush}"/>
+      <Setter Property="BorderThickness"   Value="1"/>
+      <Setter Property="MinWidth"          Value="80"/>
+    </Style>
+
+    <!-- Confirm (✓) button -->
+    <Style Selector="Button.confirmBtn">
+      <Setter Property="Background"    Value="{DynamicResource ThemeBg3Brush}"/>
+      <Setter Property="Foreground"    Value="#4caf50"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding"       Value="6,3"/>
+      <Setter Property="CornerRadius"  Value="4"/>
+      <Setter Property="FontWeight"    Value="Bold"/>
+      <Setter Property="Cursor"        Value="Hand"/>
+    </Style>
+
+    <!-- Cancel (✕) button -->
+    <Style Selector="Button.cancelBtn">
+      <Setter Property="Background"    Value="{DynamicResource ThemeBg3Brush}"/>
+      <Setter Property="Foreground"    Value="#f44336"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding"       Value="6,3"/>
+      <Setter Property="CornerRadius"  Value="4"/>
+      <Setter Property="FontWeight"    Value="Bold"/>
+      <Setter Property="Cursor"        Value="Hand"/>
+    </Style>
+
+    <!-- Tree row -->
+    <Style Selector="Border.fileRow">
+      <Setter Property="Background"    Value="Transparent"/>
+      <Setter Property="CornerRadius"  Value="5"/>
+      <Setter Property="Padding"       Value="6,0"/>
+      <Setter Property="Margin"        Value="2,1"/>
+      <Setter Property="MinHeight"     Value="26"/>
+      <Setter Property="Cursor"        Value="Hand"/>
+    </Style>
+    <Style Selector="Border.fileRow:pointerover">
+      <Setter Property="Background" Value="{DynamicResource ThemeBg2Brush}"/>
+    </Style>
+    <Style Selector="Border.fileRow.selected">
+      <Setter Property="Background" Value="{DynamicResource ThemeBg3Brush}"/>
+    </Style>
+    <Style Selector="Border.fileRow.dragOver">
+      <Setter Property="Background"  Value="{DynamicResource ThemeBg3Brush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentForegroundBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <!-- Suppress the default TreeViewItem selection highlight -->
+    <Style Selector="TreeViewItem">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Padding"    Value="0"/>
+    </Style>
+    <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+  </UserControl.Styles>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       Layout: toolbar · create-bar · tree · status
+       ═══════════════════════════════════════════════════════════════════ -->
+  <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+    <!-- ── Toolbar ──────────────────────────────────────────────────── -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource ThemeBg2Brush}"
+            BorderBrush="{DynamicResource ThemeBorderBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="4,3">
+      <WrapPanel Orientation="Horizontal">
+
+        <!-- New Folder -->
+        <Button Command="{Binding BeginCreateFolderCommand}"
+                CommandParameter="{x:Null}"
+                ToolTip.Tip="New Folder  Ctrl+Shift+N"
+                Classes="toolBtn">
+          <StackPanel Orientation="Horizontal" Spacing="3">
+            <TextBlock Text="📁" FontSize="13" VerticalAlignment="Center"/>
+            <TextBlock Text="+" FontWeight="Bold" FontSize="11"
+                       Foreground="#4caf50" VerticalAlignment="Top" Margin="0,-2,0,0"/>
+          </StackPanel>
+        </Button>
+
+        <!-- New File -->
+        <Button Command="{Binding BeginCreateFileCommand}"
+                CommandParameter="{x:Null}"
+                ToolTip.Tip="New File"
+                Classes="toolBtn">
+          <StackPanel Orientation="Horizontal" Spacing="3">
+            <TextBlock Text="📄" FontSize="13" VerticalAlignment="Center"/>
+            <TextBlock Text="+" FontWeight="Bold" FontSize="11"
+                       Foreground="{DynamicResource AccentForegroundBrush}"
+                       VerticalAlignment="Top" Margin="0,-2,0,0"/>
+          </StackPanel>
+        </Button>
+
+        <Rectangle Width="1" Fill="{DynamicResource ThemeBorderBrush}" Margin="4,4"/>
+
+        <!-- Copy -->
+        <Button Command="{Binding CopyCommand}" ToolTip.Tip="Copy  Ctrl+C" Classes="toolBtn">
+          <TextBlock Text="⎘" FontSize="14" Foreground="{DynamicResource ThemeFg1Brush}"/>
+        </Button>
+
+        <!-- Cut -->
+        <Button Command="{Binding CutCommand}" ToolTip.Tip="Cut  Ctrl+X" Classes="toolBtn">
+          <TextBlock Text="✂" FontSize="14" Foreground="#f44336"/>
+        </Button>
+
+        <!-- Paste -->
+        <Button Command="{Binding PasteCommand}" ToolTip.Tip="Paste  Ctrl+V" Classes="toolBtn">
+          <TextBlock Text="📋" FontSize="13" Foreground="#4caf50"/>
+        </Button>
+
+        <Rectangle Width="1" Fill="{DynamicResource ThemeBorderBrush}" Margin="4,4"/>
+
+        <!-- Rename -->
+        <Button Command="{Binding BeginRenameCommand}"
+                CommandParameter="{Binding ContextItem}"
+                ToolTip.Tip="Rename  F2"
+                Classes="toolBtn">
+          <TextBlock Text="✏️" FontSize="13"/>
+        </Button>
+
+        <!-- Delete -->
+        <Button Command="{Binding DeleteSelectedCommand}" ToolTip.Tip="Delete  Del" Classes="toolBtn">
+          <TextBlock Text="🗑" FontSize="13" Foreground="#f44336"/>
+        </Button>
+
+        <Rectangle Width="1" Fill="{DynamicResource ThemeBorderBrush}" Margin="4,4"/>
+
+        <!-- Refresh -->
+        <Button Command="{Binding RefreshCommand}" ToolTip.Tip="Refresh  F5" Classes="toolBtn">
+          <TextBlock Text="↻" FontSize="16" Foreground="{DynamicResource ThemeFg2Brush}"/>
+        </Button>
+
+      </WrapPanel>
+    </Border>
+
+    <!-- ── Inline creation bar ──────────────────────────────────────── -->
+    <Border Grid.Row="1"
+            IsVisible="{Binding IsCreatingFolder}"
+            Background="{DynamicResource ThemeBg2Brush}"
+            BorderBrush="{DynamicResource ThemeBorderBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="8,5">
+      <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+        <TextBlock Text="📁" FontSize="13" VerticalAlignment="Center"/>
+        <TextBlock Text="Folder name:" FontSize="12"
+                   Foreground="{DynamicResource ThemeFg2Brush}"
+                   VerticalAlignment="Center"/>
+        <TextBox Text="{Binding NewItemName}" Width="180" Classes="inlineInput"/>
+        <Button Command="{Binding ConfirmCreateCommand}" Classes="confirmBtn" Content="✓"/>
+        <Button Command="{Binding CancelCreateCommand}"  Classes="cancelBtn"  Content="✕"/>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1"
+            IsVisible="{Binding IsCreatingFile}"
+            Background="{DynamicResource ThemeBg2Brush}"
+            BorderBrush="{DynamicResource ThemeBorderBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="8,5">
+      <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+        <TextBlock Text="📄" FontSize="13" VerticalAlignment="Center"/>
+        <TextBlock Text="File name:" FontSize="12"
+                   Foreground="{DynamicResource ThemeFg2Brush}"
+                   VerticalAlignment="Center"/>
+        <TextBox Text="{Binding NewItemName}" Width="180" Classes="inlineInput"/>
+        <Button Command="{Binding ConfirmCreateCommand}" Classes="confirmBtn" Content="✓"/>
+        <Button Command="{Binding CancelCreateCommand}"  Classes="cancelBtn"  Content="✕"/>
+      </StackPanel>
+    </Border>
+
+    <!-- ── Tree view ─────────────────────────────────────────────────── -->
+    <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto">
+      <TreeView x:Name="ExplorerTree"
+                ItemsSource="{Binding RootItems}"
+                Background="Transparent"
+                BorderThickness="0"
+                Focusable="True"
+                DragDrop.AllowDrop="True"
+                Padding="4,4">
+
+        <TreeView.ItemTemplate>
+          <TreeDataTemplate x:DataType="models:FileExplorerItem"
+                            ItemsSource="{Binding Children}">
+
+            <Border Classes="fileRow"
+                    Classes.selected="{Binding IsSelected}"
+                    Classes.dragOver="{Binding IsDragOver}"
+                    Opacity="{Binding IsCut, Converter={StaticResource CutOpacity}}"
+                    DragDrop.AllowDrop="True"
+                    ToolTip.Tip="{Binding Tooltip}"
+                    PointerPressed="OnRowPointerPressed"
+                    PointerMoved="OnRowPointerMoved"
+                    PointerReleased="OnRowPointerReleased">
+
+              <!-- ── Row context menu ─────────────────────────── -->
+              <Border.ContextMenu>
+                <ContextMenu>
+                  <MenuItem Header="📁  New Folder"
+                            Command="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).BeginCreateFolderCommand}"
+                            CommandParameter="{Binding}"/>
+                  <MenuItem Header="📄  New File"
+                            Command="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).BeginCreateFileCommand}"
+                            CommandParameter="{Binding}"/>
+                  <Separator/>
+                  <MenuItem Header="✏️  Rename    F2"
+                            Command="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).BeginRenameCommand}"
+                            CommandParameter="{Binding}"/>
+                  <Separator/>
+                  <MenuItem Header="⎘  Copy      Ctrl+C"
+                            Command="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).CopyCommand}"/>
+                  <MenuItem Header="✂  Cut       Ctrl+X"
+                            Command="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).CutCommand}"/>
+                  <MenuItem Header="📋  Paste     Ctrl+V"
+                            Command="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).PasteCommand}"/>
+                  <Separator/>
+                  <MenuItem Header="▶  Expand All"
+                            IsVisible="{Binding IsDirectory}"
+                            Command="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).ExpandAllCommand}"
+                            CommandParameter="{Binding}"/>
+                  <MenuItem Header="◀  Collapse All"
+                            IsVisible="{Binding IsDirectory}"
+                            Command="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).CollapseAllCommand}"
+                            CommandParameter="{Binding}"/>
+                  <Separator/>
+                  <MenuItem Header="🗑  Delete    Del"
+                            Command="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).DeleteItemCommand}"
+                            CommandParameter="{Binding}"
+                            Foreground="#f44336"/>
+                </ContextMenu>
+              </Border.ContextMenu>
+
+              <!-- ── Row content ─────────────────────────────── -->
+              <Grid ColumnDefinitions="Auto,*" MinHeight="26">
+
+                <!-- Icon -->
+                <TextBlock Grid.Column="0"
+                           Text="{Binding Icon}"
+                           FontSize="13"
+                           VerticalAlignment="Center"
+                           Margin="0,0,7,0"
+                           IsHitTestVisible="False"/>
+
+                <!-- Display name (normal mode) -->
+                <TextBlock Grid.Column="1"
+                           Text="{Binding Name}"
+                           IsVisible="{Binding IsEditing, Converter={x:Static BoolConverters.Not}}"
+                           Foreground="{DynamicResource ThemeFg0Brush}"
+                           FontSize="12"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           IsHitTestVisible="False"/>
+
+                <!-- Rename input (editing mode) -->
+                <TextBox Grid.Column="1"
+                         Text="{Binding $parent[UserControl].((vm:FileExplorerViewModel)DataContext).RenameText}"
+                         IsVisible="{Binding IsEditing}"
+                         Classes="renameBox"
+                         VerticalAlignment="Center"/>
+
+              </Grid>
+            </Border>
+
+          </TreeDataTemplate>
+        </TreeView.ItemTemplate>
+      </TreeView>
+    </ScrollViewer>
+
+    <!-- ── Status bar ────────────────────────────────────────────────── -->
+    <Border Grid.Row="3"
+            Background="{DynamicResource ThemeBg2Brush}"
+            BorderBrush="{DynamicResource ThemeBorderBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="10,4">
+      <TextBlock Text="{Binding StatusMessage}"
+                 FontSize="11"
+                 Foreground="{DynamicResource ThemeFg2Brush}"
+                 TextTrimming="CharacterEllipsis"/>
+    </Border>
+
+  </Grid>
+</UserControl>
