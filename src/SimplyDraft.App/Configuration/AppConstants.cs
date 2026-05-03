@@ -1,11 +1,14 @@
 namespace SimplyDraft.App.Configuration;
 
+/// <summary>
+/// Contains fixed values used across the application.
+/// </summary>
 public static class AppConstants
 {
     public static class AppInfo
     {
-        public const string Name = "HamsterTrades";
-        public const string AssemblyName = "HamsterTrades";
+        public const string Name = "SimplyDraft";
+        public const string AssemblyName = "SimplyDraft";
         public const string Author = "JM";
         public const string Version = "1.0.0";
     }
@@ -27,7 +30,7 @@ public static class AppConstants
         {
             public static readonly string Assembly = AppContext.BaseDirectory;
             public static readonly string AppData = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppConstants.Directory.Name.AppData
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppConstants.Directory.Name.AppData
             );
             public static readonly string Logs = System.IO.Path.Combine(
                 AppData, AppConstants.Directory.Name.Logs

@@ -19,39 +19,27 @@ public sealed partial class FileExplorerItem : ObservableObject
 
     // ─── FILESYSTEM METADATA ───────────────────
     public bool IsDirectory {get; init;}
-    public long Size {get; init;}
+    public bool IsFile => !IsDirectory;
+    public long Size {get; init;} // In bytes, zero for directories
     public DateTime CreatedAt {get; init;}
     public DateTime LastModifiedAt {get; init;}
     public bool IsHidden {get; init;}
-    public bool IsSymLink {get; init;}
+    public bool IsSymLink {get; init;} // Is shortcut
     public bool IsReadOnly {get; init;}
 
     // ─── UI STATE ──────────────────────────────
-    [ObservableProperty]
-    private bool _isHovered;
-    
-    [ObservableProperty]
-    private bool _isSelected;
-
-    [ObservableProperty]
-    private bool _isEditing;
-
-    [ObservableProperty]
-    private bool _isExpanded;
-
-    [ObservableProperty]
-    private bool _isCut;
-
-    [ObservableProperty]
-    private bool _isDragOver;
+    [ObservableProperty] private bool _isHovered;
+    [ObservableProperty] private bool _isSelected;
+    [ObservableProperty] private bool _isEditing;
+    [ObservableProperty] private bool _isExpanded;
+    [ObservableProperty] private bool _isCut;
+    [ObservableProperty] private bool _isDragOver;
 
     // ─── HIERARCHY ─────────────────────────────
     public ObservableCollection<FileExplorerItem> Children {get;} = new();
     public FileExplorerItem? Parent {get; set;}
 
     // ─── CONVENIENCE ───────────────────────────
-
-    public bool IsFile => !IsDirectory;
 
     // Human-readable file size
     public string FormattedSize => IsDirectory ? string.Empty : FormatBytes(Size);

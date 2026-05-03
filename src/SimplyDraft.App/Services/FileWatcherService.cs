@@ -6,6 +6,8 @@ public sealed class FileWatcherService : IDisposable
 {
     private readonly ILogger<FileWatcherService> _logger;
     private readonly TimeSpan _debounce;
+    
+    // State
     private FileSystemWatcher? _watcher;
     private Timer? _debounceTimer;
     private FileSystemEventArgs? _pendingEvent;
