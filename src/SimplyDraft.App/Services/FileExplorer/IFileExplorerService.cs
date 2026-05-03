@@ -5,6 +5,7 @@ namespace SimplyDraft.App.Services.FileExplorer;
 
 public interface IFileExplorerService
 {
+    // State
     ObservableCollection<FileExplorerItem> RootItems {get;}
     ObservableCollection <FileExplorerItem> SelectedItems {get;}
     FileExplorerClipboard Clipboard {get;}

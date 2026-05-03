@@ -1,5 +1,8 @@
 namespace SimplyDraft.App.Configuration;
 
+/// <summary>
+/// Contains lookup values - for now deprecated after moving from <c>IConfiguration</c> to <c>JsonSerializer.</c>
+/// </summary>
 public static class AppKeys
 {
     public static class AppSettings

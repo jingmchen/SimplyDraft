@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using SimplyDraft.App.Configuration;
@@ -22,6 +23,9 @@ public partial class FileExplorerControl : UserControl
 
     // ─── DROP HIGHLIGHT TRACKING ───────────────
     private FileExplorerItem? _lastDragOverItem;
+    
+    // ─── KEYBOARD MODIFIER TRACKING ────────────
+    private bool _isCtrlHeld;
 
     // ─── CONTROLS ──────────────────────────────
     private TreeView? _tree;
@@ -36,12 +40,48 @@ public partial class FileExplorerControl : UserControl
         if (_tree is null) return;
 
         _tree.SelectionChanged += OnTreeSelectionChanged;
+        _tree.ContainerPrepared += OnContainerPrepared;
+
+        DragDrop.SetAllowDrop(_tree, true);
+        _tree.AddHandler(DragDrop.DragOverEvent, OnTreeDragOver);
+        _tree.AddHandler(DragDrop.DropEvent, OnTreeDrop);
     }
 
     // ViewModel shortcut
     private FileExplorerViewModel? VM => DataContext as FileExplorerViewModel;
 
     // ─── PRIVATE METHODS ───────────────────────
+    // Browse for root dir of File Explorer
+    private async void OnBrowseClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel is null) return;
+
+        var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(
+            new FolderPickerOpenOptions
+            {
+                Title = "Select root folder",
+                AllowMultiple = false
+            }
+        );
+
+        if (folders.Count > 0)
+            VM?.LoadDirectory(folders[0].Path.LocalPath);
+    }
+
+    // Pressing Enter in the path box commits the typed path
+    private void OnPathBoxKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter) return;
+        if (sender is not TextBox tb) return;
+
+        var path = tb.Text?.Trim();
+        if (!string.IsNullOrEmpty(path))
+            VM?.LoadDirectory(path);
+        
+        e.Handled = true;
+    }
+
     // Container lifecycle
     private static void OnContainerPrepared(object? sender, ContainerPreparedEventArgs e)
     {
@@ -61,11 +101,17 @@ public partial class FileExplorerControl : UserControl
     {
         if (VM is null) return;
 
+        var isMultiSelect = _isCtrlHeld;
+
+        // Sync added items
         foreach (var added in e.AddedItems)
-        {
             if (added is FileExplorerItem item)
-                VM.SelectItem(item, multiSelect:false);
-        }
+                VM.SelectItem(item, multiSelect:isMultiSelect);
+        
+        // Keep collection in sync when deselection
+        foreach (var removed in e.RemovedItems)
+            if (removed is FileExplorerItem item)
+                VM.DeselectItem(item);
     }
 
     // Keyboard
@@ -92,21 +138,25 @@ public partial class FileExplorerControl : UserControl
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
+        _isCtrlHeld = e.KeyModifiers.HasFlag(KeyModifiers.Control);
         OnTreeKeyDown(this, e);
+    }
+
+    protected override void OnKeyUp(KeyEventArgs e)
+    {
+        base.OnKeyUp(e);
+        _isCtrlHeld = e.KeyModifiers.HasFlag(KeyModifiers.Control);
     }
 
     // Row pointer events
     private void OnRowPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        var point = e.GetCurrentPoint(sender as Visual);
-        if (!point.Properties.IsLeftButtonPressed) return;
+        if (!e.GetCurrentPoint(sender as Visual).Properties.IsLeftButtonPressed) return;
         if (sender is not Control{DataContext: FileExplorerItem item}) return;
 
         _dragSource = item;
         _dragStartPoint = e.GetPosition(this);
         _isDragging = false;
-
-        e.Pointer.Capture(sender as IInputElement);
     }
 
     private async void OnRowPointerMoved(object? sender, PointerEventArgs e)
@@ -125,8 +175,13 @@ public partial class FileExplorerControl : UserControl
         // Threshold exceeded - start dragging
         _isDragging = true;
         var source = _dragSource;
+
+        // Capture pointer so subsequent move/release events are routed here regardless of where the pointer travels
+        e.Pointer.Capture(sender as IInputElement);
+
         var data = new DataObject();
         data.Set("FileExplorerItem", source);
+
         await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
 
         // Post-drop cleanup
@@ -210,11 +265,33 @@ public partial class FileExplorerControl : UserControl
         {
             if (hit is Control{DataContext:FileExplorerItem item})
                 return item;
-            
             hit = hit.GetVisualParent();
         }
-
         return null;
+    }
+
+    private FileExplorerItem? HitTestItemFromPoint(Point position)
+    {
+        if (_tree is null) return null;
+        var hit = _tree.InputHitTest(position) as Visual;
+
+        while (hit is not null)
+        {
+            if (hit is Control{DataContext:FileExplorerItem item})
+                return item;
+            hit = hit.GetVisualParent();
+        }
+        return null;
+    }
+
+    private void OnScrollViewerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(sender as Visual).Properties.IsLeftButtonPressed) return;
+        if (HitTestItemFromPoint(e.GetPosition(_tree)) is not null) return;
+        if (_tree is not null)
+            _tree.SelectedItem = null;
+        VM?.ClearSelection();
+        e.Handled = true;
     }
 
     // Resolves the folder that will receive the dropped item.

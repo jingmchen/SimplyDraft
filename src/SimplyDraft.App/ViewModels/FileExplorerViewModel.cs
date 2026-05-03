@@ -1,8 +1,7 @@
 using System.Collections.ObjectModel;
-using Avalonia.Threading;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
 using SimplyDraft.App.Configuration;
 using SimplyDraft.App.Models;
 using SimplyDraft.App.Services.FileExplorer;
@@ -29,6 +28,7 @@ public sealed partial class FileExplorerViewModel : ObservableObject
     [ObservableProperty] private string _renameText = string.Empty;
     [ObservableProperty] private FileExplorerItem? _contextItem; // The item that was most recently right-clicked or keyboard-focused.
     [ObservableProperty] private bool _hasDirectory;
+    [ObservableProperty] private string _currentRootPath = string.Empty;
 
     // ─── COLLECTIONS FROM SERVICE ──────────────
     public ObservableCollection<FileExplorerItem> RootItems => _service.RootItems;
@@ -52,8 +52,8 @@ public sealed partial class FileExplorerViewModel : ObservableObject
     public void LoadDirectory(string path)
     {
         if (string.IsNullOrWhiteSpace(path)) return;
-
         _service.LoadDirectory(path);
+        CurrentRootPath = path;
         HasDirectory = true;
         SetStatus($"Loaded: {Path.GetFileName(path)}");
     }
@@ -64,7 +64,6 @@ public sealed partial class FileExplorerViewModel : ObservableObject
         {
             foreach (var prev in SelectedItems.ToList())
                 prev.IsSelected = false;
-            
             SelectedItems.Clear();
         }
 
@@ -75,7 +74,28 @@ public sealed partial class FileExplorerViewModel : ObservableObject
         }
 
         ContextItem = item;
-        SetStatus(BuildSelectionStatus());
+        SetStatus(SelectedItems.Count > 1
+            ? $"{SelectedItems.Count} items selected"
+            : item.Name);
+    }
+
+    public void DeselectItem(FileExplorerItem item)
+    {
+        item.IsSelected = false;
+        SelectedItems.Remove(item);
+        if (ContextItem == item)
+            ContextItem = SelectedItems.LastOrDefault();
+    }
+
+    public void ClearSelection()
+    {
+        foreach (var item in SelectedItems.ToList())
+            item.IsSelected = false;
+        SelectedItems.Clear();
+        ContextItem = null;
+        SetStatus(HasDirectory
+            ? $"Loaded: {Path.GetFileName(CurrentRootPath)}"
+            : "No folder loaded.");
     }
 
     public void HandleKeyboardShortcut(string key, bool ctrl)
@@ -111,21 +131,21 @@ public sealed partial class FileExplorerViewModel : ObservableObject
     [RelayCommand]
     private void BeginCreateFolder(FileExplorerItem? parent)
     {
-        _pendingCreateParent = parent ?? ContextItem;
+        _pendingCreateParent = parent is null ? null : ResolveParentFolder(parent);
         _creatingFolder = true;
         IsCreatingFile = false;
         IsCreatingFolder = true;
-        NewItemName = "New Folder";
+        NewItemName = _service.Options.NewFolderName;
     }
 
     [RelayCommand]
     private void BeginCreateFile(FileExplorerItem? parent)
     {
-        _pendingCreateParent = parent ?? ContextItem;
+        _pendingCreateParent = parent is null ? null : ResolveParentFolder(parent);
         _creatingFolder = false;
         IsCreatingFolder = false;
         IsCreatingFile = true;
-        NewItemName = "new-file.txt";
+        NewItemName = $"{_service.Options.NewFileName}{_service.Options.NewFileExt}";
     }
 
     [RelayCommand]
@@ -226,8 +246,7 @@ public sealed partial class FileExplorerViewModel : ObservableObject
     private void Paste()
     {
         if (!_service.Clipboard.HasItems) return;
-        var targetFolder = ResolveDropTarget(ContextItem);
-        _service.ClipboardPasteItems(targetFolder);
+        _service.ClipboardPasteItems(ResolveParentFolder(ContextItem));
     }
 
     [RelayCommand]
@@ -266,31 +285,18 @@ public sealed partial class FileExplorerViewModel : ObservableObject
     }
 
     // ─── PRIVATE HELPERS ───────────────────────
-    private void OnExplorerRefreshed(object? sender, EventArgs e)
-    {
-        Dispatcher.UIThread.Post(() =>
-        {
-            HasDirectory = _service.RootItems.Count > 0;
-            SetStatus($"Refreshed — {CountItems()} item(s).");
-        });
-    }
-
-    private static FileExplorerItem? ResolveDropTarget(FileExplorerItem? item)
+    private static FileExplorerItem? ResolveParentFolder(FileExplorerItem? item)
         => item switch
         {
             null => null,
-            {IsDirectory: true} => item,
+            {IsDirectory:true} => item,
             _ => item.Parent
         };
-    
-    private string BuildSelectionStatus()
+
+    private void OnExplorerRefreshed(object? sender, EventArgs e)
     {
-        return SelectedItems.Count switch
-        {
-            0 => string.Empty,
-            1 => SelectedItems[0].Name,
-            _ => $"{SelectedItems.Count} items selected",
-        };
+        HasDirectory = _service.RootItems.Count > 0;
+        SetStatus($"Refreshed — {CountItems()} item(s).");
     }
 
     private int CountItems()

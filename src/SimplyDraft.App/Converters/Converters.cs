@@ -12,9 +12,8 @@ namespace SimplyDraft.App.Converters;
 // - Convert() takes inputs and returns an output with no stored state between calls
 // All converters have a private constructor to enforce singleton at compile time (prevent new Converter() elsewhere)
 
-// For calling in .axaml files, declare in namespace: xmlns:conv="clr-namespace:SimplyDraft.App.Converters"
-// For binding in .axaml files, call for example,
-// <TextBlock Text="{Binding IsExpanded, Converter={x:Static conv:BoolToExpandIconConverter.Instance}}" />
+// For namespace in .axaml files, declare as; xmlns:conv="using:SimplyDraft.App.Converters"
+// For binding, declare; i.e., {Binding IsExpanded, Converter={x:Static conv:BoolToOpacityConverter.Instance}}
 
 /// <summary>Returns 0.4 opacity when true (cut items), 1.0 otherwise.</summary>
 public sealed class BoolToOpacityConverter : IValueConverter

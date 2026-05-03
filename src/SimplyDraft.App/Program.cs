@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using Avalonia.WebView.Desktop;
 using Serilog;
 using Serilog.Templates;
 using Serilog.Extensions.Logging;
@@ -8,7 +9,6 @@ using SimplyDraft.App.Configuration;
 using SimplyDraft.App.Exceptions;
 using SimplyDraft.App.Utils;
 using SimplyDraft.App.Services.Settings;
-using Avalonia.WebView.Desktop;
 
 namespace SimplyDraft.App;
 
