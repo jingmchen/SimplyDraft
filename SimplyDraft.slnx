@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SimplyDraft.AppHost/SimplyDraft.AppHost.csproj" />
+    <Project Path="src/SimplyDraft.Core/SimplyDraft.Core.csproj" />
+    <Project Path="src/SimplyDraft.Engine/SimplyDraft.Engine.csproj" />
+    <Project Path="src/SimplyDraft.Infrastructure/SimplyDraft.Infrastructure.csproj" />
+    <Project Path="src/SimplyDraft.UI/SimplyDraft.UI.csproj" />
+  </Folder>
+</Solution>
