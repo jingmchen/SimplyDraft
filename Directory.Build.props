@@ -1,0 +1,34 @@
+<Project>
+  <PropertyGroup>
+    <!-- Assembly metadata -->
+    <Product>SimplyDraft</Product>
+    <Company>Tan Jing Ming</Company>
+    <Authors>Tan Jing Ming</Authors>
+    <Copyright>Copyright (c) $(Company). Use of this software is governed by LICENSE.md.</Copyright>
+    <Version>1.0.0</Version>
+
+    <!-- Common settings -->
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>Latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <NeutralLanguage>en</NeutralLanguage>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <!-- Builds -->
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)build</ArtifactsPath>
+  </PropertyGroup>
+
+  <!-- For shipping -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
+    <DebugType>embedded</DebugType>
+    <EmbedAllSources>false</EmbedAllSources>
+  </PropertyGroup>
+</Project>
