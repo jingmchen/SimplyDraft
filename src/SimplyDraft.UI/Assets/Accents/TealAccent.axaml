@@ -1,0 +1,22 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Fluent ramp (consumed by built-in controls via SystemAccentColor) -->
+  <Color x:Key="SystemAccentColor">#14B8A6</Color>
+  <Color x:Key="SystemAccentColorDark1">#0F9D8D</Color>
+  <Color x:Key="SystemAccentColorDark2">#0B8275</Color>
+  <Color x:Key="SystemAccentColorDark3">#08685D</Color>
+  <Color x:Key="SystemAccentColorLight1">#2BC9B7</Color>
+  <Color x:Key="SystemAccentColorLight2">#45D5C5</Color>
+  <Color x:Key="SystemAccentColorLight3">#63E0D2</Color>
+
+  <!-- Accent brushes -->
+  <SolidColorBrush x:Key="AccentBrush"           Color="#14B8A6" />
+  <SolidColorBrush x:Key="AccentHoverBrush"      Color="#2BC9B7" />
+  <SolidColorBrush x:Key="AccentPressedBrush"    Color="#0F9D8D" />
+  <SolidColorBrush x:Key="AccentLight1Brush"     Color="#2BC9B7" />
+  <SolidColorBrush x:Key="AccentDark1Brush"      Color="#0F9D8D" />
+  <SolidColorBrush x:Key="AccentSubtleBrush"     Color="#3314B8A6" />
+  <SolidColorBrush x:Key="AccentForegroundBrush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="StatusBarBrush"        Color="#14B8A6" />
+</ResourceDictionary>
