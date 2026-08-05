@@ -1,16 +1,13 @@
 # SimplyDraft
-C# Avalonia app to ease creation of documents via variable substitutions.
+C# Avalonia desktop application to ease document creation using LaTeX-like markups and embedded scripting in Python
 
 ## Licensing
 Copyright (c) 2026 Tan Jing Ming
 
-This project is licensed under the **PolyForm Noncommercial License 1.0.0**.
-You are free to use, modify, and share this code for any noncommercial
-purpose (personal, research, education, non-profit). Commercial use is
-not permitted. See [LICENSE](LICENSE) for the full terms.
+This project is licensed under the **AGPL-3.0**.
 
-If you fork or build on this project, please retain this copyright notice
-and credit the original source:
-
-> This project is based on SimplyDraft (https://github.com/jingmchen/SimplyDraft)
-> by Tan Jing Ming, licensed under PolyForm Noncommercial 1.0.0.
+Use cases:
+1. Personal / research / education -> Yes, under AGPL-3.0 only
+2. Fork and modification -> Yes, share the source under AGPL-3.0
+3. Commercial-use -> Yes, share the source under AGPL-3.0
+4. Private-source proprietary use -> Separate commercial or trademark permission required
