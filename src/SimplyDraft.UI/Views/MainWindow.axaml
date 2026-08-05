@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SimplyDraft.UI.Views.MainWindow"
+        Width="780" Height="740"
+        Background="{DynamicResource ThemeBg0Brush}"
+        Title="Theme Debugger">
+
+  <ScrollViewer>
+    <StackPanel Margin="16" Spacing="16">
+
+      <StackPanel Spacing="4">
+        <TextBlock Text="Theme Debugger" FontSize="20" FontWeight="SemiBold"
+                   Foreground="{DynamicResource ThemeFg0Brush}" />
+        <TextBlock x:Name="CurrentLabel" Foreground="{DynamicResource ThemeFg2Brush}" />
+      </StackPanel>
+
+      <StackPanel Spacing="8">
+        <TextBlock Text="THEME" Classes="paneHeader" />
+        <WrapPanel x:Name="ThemesPanel" />
+        <TextBlock Text="ACCENT" Classes="paneHeader" Margin="0,6,0,0" />
+        <WrapPanel x:Name="AccentsPanel" />
+      </StackPanel>
+
+      <Border Classes="card">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Neutral ramp (live)" FontWeight="SemiBold"
+                     Foreground="{DynamicResource ThemeFg0Brush}" />
+          <WrapPanel x:Name="NeutralRamp" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Accent ramp (live)" FontWeight="SemiBold"
+                     Foreground="{DynamicResource ThemeFg0Brush}" />
+          <WrapPanel x:Name="AccentRamp" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card">
+        <StackPanel Spacing="12">
+          <TextBlock Text="Sample controls" FontWeight="SemiBold"
+                     Foreground="{DynamicResource ThemeFg0Brush}" />
+          <WrapPanel>
+            <Button Content="Default"  Margin="0,0,8,8" />
+            <Button Content="Accent"   Classes="accent"     Margin="0,0,8,8" />
+            <Button Content="Ghost"    Classes="ghost"      Margin="0,0,8,8" />
+            <Button Content="Danger"   Classes="danger"     Margin="0,0,8,8" />
+            <Button Content="?"        Classes="helpButton" Margin="0,0,8,8" />
+            <Button Content="Disabled" IsEnabled="False"    Margin="0,0,8,8" />
+          </WrapPanel>
+          <TextBox Watermark="TextBox sample" />
+          <ComboBox SelectedIndex="0" MinWidth="180">
+            <ComboBoxItem>ComboBox item</ComboBoxItem>
+            <ComboBoxItem>Second item</ComboBoxItem>
+          </ComboBox>
+          <ProgressBar Value="60" />
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</Window>
