@@ -10,13 +10,12 @@ namespace SimplyDraft.Engine.Markup;
 internal sealed class InlineParser
 {
     private const int MaxInlineDepth = 64; // Bound nesting depth to prevent overflowing the stack crash
-
     private readonly MarkupParser _host;
 
-    public InlineParser(MarkupParser host)
+    internal InlineParser(MarkupParser host)
         => _host = host ?? throw new ArgumentNullException(nameof(host));
 
-    public void Parse(string source, List<Inline> output, int lineNumber)
+    internal void Parse(string source, List<Inline> output, int lineNumber)
         => ParseRun(source, 0, source.Length, InlineStyle.None, output, lineNumber, depth: 0);
 
     private void ParseRun(
@@ -103,7 +102,8 @@ internal sealed class InlineParser
             int commandStart = position + 1;
             int commandEnd = commandStart;
 
-            while (commandEnd < end && char.IsLetter(source[commandEnd])) commandEnd++;
+            while (commandEnd < end && char.IsLetter(source[commandEnd]))
+                commandEnd++;
 
             string command = source[commandStart..commandEnd];
 
@@ -115,8 +115,17 @@ internal sealed class InlineParser
     }
 
     private int DispatchCommand(
-        string source, int end, string command, int commandPosition, int commandEnd,InlineStyle style,
-        List<Inline> output, StringBuilder pendingText, Action flush, int lineNumber, int depth
+        string source,
+        int end,
+        string command,
+        int commandPosition,
+        int commandEnd,
+        InlineStyle style,
+        List<Inline> output,
+        StringBuilder pendingText,
+        Action flush,
+        int lineNumber,
+        int depth
     )
     {
         switch (command)
@@ -160,12 +169,14 @@ internal sealed class InlineParser
 
             case MarkupConstants.Commands.BigSkip:
             case MarkupConstants.Commands.MedSkip:
+
             case MarkupConstants.Commands.SmallSkip:
                 flush();
                 output.Add(new LineBreak());
                 return commandEnd;
 
             case MarkupConstants.Commands.VSpace:
+
             case MarkupConstants.Commands.HSpace:
                 return ConsumeSpaceCommand(source, end, command, commandEnd, output, pendingText, flush);
 
@@ -175,6 +186,7 @@ internal sealed class InlineParser
             case MarkupConstants.Commands.TextSlanted:
             case MarkupConstants.Commands.TextSmallCaps:
             case MarkupConstants.Commands.Underline:
+            
             case MarkupConstants.Commands.TextTypewriter:
                 return ConsumeStyleCommand(
                     source, end, command, commandEnd, style, output, pendingText, flush, lineNumber, depth
@@ -196,13 +208,20 @@ internal sealed class InlineParser
     }
 
     private static int ConsumeSpaceCommand(
-        string source, int end, string command, int commandEnd,
-        List<Inline> output, StringBuilder pendingText, Action flush
+        string source,
+        int end,
+        string command,
+        int commandEnd,
+        List<Inline> output,
+        StringBuilder pendingText,
+        Action flush
     )
     {
         int position = commandEnd;
 
-        if (position < end && source[position] == MarkupConstants.Delimiters.StarredSuffix) position++;
+        if (position < end && source[position] == MarkupConstants.Delimiters.StarredSuffix)
+            position++;
+        
         if (position < end && source[position] == MarkupConstants.Delimiters.GroupOpen)
         {
             int close = MarkupHelper.MatchBrace(source, position, end);
@@ -222,8 +241,16 @@ internal sealed class InlineParser
     }
 
     private int ConsumeStyleCommand(
-        string source, int end, string command, int commandEnd, InlineStyle style,
-        List<Inline> output, StringBuilder pendingText, Action flush, int lineNumber, int depth
+        string source,
+        int end,
+        string command,
+        int commandEnd,
+        InlineStyle style,
+        List<Inline> output,
+        StringBuilder pendingText,
+        Action flush,
+        int lineNumber,
+        int depth
     )
     {
         if (commandEnd < end && source[commandEnd] == MarkupConstants.Delimiters.GroupOpen)
@@ -235,13 +262,13 @@ internal sealed class InlineParser
                 flush();
 
                 ParseRun(
-                    source, commandEnd + 1, close, ApplyStyleCommand(style, command),
-                    output, lineNumber, depth + 1
+                    source, commandEnd + 1, close, ApplyStyleCommand(style, command), output, lineNumber, depth + 1
                 );
 
                 return close + 1;
             }
         }
+
         _host.Warn($"\\{command} expects an argument in braces", lineNumber);
         pendingText.Append(MarkupConstants.Delimiters.SyntaxStart).Append(command);
         return commandEnd;
@@ -251,33 +278,46 @@ internal sealed class InlineParser
         => command switch
         {
             MarkupConstants.Commands.TextBold => style with {Bold = true},
+
             MarkupConstants.Commands.TextItalic or MarkupConstants.Commands.Emph
                 or MarkupConstants.Commands.TextSlanted => style with {Italic = true},
+            
             MarkupConstants.Commands.Underline => style with {Underline = true},
+            
             MarkupConstants.Commands.TextTypewriter => style with {Mono = true},
+            
             MarkupConstants.Commands.TextSmallCaps => style with {SmallCaps = true},
+            
             _ => style
         };
 
     private int ConsumeRefCommand(
-        string source, int end, int commandEnd, InlineStyle style,
-        List<Inline> output, StringBuilder pendingText, Action flush, int lineNumber
+        string source,
+        int end,
+        int commandEnd,
+        InlineStyle style,
+        List<Inline> output,
+        StringBuilder pendingText,
+        Action flush,
+        int lineNumber
     )
     {
         if (commandEnd < end && source[commandEnd] == MarkupConstants.Delimiters.GroupOpen)
         {
             int close = MarkupHelper.MatchBrace(source, commandEnd, end);
+
             if (close > commandEnd)
             {
                 flush();
-                output.Add(
-                    new RefRun(
-                        source[(commandEnd + 1)..close].Trim(), lineNumber,
-                        style.Bold, style.Italic, style.Underline, style.Mono
+
+                output.Add(new RefRun(
+                    source[(commandEnd + 1)..close].Trim(), lineNumber, style.Bold, style.Italic, style.Underline, style.Mono
                 ));
+
                 return close + 1;
             }
         }
+
         _host.Warn("\\ref expects a label name in braces", lineNumber);
         pendingText.Append(MarkupConstants.Tokens.Ref);
         return commandEnd;
@@ -290,6 +330,7 @@ internal sealed class InlineParser
         if (commandEnd < end && source[commandEnd] == MarkupConstants.Delimiters.GroupOpen)
         {
             int close = MarkupHelper.MatchBrace(source, commandEnd, end);
+
             if (close > commandEnd)
             {
                 _host.BindLabel(source[(commandEnd + 1)..close].Trim(), _host.CurrentLabelTarget, lineNumber);
