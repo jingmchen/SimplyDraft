@@ -17,6 +17,7 @@ public static class InfrastructureServiceExtension
         services.AddSingleton<ILibraryPaths, LibraryPaths>();
         services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
         services.AddSingleton<ILibrary, Library>();
+        services.AddSingleton<IFileSystem, FileSystem>();
         return services;
     }
 }
