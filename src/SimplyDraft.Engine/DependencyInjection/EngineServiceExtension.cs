@@ -2,6 +2,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimplyDraft.Core.Abstractions.Engine;
+using SimplyDraft.Engine.Services;
 
 namespace SimplyDraft.Engine.DependencyInjection;
 
@@ -11,8 +12,10 @@ public static class EngineServiceExtension
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        services.AddSingleton<IBuiltinProvider, SystemBuiltins>();
         services.AddSingleton<IMarkupEngine, MarkupEngine>();
         services.AddSingleton<IScriptingEngine, ScriptingEngine>();
+        services.AddSingleton<IRenderEngine, RenderEngine>();
         services.AddSingleton<IBatchGenerator, BatchGenerator>();
         return services;
     }
