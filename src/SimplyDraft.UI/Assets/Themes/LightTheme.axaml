@@ -1,0 +1,33 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Backgrounds (Bg0 canvas · Bg1 white cards/inputs · Bg2/Bg3 raised controls) -->
+  <SolidColorBrush x:Key="ThemeBg0Brush" Color="#F4F5FA" />
+  <SolidColorBrush x:Key="ThemeBg1Brush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="ThemeBg2Brush" Color="#EAEDF4" />
+  <SolidColorBrush x:Key="ThemeBg3Brush" Color="#DEE2EE" />
+
+  <!-- Foregrounds (Fg0 primary → Fg3 faint) -->
+  <SolidColorBrush x:Key="ThemeFg0Brush" Color="#23263B" />
+  <SolidColorBrush x:Key="ThemeFg1Brush" Color="#454A63" />
+  <SolidColorBrush x:Key="ThemeFg2Brush" Color="#6A6F8A" />
+  <SolidColorBrush x:Key="ThemeFg3Brush" Color="#9297AE" />
+
+  <!-- Borders -->
+  <SolidColorBrush x:Key="ThemeBorderBrush"       Color="#D5D9E8" />
+  <SolidColorBrush x:Key="ThemeBorderStrongBrush" Color="#C0C5D8" />
+
+  <!-- Interaction fills -->
+  <SolidColorBrush x:Key="ThemeHoverBrush"    Color="#E7EAF4" />
+  <SolidColorBrush x:Key="ThemePressedBrush"  Color="#D9DDEB" />
+  <SolidColorBrush x:Key="ThemeSelectedBrush" Color="#D8E0F2" />
+
+  <!-- Status -->
+  <SolidColorBrush x:Key="ThemeErrorBrush"   Color="#C0392B" />
+  <SolidColorBrush x:Key="ThemeWarningBrush" Color="#B7791F" />
+  <SolidColorBrush x:Key="ThemeSuccessBrush" Color="#2E7D5B" />
+  <SolidColorBrush x:Key="ThemeInfoBrush"    Color="#1F6FBB" />
+
+  <!-- Overlay / scrim -->
+  <SolidColorBrush x:Key="ThemeOverlayBrush" Color="#66000000" />
+</ResourceDictionary>
