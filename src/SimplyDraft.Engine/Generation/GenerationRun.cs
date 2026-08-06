@@ -35,7 +35,7 @@ public sealed class GenerationRun
 
         _request = request;
         _result = result;
-        (_variables, _formulaSources) = FormulaEngine.Seed(request.TemplateDefaults, request.ChildValues);
+        (_variables, _formulaSources) = FormulaParser.Seed(request.TemplateDefaults, request.ChildValues);
         _scope = new ScriptScope(_variables, builtins, new BuiltinContext(now, request.Doc), culture, BuildInputFallback(request.PreviewInputs, _variables));
         _interpreter = new Interpreter(_scope);
 
@@ -43,7 +43,7 @@ public sealed class GenerationRun
     }
 
     public bool EvaluateFormulas()
-        => _formulaSources.Count == 0 || FormulaEngine.EvaluateAll(_formulaSources, _variables, _interpreter, _result, IsPreview);
+        => _formulaSources.Count == 0 || FormulaParser.EvaluateAll(_formulaSources, _variables, _interpreter, _result, IsPreview);
     
     public bool WriteSegments(List<Segment> segments)
     {
@@ -68,7 +68,7 @@ public sealed class GenerationRun
     public void ValidateDeclaredTypes()
     {
         if (_request.VariableTypes is {Count: > 0} declaredTypes)
-            FormulaEngine.ValidateDeclaredTypes(declaredTypes, _variables, _result.Diagnostics);
+            FormulaParser.ValidateDeclaredTypes(declaredTypes, _variables, _result.Diagnostics);
     }
 
     private bool WriteLiteral(LiteralSegment literal)
