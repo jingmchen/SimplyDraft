@@ -1,0 +1,119 @@
+---
+name: "IOQ Protocol (Showcase)"
+description: "Every feature in one template: match/case scenarios, if/elif, methods, slicing, typed inputs, built-ins, inline expressions, LaTeX markup with TOC, tables, labels and figures"
+markup: latex
+variables:
+  client: ""
+  equipment: ""
+  equipment_count: ""
+  qualification_date: ""
+  review_time: ""
+  gmp_critical: ""
+  author: ""
+types:
+  equipment_count: number
+  qualification_date: date
+  review_time: time
+  gmp_critical: yesno
+docx:
+  font: "Calibri"
+  size: 11
+  header: "IOQ Protocol — controlled document"
+---
+#SCRIPT
+# ---- scenario: client profile (appears as a dropdown when generating a child) ----
+match client:
+    case "ABC Corp":
+        company_name = "ABC Corporation Inc."
+        company_code = "ABC"
+        approver = "Tan Wei Ming"
+    case "XYZ Ltd":
+        company_name = "XYZ Limited"
+        company_code = "XYZ"
+        approver = "Nur Aisyah"
+    case _:
+        company_name = client
+        company_code = client[:3].upper()
+        approver = "TBD"
+
+# ---- derived values: methods, slicing, ternary, membership ----
+title = "IOQ — " + equipment.strip()
+header_tag = company_code + "-" + equipment.strip()[:8].upper().replace(" ", "-")
+criticality = "GMP-critical" if gmp_critical == "yes" else "non-critical"
+lab_note = "on-site" if "Lab" in equipment else "standard"
+
+# ---- typed inputs: number / date / time (guarded while still empty) ----
+if equipment_count != "":
+    units = float(equipment_count)
+    effort_label = format(units * 1.5, "0.0") + " day(s)"
+else:
+    effort_label = "TBD"
+
+if qualification_date != "" and review_time != "":
+    schedule_line = "scheduled " + qualification_date + " at " + review_time
+elif qualification_date != "":
+    schedule_line = "scheduled " + qualification_date
+else:
+    schedule_line = "to be scheduled"
+
+# ---- built-ins ----
+generated_on = str(system.date) + " " + str(system.time)
+signature = author.strip() + " / " + system.username
+#ENDSCRIPT
+\begin{center}
+\textbf{ {header_tag}: {title} }
+Prepared for {company_name} — issued \today
+\end{center}
+\hrule
+
+\tableofcontents
+% the TOC above lists every numbered section; in Word, press F9 to add page numbers
+
+\section{Overview} \label{sec:overview}
+Prepared for \textbf{ {company_name} } — {criticality} qualification, {lab_note} handling.\\
+Document \texttt{ {doc.name} }, from template \texttt{ {doc.template} }, generated {generated_on}.
+
+\subsection{Scope}
+This protocol qualifies {= equipment.strip() }: installation checks, operational checks,
+and acceptance criteria. Estimated effort: \underline{ {effort_label} }, {schedule_line}.
+Approval flow is defined in section \ref{sec:approval}; \emph{execution} in section \ref{sec:execution}.
+
+\subsection{Roles}
+\begin{description}
+\item[Approver] {approver} — reviews \& signs the executed protocol
+\item[Author] {signature}
+\item[Units under test] {equipment_count}
+\end{description}
+
+\section{Execution} \label{sec:execution}
+\subsection{Installation checks}
+\begin{tabular}{lcr}
+Step & Check & Units \\
+\hline
+1 & Delivery matches PO {= "PO-" + company_code + "-" + str(system.year) } & {equipment_count} \\
+2 & Environment (temperature, power, clearance) & {equipment_count} \\
+3 & Utilities connected \& labelled & {equipment_count} \\
+\end{tabular}
+
+\subsection{Operational checks}
+\begin{enumerate}
+\item Execute operational runs and record results
+\item Confirm alarms \textit{(power loss, sensor fault)}
+\item Record deviations, if any
+\end{enumerate}
+
+\subsubsection{Acceptance criteria}
+\begin{quote}
+Approved when 100\% of checks pass and all deviations are closed.
+\end{quote}
+
+\section{Approval} \label{sec:approval}
+Literal braces stay literal when doubled: {{not_a_variable}}.
+
+\begin{verbatim}
+raw block: markup like \textbf{...} is kept exactly as typed here
+\end{verbatim}
+
+\newpage
+\section*{Appendix (unnumbered)}
+Refer back to \ref{sec:overview} for scope. Signature: ________________  Date: {system.date}
