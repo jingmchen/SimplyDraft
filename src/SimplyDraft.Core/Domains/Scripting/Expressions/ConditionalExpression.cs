@@ -9,7 +9,7 @@ public sealed class ConditionalExpression : Expression
     public Expression Else {get;}
     public override IEnumerable<Expression> SubExpressions => [Condition, Then, Else];
 
-    public ConditionalExpression(int line, int column, Expression condition, Expression then, Expression el) : base(line, column)
+    public ConditionalExpression(Expression condition, Expression then, Expression el, int line, int column) : base(line, column)
     {
         Condition = condition ?? throw new ArgumentNullException(nameof(condition));
         Then = then ?? throw new ArgumentNullException(nameof(then));
