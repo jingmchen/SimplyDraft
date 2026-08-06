@@ -1,0 +1,33 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!--  RADIO BUTTONS — .Swatch (circular color pickers)           -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <Style Selector="RadioButton.Swatch">
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Margin" Value="4" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border x:Name="SelectionRing"
+                CornerRadius="999"
+                Padding="2"
+                BorderThickness="2"
+                BorderBrush="Transparent">
+          <ContentPresenter Content="{TemplateBinding Content}" />
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+  <Style Selector="RadioButton.Swatch:checked /template/ Border#SelectionRing">
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColorBrush}" />
+  </Style>
+
+  <Style Selector="RadioButton.Swatch:pointerover /template/ Border#SelectionRing">
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+  </Style>
+
+</Styles>
