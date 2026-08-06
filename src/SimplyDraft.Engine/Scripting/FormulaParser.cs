@@ -1,17 +1,21 @@
+// Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
+
 namespace SimplyDraft.Engine.Scripting;
 
-internal static class FormulaEngine
+public static class FormulaEngine
 {
-    internal static (Dictionary<string, Value> Vars, Dictionary<string, string> FormulaSrc) Seed(
+    public static (Dictionary<string, Value> Vars, Dictionary<string, string> FormulaSrc) Seed(
         IReadOnlyDictionary<string, string> defaults, IReadOnlyDictionary<string, string>? childValues
     )
     {
         var mergedRawValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var entry in defaults) mergedRawValues[entry.Key] = entry.Value;
+        foreach (var entry in defaults)
+            mergedRawValues[entry.Key] = entry.Value;
 
         if (childValues != null)
-            foreach (var entry in childValues) mergedRawValues[entry.Key] = entry.Value;
+            foreach (var entry in childValues)
+                mergedRawValues[entry.Key] = entry.Value;
 
         var variables = new Dictionary<string, Value>(StringComparer.OrdinalIgnoreCase);
         var formulaSources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -27,7 +31,7 @@ internal static class FormulaEngine
             else if (rawValue.Length > 1 && rawValue[0] == ScriptingConstants.Formula.Prefix)
             {
                 formulaSources[entry.Key] = rawValue[1..];
-                variables[entry.Key] = Value.Str("");   // defined-but-pending until evaluated
+                variables[entry.Key] = Value.Str(""); // defined-but-pending until evaluated
             }
             else
             {
@@ -37,7 +41,7 @@ internal static class FormulaEngine
         return (variables, formulaSources);
     }
     
-    internal static bool EvaluateAll(
+    public static bool EvaluateAll(
         Dictionary<string, string> formulaSources,
         Dictionary<string, Value> variables,
         Interpreter interpreter,
@@ -57,6 +61,7 @@ internal static class FormulaEngine
                 expressions[entry.Key] = expression;
                 var referencedNames = new List<string>();
                 CollectVarRefs(expression, referencedNames);
+
                 dependencies[entry.Key] = referencedNames
                     .Where(formulaSources.ContainsKey)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -64,19 +69,27 @@ internal static class FormulaEngine
             }
             catch (ScriptException ex)
             {
-                result.Diagnostics.Add(new Diagnostic(ex.Diagnostic.Code,
+                result.Diagnostics.Add(new Diagnostic(
+                    ex.Diagnostic.Code,
+                    DiagnosticSeverity.Error,
                     $"in formula for {{{entry.Key}}}: {ex.Diagnostic.Message}",
-                    ex.Diagnostic.Line, ex.Diagnostic.Col, DiagnosticSeverity.Error));
-                if (!isPreview) allParsed = false;
+                    ex.Diagnostic.Line,
+                    ex.Diagnostic.Column
+                ));
+
+                if (!isPreview)
+                    allParsed = false;
             }
         }
 
-        if (!allParsed) return false;
+        if (!allParsed)
+            return false;
 
         var evaluated = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var name in formulaSources.Keys)
-            if (!expressions.ContainsKey(name)) evaluated.Add(name);
+            if (!expressions.ContainsKey(name))
+                evaluated.Add(name);
         
         bool madeProgress = true;
         
@@ -86,8 +99,11 @@ internal static class FormulaEngine
 
             foreach (var name in expressions.Keys.ToList())
             {
-                if (evaluated.Contains(name)) continue;
-                if (dependencies[name].Any(dependency => !evaluated.Contains(dependency))) continue;
+                if (evaluated.Contains(name))
+                    continue;
+                
+                if (dependencies[name].Any(dependency => !evaluated.Contains(dependency)))
+                    continue;
 
                 try
                 {
@@ -95,18 +111,31 @@ internal static class FormulaEngine
                 }
                 catch (ScriptException ex)
                 {
-                    result.Diagnostics.Add(new Diagnostic(ex.Diagnostic.Code,
+                    result.Diagnostics.Add(new Diagnostic(
+                        ex.Diagnostic.Code,
+                        DiagnosticSeverity.Error,
                         $"in formula for {{{name}}}: {ex.Diagnostic.Message}",
-                        ex.Diagnostic.Line, ex.Diagnostic.Col, DiagnosticSeverity.Error));
-                    if (!isPreview) return false;
+                        ex.Diagnostic.Line,
+                        ex.Diagnostic.Column
+                    ));
+
+                    if (!isPreview)
+                        return false;
+                    
                     variables[name] = Value.Str("");
                 }
                 catch (Exception ex)
                 {
-                    result.Diagnostics.Add(new Diagnostic(DiagnosticCode.SyntaxError,
-                        $"in formula for {{{name}}}: internal error: {ex.Message}",
-                        1, 1, DiagnosticSeverity.Error));
-                    if (!isPreview) return false;
+                    result.Diagnostics.Add(new Diagnostic(
+                        DiagnosticCode.SyntaxError,
+                        DiagnosticSeverity.Error,
+                        $"in formula for {{{name}}}: public error: {ex.Message}",
+                        1, 1
+                    ));
+
+                    if (!isPreview)
+                        return false;
+                    
                     variables[name] = Value.Str("");
                 }
 
@@ -115,22 +144,29 @@ internal static class FormulaEngine
             }
         }
 
-        var cyclicNames = expressions.Keys.Where(name => !evaluated.Contains(name))
-            .OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToList();
+        var cyclicNames =
+            expressions.Keys.Where(name => !evaluated.Contains(name))
+                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToList();
         
         if (cyclicNames.Count > 0)
         {
-            result.Diagnostics.Add(new Diagnostic(DiagnosticCode.CircularFormula,
-                "circular reference between formula variables: " +
-                string.Join(", ", cyclicNames.Select(name => "{" + name + "}")),
-                1, 1, DiagnosticSeverity.Error));
-            if (!isPreview) return false;
-            foreach (var name in cyclicNames) variables[name] = Value.Str("");
+            result.Diagnostics.Add(new Diagnostic(
+                DiagnosticCode.CircularFormula,
+                DiagnosticSeverity.Error,
+                "circular reference between formula variables: " + string.Join(", ", cyclicNames.Select(name => "{" + name + "}")),
+                1, 1
+            ));
+            
+            if (!isPreview)
+                return false;
+            
+            foreach (var name in cyclicNames)
+                variables[name] = Value.Str("");
         }
         return true;
     }
 
-    internal static void ValidateDeclaredTypes(
+    public static void ValidateDeclaredTypes(
         IReadOnlyDictionary<string, string> types,
         IReadOnlyDictionary<string,
         Value> variables,
@@ -139,25 +175,37 @@ internal static class FormulaEngine
     {
         foreach (var entry in types)
         {
-            if (!variables.TryGetValue(entry.Key, out var value)) continue;
+            if (!variables.TryGetValue(entry.Key, out var value))
+                continue;
+            
             var text = value.Render();
-            if (text.Length == 0) continue;
+            
+            if (text.Length == 0)
+                continue;
+            
             bool isValid = entry.Value.ToLowerInvariant() switch
             {
-                "number" => double.TryParse(text, NumberStyles.Float | NumberStyles.AllowLeadingSign,
-                    CultureInfo.InvariantCulture, out _),
-                "date" => DateTime.TryParseExact(text, ScriptingConstants.Temporal.IsoDate, CultureInfo.InvariantCulture,
-                    DateTimeStyles.None, out _),
+                "number" => double.TryParse(text, NumberStyles.Float | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out _),
+                
+                "date" => DateTime.TryParseExact(text, ScriptingConstants.Temporal.IsoDate, CultureInfo.InvariantCulture, DateTimeStyles.None, out _),
+                
                 "time" => TimeSpan.TryParseExact(text, ScriptingConstants.Temporal.TimeFormats, CultureInfo.InvariantCulture, out _),
+                
                 "yesno" => text.ToLowerInvariant() is "yes" or "no" or "true" or "false" or "1" or "0",
+                
                 _ => true
             };
+
             if (!isValid)
             {
                 var truncated = text.Length > 40 ? text[..40] + "…" : text;
-                diagnostics.Add(new Diagnostic(DiagnosticCode.DeclaredTypeMismatch,
+
+                diagnostics.Add(new Diagnostic(
+                    DiagnosticCode.DeclaredTypeMismatch,
+                    DiagnosticSeverity.Warning,
                     $"value \"{truncated}\" of {{{entry.Key}}} doesn't match declared type {entry.Value}",
-                    1, 1, DiagnosticSeverity.Warning));
+                    1, 1
+                ));
             }
         }
     }
@@ -166,11 +214,16 @@ internal static class FormulaEngine
     {
         var pending = new Stack<Expr>();
         pending.Push(root);
+
         while (pending.Count > 0)
         {
             var expression = pending.Pop();
-            if (expression is NameExpr nameExpr) referencedNames.Add(nameExpr.Name);
-            foreach (var child in expression.SubExpressions) pending.Push(child);
+            
+            if (expression is NameExpr nameExpr)
+                referencedNames.Add(nameExpr.Name);
+            
+            foreach (var child in expression.SubExpressions)
+                pending.Push(child);
         }
     }
 }
