@@ -3,7 +3,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
-using SimplyDraft.Core.Abstractions;
+using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.Core.Enums;
 
 namespace SimplyDraft.UI.Views;
