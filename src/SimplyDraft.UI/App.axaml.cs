@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.UI.Views;
 
 namespace SimplyDraft.UI;
