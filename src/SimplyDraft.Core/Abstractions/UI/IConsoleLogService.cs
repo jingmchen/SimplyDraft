@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace SimplyDraft.Core.Abstractions.UI;
 
-public interface IConsoleLog
+public interface IConsoleLogService
 {
     ObservableCollection<string> Entries {get;}
     void Clear();
