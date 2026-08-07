@@ -20,11 +20,6 @@ namespace SimplyDraft.Engine.Services;
 
 public sealed class ScriptingEngine : IScriptingEngine
 {
-    private readonly IBuiltinProvider _builtins;
-
-    public ScriptingEngine(IBuiltinProvider builtins)
-        => _builtins = builtins ?? throw new ArgumentNullException(nameof(builtins));
-
     public GenerationResult Run(GenerationRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -34,7 +29,7 @@ public sealed class ScriptingEngine : IScriptingEngine
         if (!TryParseTemplate(request.TemplateBody, result, out var segments))
             return result;
 
-        var run = new GenerationRun(request, _builtins, result);
+        var run = new GenerationRun(request, result);
 
         if (run.IsPreview)
             WarnOnScriptLikeContent(request.TemplateBody, result.Diagnostics);

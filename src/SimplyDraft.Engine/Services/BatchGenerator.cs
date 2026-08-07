@@ -45,7 +45,8 @@ public sealed class BatchGenerator : IBatchGenerator
         string extension = "." + request.Exporter.FileExtension;
         var usedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         int totalRows = csvRows.Count - 1;
-        _fileSystem.CreateDirectory(request.OutputDir);
+
+        Directory.CreateDirectory(request.OutputDir);
 
         for (int rowIndex = 1; rowIndex < csvRows.Count; rowIndex++)
         {
@@ -97,14 +98,14 @@ public sealed class BatchGenerator : IBatchGenerator
         return rowValues;
     }
 
-    private string ReserveUniqueFileName(string fileNamePattern, Dictionary<string, string> rowValues,
+    private static string ReserveUniqueFileName(string fileNamePattern, Dictionary<string, string> rowValues,
         BatchRequest request, HashSet<string> usedFileNames, string extension)
     {
         string baseFileName = FileNameSanitizer.Sanitize(RenderPattern(fileNamePattern, rowValues, request.Template.Fm.Variables));
         string candidate = baseFileName;
         int duplicateSuffix = 2;
 
-        while (usedFileNames.Contains(candidate) || _fileSystem.FileExists(Path.Combine(request.OutputDir, candidate + extension)))
+        while (usedFileNames.Contains(candidate) || File.Exists(Path.Combine(request.OutputDir, candidate + extension)))
             candidate = $"{baseFileName} ({duplicateSuffix++})";
         
         usedFileNames.Add(candidate);
