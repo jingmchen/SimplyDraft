@@ -5,9 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using SimplyDraft.UI.Views;
 using Avalonia.Threading;
-using Serilog;
+using SimplyDraft.UI.Views;
 
 namespace SimplyDraft.UI;
 
@@ -27,13 +26,14 @@ public sealed partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        Dispatcher.UIThread.UnhandledException += OnDispatcherUnhandledException;
-
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (_services is { } services)
         {
-            desktop.MainWindow = _services.GetRequiredService<MainWindow>();
+            Dispatcher.UIThread.UnhandledException += OnDispatcherUnhandledException;
+
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                desktop.MainWindow = _services.GetRequiredService<MainWindow>();
         }
-        
+
         base.OnFrameworkInitializationCompleted();
     }
 
