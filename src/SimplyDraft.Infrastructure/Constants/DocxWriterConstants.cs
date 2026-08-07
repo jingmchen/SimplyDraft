@@ -1,10 +1,58 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
+using System.Globalization;
+
 namespace SimplyDraft.Infrastructure.Constants;
 
 internal static class DocxWriterConstants
 {
     internal const string XmlDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+    internal const string DocumentClose = "</w:body></w:document>";
+
+    internal static class Sections
+    {
+        internal const string DocumentOpen =
+            "<w:document xmlns:w=\"" + Namespaces.Main +
+            "\" xmlns:r=\"" + Namespaces.Relationships +
+            "\" xmlns:wp=\"" + Namespaces.WordprocessingDrawing +
+            "\" xmlns:a=\"" + Namespaces.DrawingMl +
+            "\" xmlns:pic=\"" + Namespaces.Picture + "\"><w:body>";
+
+        internal const string RootRelationshipsXml =
+            XmlDeclaration + "<Relationships xmlns=\"" +
+            Namespaces.PackageRelationships + "\">" +
+            "<Relationship Id=\"" + RelationshipIds.OfficeDocument +
+            "\" Type=\"" + RelationshipTypes.OfficeDocument +
+            "\" Target=\"" + RelationshipTargets.Document + "\"/>" + "</Relationships>";
+        
+        internal const string SettingsXml =
+            XmlDeclaration + "<w:settings xmlns:w=\"" +
+            Namespaces.Main + "\">" + "<w:updateFields w:val=\"true\"/></w:settings>";
+        
+        internal const string NoRunProperties = "";
+
+        internal const string TableOfContentsFieldBegin =
+        "<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>" +
+        "<w:r><w:instrText xml:space=\"preserve\">" + FieldInstructions.TableOfContents + "</w:instrText></w:r>" +
+        "<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+
+        internal const string TableOfContentsFieldEnd = "<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+
+        internal static readonly string PageGeometryXml = string.Create(
+            CultureInfo.InvariantCulture,
+            $"""
+            <w:pgSz w:w=\"{Page.WidthTwips}\" w:h=\"{Page.HeightTwips}\"/>
+            <w:pgMar 
+                w:top=\"{Page.MarginTwips}\"
+                w:right=\"{Page.MarginTwips}\"
+                w:bottom=\"{Page.MarginTwips}\"
+                w:left=\"{Page.MarginTwips}\"
+                w:header=\"{Page.HeaderFooterMarginTwips}\"
+                w:footer=\"{Page.HeaderFooterMarginTwips}\"
+                w:gutter=\"{Page.GutterTwips}\"/>
+            """
+        );
+    }
 
     internal static class Namespaces
     {
@@ -117,6 +165,19 @@ internal static class DocxWriterConstants
         internal const string Header = WordprocessingMlPrefix + "header+xml";
         internal const string Footer = WordprocessingMlPrefix + "footer+xml";
         internal const string Settings = WordprocessingMlPrefix + "settings+xml";
+    }
+
+    /// <summary>
+    /// File extensions as they appear in <c>[Content_Types].xml</c>
+    /// Separate purpose from <c>InfrastructureConstants.FileExtensions</c>
+    /// </summary>
+    internal static class FileExtensions
+    {
+        public const string Relationships = "rels";
+        public const string Xml = "xml";
+        public const string Png = "png";
+        public const string Jpg = "jpg";
+        public const string Jpeg = "jpeg";
     }
 
     internal static class Page

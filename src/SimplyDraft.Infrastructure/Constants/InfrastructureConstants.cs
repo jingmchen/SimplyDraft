@@ -43,10 +43,6 @@ internal static class InfrastructureConstants
         internal const string Children = ".sdc";
         internal const string Docx = ".docx";
         internal const string Txt = ".txt";
-        internal const string Xml = ".xml";
-        internal const string Png = ".png";
-        internal const string Jpg = ".jpg";
-        internal const string Jpeg = ".jpeg";
     }
 
     internal static class Service
