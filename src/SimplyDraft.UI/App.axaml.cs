@@ -14,11 +14,13 @@ public sealed partial class App : Application
 {
     private readonly IServiceProvider _services;
     private readonly ILogger<App> _logger;
+    private readonly IStartupTasks _startupTasks;
 
     public App(IServiceProvider services)
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _logger = _services.GetRequiredService<ILogger<App>>();
+        _startupTasks = _services.GetRequiredService<IStartupTasks>();
     }
 
     public override void Initialize()
@@ -29,7 +31,8 @@ public sealed partial class App : Application
         if (_services is { } services)
         {
             Dispatcher.UIThread.UnhandledException += OnDispatcherUnhandledException;
-
+            _startupTasks.Run();
+            
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 desktop.MainWindow = _services.GetRequiredService<MainWindow>();
         }
