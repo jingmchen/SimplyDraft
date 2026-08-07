@@ -67,9 +67,7 @@ internal static class DocxWriterConstants
                 <w:fldChar w:fldCharType="begin" />
             </w:r>
             <w:r>
-                <w:instrText xml:space="preserve">
-                    {FieldInstructions.TableOfContents}
-                </w:instrText>
+                <w:instrText xml:space="preserve">{FieldInstructions.TableOfContents}</w:instrText>
             </w:r>
             <w:r>
                 <w:fldChar w:fldCharType="separate" />
