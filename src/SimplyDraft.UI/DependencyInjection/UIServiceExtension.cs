@@ -23,6 +23,7 @@ public static class UIServiceExtension
     {
         services.AddSingleton<IUriPaths, UriPaths>();
         services.AddSingleton<IThemeService, ThemeService>();
+        services.AddSingleton<IStartupTasks, StartupTasks>();
         return services;
     }
 }
