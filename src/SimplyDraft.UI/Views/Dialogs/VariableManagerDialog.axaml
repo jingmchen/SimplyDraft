@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SimplyDraft.UI.ViewModels"
+        x:Class="SimplyDraft.UI.Views.Dialogs.VariableManagerDialog"
+        Title="Variable declarations"
+        Width="560" Height="460" WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="12">
+    <TextBlock DockPanel.Dock="Top" Opacity="0.75" FontSize="12" Margin="0,0,0,8" TextWrapping="Wrap"
+               Text="Templates are abstract: declare a name and a type only. Values are assigned by the script (if/elif, match/case) or entered when generating a child." />
+    <DockPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+        <Button Content="OK" MinWidth="80" Click="Ok_Click" />
+        <Button Content="Cancel" MinWidth="80" Click="Cancel_Click" />
+      </StackPanel>
+      <TextBlock x:Name="ErrorText" Classes="errorText" VerticalAlignment="Center"
+                 TextWrapping="Wrap" FontSize="12" />
+    </DockPanel>
+    <StackPanel DockPanel.Dock="Right" Spacing="6" Margin="10,0,0,0" Width="96">
+      <Button Content="Add" HorizontalAlignment="Stretch" Click="Add_Click" />
+      <Button Content="Remove" HorizontalAlignment="Stretch" Click="Remove_Click" />
+    </StackPanel>
+    <DockPanel>
+      <Grid DockPanel.Dock="Top" ColumnDefinitions="*,140" Margin="4,0,4,4">
+        <TextBlock Classes="columnHeader" Text="Name" />
+        <TextBlock Grid.Column="1" Classes="columnHeader" Text="Type" />
+      </Grid>
+      <ListBox x:Name="RowsList" ItemTemplate="{StaticResource ManagerRowTemplate}" />
+    </DockPanel>
+  </DockPanel>
+</Window>

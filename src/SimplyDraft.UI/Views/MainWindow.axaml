@@ -1,0 +1,149 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        xmlns:b="using:SimplyDraft.UI.Behaviors"
+        xmlns:vm="using:SimplyDraft.UI.ViewModels"
+        x:Class="SimplyDraft.UI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="SimplyDraft" Width="1000" Height="640" MinWidth="780" MinHeight="480">
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Ctrl+N" Command="{Binding NewTemplateCommand}" />
+    <KeyBinding Gesture="Ctrl+Shift+N" Command="{Binding NewChildCommand}" />
+    <KeyBinding Gesture="Delete" Command="{Binding DeleteCommand}" />
+    <KeyBinding Gesture="F2" Command="{Binding RenameCommand}" />
+  </Window.KeyBindings>
+  <DockPanel>
+
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Header="New _Template…" Command="{Binding NewTemplateCommand}" InputGesture="Ctrl+N" />
+        <MenuItem Header="New _Child (generate)…" Command="{Binding NewChildCommand}" InputGesture="Ctrl+Shift+N" />
+        <Separator />
+        <MenuItem Header="_Export…" Command="{Binding ExportCommand}" />
+        <MenuItem Header="_Batch generate…" Command="{Binding BatchCommand}" />
+        <Separator />
+        <MenuItem Header="_Settings…" Command="{Binding SettingsCommand}" />
+        <Separator />
+        <MenuItem Header="E_xit" Click="OnExit" />
+      </MenuItem>
+      <MenuItem Header="_Edit">
+        <MenuItem Header="_Open" Command="{Binding OpenCommand}" InputGesture="Enter" />
+        <MenuItem Header="_Duplicate" Command="{Binding DuplicateCommand}" />
+        <MenuItem Header="_Rename…" Command="{Binding RenameCommand}" InputGesture="F2" />
+        <MenuItem Header="De_lete" Command="{Binding DeleteCommand}" InputGesture="Delete" />
+        <Separator />
+        <MenuItem Header="Re_veal in file manager" Command="{Binding RevealCommand}" />
+      </MenuItem>
+      <MenuItem Header="_View">
+        <MenuItem Header="_Theme">
+          <MenuItem x:Name="ThemeSystem" Header="System" ToggleType="Radio" GroupName="theme"
+                    Tag="System" Click="OnThemePick"
+                    ToolTip.Tip="Follows the OS light/dark setting (Black / White)" />
+          <MenuItem x:Name="ThemeDarkNavy" Header="Dark Navy" ToggleType="Radio" GroupName="theme"
+                    Tag="DarkNavy" Click="OnThemePick" />
+          <MenuItem x:Name="ThemeDarkGraphite" Header="Dark Graphite" ToggleType="Radio" GroupName="theme"
+                    Tag="DarkGraphite" Click="OnThemePick" />
+          <MenuItem x:Name="ThemeBlack" Header="Black" ToggleType="Radio" GroupName="theme"
+                    Tag="Black" Click="OnThemePick" />
+          <MenuItem x:Name="ThemeLight" Header="Light" ToggleType="Radio" GroupName="theme"
+                    Tag="Light" Click="OnThemePick" />
+          <MenuItem x:Name="ThemeWhite" Header="White" ToggleType="Radio" GroupName="theme"
+                    Tag="White" Click="OnThemePick" />
+        </MenuItem>
+        <MenuItem Header="_Accent">
+          <MenuItem x:Name="AccentIndigo" Header="Indigo" ToggleType="Radio" GroupName="accent"
+                    Tag="Indigo" Click="OnAccentPick" />
+          <MenuItem x:Name="AccentBlue" Header="Blue" ToggleType="Radio" GroupName="accent"
+                    Tag="Blue" Click="OnAccentPick" />
+          <MenuItem x:Name="AccentTeal" Header="Teal" ToggleType="Radio" GroupName="accent"
+                    Tag="Teal" Click="OnAccentPick" />
+          <MenuItem x:Name="AccentAmber" Header="Amber" ToggleType="Radio" GroupName="accent"
+                    Tag="Amber" Click="OnAccentPick" />
+          <MenuItem x:Name="AccentBlack" Header="Black" ToggleType="Radio" GroupName="accent"
+                    Tag="Black" Click="OnAccentPick" />
+          <MenuItem x:Name="AccentWhite" Header="White" ToggleType="Radio" GroupName="accent"
+                    Tag="White" Click="OnAccentPick" />
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="_Console" ToggleType="CheckBox"
+                  IsChecked="{Binding ConsoleVisible, Mode=TwoWay}" />
+      </MenuItem>
+    </Menu>
+
+    <Border DockPanel.Dock="Bottom" Classes="statusBar">
+      <TextBlock Classes="statusText" Text="{Binding StatusText}" />
+    </Border>
+
+    <!-- Content over the console pane; the splitter resizes the console (View ▸ Console toggles it;
+         the rows are collapsed in code-behind so the hidden console costs no space). -->
+    <Grid x:Name="CenterGrid">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" MinHeight="200" />
+        <RowDefinition Height="6" />
+        <RowDefinition Height="110" />
+      </Grid.RowDefinitions>
+
+      <Grid Grid.Row="0" ColumnDefinitions="200,6,*">
+      <DockPanel Grid.Column="0" Margin="8,2,0,8">
+        <TextBlock DockPanel.Dock="Top" Classes="paneHeader" Text="LIBRARY" Margin="4,4,0,4" />
+        <TextBox DockPanel.Dock="Top" PlaceholderText="Search library…" Margin="0,0,0,8"
+                 Text="{Binding Library.SearchText, Mode=TwoWay}" />
+        <!-- Drag-to-trash zone; TrashDroppedCommand.CanExecute doubles as drop validation. -->
+        <Border DockPanel.Dock="Bottom" Classes="dropZone" Height="52" Margin="0,8,0,0">
+          <i:Interaction.Behaviors>
+            <b:DropTargetBehavior DropCommand="{Binding TrashDroppedCommand}" />
+          </i:Interaction.Behaviors>
+          <TextBlock Text="Drop here to move to trash" FontSize="12" Opacity="0.6"
+                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+        <ListBox ItemsSource="{Binding Library.Sections}"
+                 SelectedItem="{Binding Library.SelectedSection, Mode=TwoWay}" />
+      </DockPanel>
+      <GridSplitter Grid.Column="1" />
+      <ListBox Grid.Column="2" Margin="0,2,8,8"
+               ItemsSource="{Binding Library.Items}"
+               SelectedItem="{Binding Library.SelectedItem, Mode=TwoWay}"
+               DoubleTapped="OnItemDoubleTapped"
+               ItemTemplate="{StaticResource LibraryRowTemplate}">
+        <ListBox.KeyBindings>
+          <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
+        </ListBox.KeyBindings>
+        <ListBox.ContextMenu>
+          <ContextMenu>
+            <MenuItem Header="Open" Command="{Binding OpenCommand}" InputGesture="Enter" />
+            <Separator />
+            <MenuItem Header="Duplicate" Command="{Binding DuplicateCommand}" />
+            <MenuItem Header="Rename…" Command="{Binding RenameCommand}" InputGesture="F2" />
+            <MenuItem Header="Delete" Command="{Binding DeleteCommand}" InputGesture="Delete" />
+            <Separator />
+            <MenuItem Header="Export…" Command="{Binding ExportCommand}" />
+            <MenuItem Header="Batch generate…" Command="{Binding BatchCommand}" />
+            <Separator />
+            <MenuItem Header="Reveal in file manager" Command="{Binding RevealCommand}" />
+          </ContextMenu>
+        </ListBox.ContextMenu>
+      </ListBox>
+      </Grid>
+
+      <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+
+      <!-- Console: timestamped activity log (seeding, actions, exports, theme changes). -->
+      <Border Grid.Row="2" Classes="panel" Margin="8,0,8,8">
+        <DockPanel>
+          <DockPanel DockPanel.Dock="Top" Margin="8,2,4,0">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="2">
+              <Button Classes="helpButton" Content="Clear" Click="OnConsoleClear"
+                      ToolTip.Tip="Clear the activity log" />
+              <Button Classes="helpButton" Content="✕" Click="OnConsoleHide"
+                      ToolTip.Tip="Hide (View ▸ Console brings it back)" />
+            </StackPanel>
+            <TextBlock Classes="paneHeader" Text="CONSOLE" VerticalAlignment="Center" />
+          </DockPanel>
+          <ListBox x:Name="ConsoleList" Classes="console" Margin="4,0,4,4"
+                   ItemsSource="{Binding ConsoleEntries}"
+                   FontFamily="{StaticResource MonoFontFamily}" FontSize="11" />
+        </DockPanel>
+      </Border>
+    </Grid>
+  </DockPanel>
+</Window>
