@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
+    <ApplicationIcon>..\SimplyDraft.UI\Assets\Icons\app.ico</ApplicationIcon>
     <RootNamespace>SimplyDraft.AppHost</RootNamespace>
     <AssemblyName>SimplyDraft</AssemblyName>
     <StartupObject>SimplyDraft.AppHost.Program</StartupObject>
