@@ -25,10 +25,31 @@
 
   <!-- For shipping -->
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+
     <Deterministic>true</Deterministic>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    
     <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
+    
     <DebugType>embedded</DebugType>
     <EmbedAllSources>false</EmbedAllSources>
   </PropertyGroup>
+
+  <!-- Files shipped beside executable -->
+  <ItemGroup Condition="
+      ('$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe')
+      And '$(Configuration)' == 'Release'">
+
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.md"
+          Link="LICENSE.md"
+          CopyToPublishDirectory="PreserveNewest"
+          ExcludeFromSingleFile="true" />
+
+    <None Include="$(MSBuildThisFileDirectory)THIRD-PARTY-NOTICES.txt"
+          Link="THIRD-PARTY-NOTICES.txt"
+          CopyToPublishDirectory="PreserveNewest"
+          ExcludeFromSingleFile="true" />
+  </ItemGroup>
 </Project>
