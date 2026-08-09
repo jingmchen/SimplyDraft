@@ -58,7 +58,7 @@ public sealed partial class EditorWindowViewModel : ViewModelBase, IDisposable
     public string PreviewFontFamily => PagePreview.FontFamily(PreviewPageView, _fm.DocxFont);
     public double PreviewFontSize => PagePreview.FontSize(PreviewPageView, _fm.DocxSizePt);
     public double PreviewMaxWidth => PagePreview.MaxWidth(PreviewPageView);
-    public string WindowTitle => (Dirty ? "● " : "") + Item.Name + " — Mini LaTeX";
+    public string WindowTitle => (Dirty ? "● " : "") + Item.Name + " — SimplyDraft";
     public ObservableCollection<string> Diagnostics {get;} = [];
 
     [ObservableProperty]
