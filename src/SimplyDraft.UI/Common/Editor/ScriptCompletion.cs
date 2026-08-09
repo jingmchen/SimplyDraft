@@ -43,6 +43,9 @@ public static class ScriptCompletion
             if (window != null || string.IsNullOrEmpty(e.Text) || editor.IsReadOnly)
                 return;
             
+            if (CaretInString(editor))
+                return;
+            
             char c = e.Text[0];
             
             if (c == '.')
@@ -110,5 +113,45 @@ public static class ScriptCompletion
         char ch = editor.Document.GetCharAt(offset - 1);
         
         return ch is '"' or '\'' or ')' or ']';
+    }
+
+    private static bool CaretInString(TextEditor editor)
+    {
+        var doc = editor.Document;
+        int caret = Math.Clamp(editor.CaretOffset, 0, doc.TextLength);
+        var line = doc.GetLineByOffset(caret);
+
+        var text = doc.GetText(
+            line.Offset,
+            caret - line.Offset);
+
+        char quote = '\0';
+
+        for (int i = 0; i < text.Length; i++)
+        {
+            char ch = text[i];
+
+            if (quote != '\0')
+            {
+                if (ch == '\\')
+                {
+                    i++;
+                    continue;
+                }
+
+                if (ch == quote)
+                    quote = '\0';
+            }
+            else if (ch is '"' or '\'')
+            {
+                quote = ch;
+            }
+            else if (ch == '#')
+            {
+                break;
+            }
+        }
+
+        return quote != '\0';
     }
 }
