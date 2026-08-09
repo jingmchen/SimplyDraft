@@ -24,6 +24,10 @@
     <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}" />
   </Style>
 
+  <Style Selector="SelectableTextBlock">
+    <Setter Property="SelectionBrush" Value="{DynamicResource ThemeSelectedBrush}" />
+  </Style>
+
   <Style Selector="TextBlock.h1">
     <Setter Property="FontSize" Value="32" />
     <Setter Property="FontWeight" Value="Bold" />
@@ -53,7 +57,6 @@
 
   <!-- ── App-specific text roles ── -->
   
-  <!-- muted uppercase panel titles, like VS Code's EXPLORER / OUTLINE headers -->
   <Style Selector="TextBlock.paneHeader">
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="FontSize" Value="11" />
