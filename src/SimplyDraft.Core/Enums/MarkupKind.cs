@@ -2,7 +2,8 @@
 
 namespace SimplyDraft.Core.Enums;
 
+// Not in use yet- future implementation to support different markup kinds
 public enum MarkupKind
 {
-    QuilTeX
+    LaTeX
 }
