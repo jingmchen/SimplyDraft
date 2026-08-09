@@ -26,9 +26,9 @@ match documentType:
     case "report":
         line1 = "this is a document"
     case "essay":
-        line2 = "this is perhaps an essay"
+        line1 = "this is perhaps an essay"
     case _:
-        line3 = "unknown document type"
+        line1 = "unknown document type"
    
 #ENDSCRIPT
 \section{Introduction To SimplyDraft}
