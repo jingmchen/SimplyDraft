@@ -14,7 +14,7 @@ internal static class HelpContent
             [
                 new(@"\command{…}", "Structural commands go at the start of their own line."),
                 new(@"\title{IOQ Protocol}", "Set the document title."),
-                new(@"\author{J. Tan}   \date{…}", "Optional; \\date defaults to today."),
+                new(@"\author{NAME}   \date{…}", "Optional; \\date defaults to today."),
                 new(@"\maketitle", "Print the centered title block."),
             ]),
         
