@@ -1,0 +1,272 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        xmlns:b="using:SimplyDraft.UI.Behaviors"
+        xmlns:vm="using:SimplyDraft.UI.ViewModels"
+        xmlns:ctrl="using:SimplyDraft.UI.Controls"
+        x:Class="SimplyDraft.UI.Views.EditorWindow"
+        x:DataType="vm:EditorWindowViewModel"
+        Title="{Binding WindowTitle}"
+        Width="1160" Height="760" MinWidth="920" MinHeight="560">
+
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
+  </Window.KeyBindings>
+
+  <DockPanel>
+
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+
+        <MenuItem Header="_Save"
+                  Command="{Binding SaveCommand}"
+                  InputGesture="Ctrl+S" />
+
+        <Separator IsVisible="{Binding CanExport}" />
+
+        <MenuItem Header="Export ._txt…"
+                  Command="{Binding ExportTxtCommand}"
+                  IsVisible="{Binding CanExport}" />
+
+        <MenuItem Header="Export ._docx…"
+                  Command="{Binding ExportDocxCommand}"
+                  IsVisible="{Binding CanExport}" />
+
+        <Separator />
+
+        <MenuItem Header="_Close"
+                  Click="OnCloseMenu" />
+
+      </MenuItem>
+      <MenuItem Header="_Edit">
+
+        <MenuItem Header="_Undo"
+                  Click="OnEditUndo"
+                  InputGesture="Ctrl+Z" />
+
+        <MenuItem Header="_Redo"
+                  Click="OnEditRedo"
+                  InputGesture="Ctrl+Y" />
+
+        <Separator />
+
+        <MenuItem Header="Cu_t"
+                  Click="OnEditCut"
+                  InputGesture="Ctrl+X" />
+
+        <MenuItem Header="_Copy"
+                  Click="OnEditCopy"
+                  InputGesture="Ctrl+C" />
+
+        <MenuItem Header="_Paste"
+                  Click="OnEditPaste"
+                  InputGesture="Ctrl+V" />
+
+        <Separator />
+
+        <MenuItem Header="Select _All"
+                  Click="OnEditSelectAll"
+                  InputGesture="Ctrl+A" />
+
+      </MenuItem>
+      <MenuItem Header="_View">
+
+        <MenuItem x:Name="WordWrapToggle"
+                  Header="_Word wrap"
+                  ToggleType="CheckBox"
+                  Click="OnWordWrapToggle"
+                  ToolTip.Tip="Soft wrap in the content editor — no line breaks are inserted; one line stays one paragraph in .docx" />
+        
+        <Separator />
+
+        <MenuItem Header="_Theme"
+                  x:Name="ThemeMenu" />
+
+        <MenuItem Header="_Accent"
+                  x:Name="AccentMenu" />
+
+      </MenuItem>
+      <MenuItem Header="_Template" IsVisible="{Binding IsTemplate}">
+
+        <MenuItem Header="_Variables…"
+                  Command="{Binding OpenVariablesCommand}" />
+
+        <Separator />
+
+        <MenuItem Header="_LaTeX markup"
+                  ToggleType="CheckBox"
+                  IsChecked="{Binding MarkupOn, Mode=TwoWay}" />
+                  
+      </MenuItem>
+    </Menu>
+
+    <Border DockPanel.Dock="Bottom" Classes="statusBar">
+
+      <TextBlock Classes="statusText"
+                 Text="{Binding StatusText}" />
+
+    </Border>
+
+    <Grid Margin="8,4,8,8" ColumnDefinitions="7*,6,3*">
+
+      <!-- LEFT PANE: content editor (70%) above the live preview (30%) -->
+      <Grid Grid.Column="0" RowDefinitions="7*,6,3*">
+        <DockPanel Grid.Row="0">
+          <DockPanel DockPanel.Dock="Top">
+
+            <Button DockPanel.Dock="Right"
+                    Classes="helpButton"
+                    Content="?"
+                    Click="OnMarkupHelp"
+                    ToolTip.Tip="Markup reference (\section, \label, tables, …)" />
+
+            <TextBlock Classes="paneHeader"
+                       Text="CONTENT"
+                       ToolTip.Tip="Text, {placeholders}, {= expressions}, markup" />
+
+          </DockPanel>
+          <Border Classes="editorFrame">
+
+            <i:Interaction.Behaviors>
+              <b:WheelRouterBehavior CtrlWheelCommand="{Binding ZoomEditorCommand}" />
+            </i:Interaction.Behaviors>
+
+            <ae:TextEditor x:Name="ContentEditor"
+                           FontFamily="{StaticResource MonoFontFamily}"
+                           FontSize="{Binding EditorFontSize}"
+                           ShowLineNumbers="True" />
+
+          </Border>
+        </DockPanel>
+
+        <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+
+        <DockPanel Grid.Row="2">
+          <DockPanel DockPanel.Dock="Top">
+
+            <CheckBox DockPanel.Dock="Right"
+                      Content="LaTeX markup"
+                      FontSize="11"
+                      MinHeight="0"
+                      Padding="4,0,0,0"
+                      IsChecked="{Binding MarkupOn, Mode=TwoWay}"
+                      IsVisible="{Binding IsTemplate}"
+                      ToolTip.Tip="Render \section, \textbf, tables, \today… in the preview and exports (saved with this template)" />
+            
+            <CheckBox DockPanel.Dock="Right"
+                      Content="Page view"
+                      FontSize="11"
+                      MinHeight="0"
+                      Padding="4,0,0,0"
+                      Margin="0,0,10,0"
+                      IsChecked="{Binding PreviewPageView, Mode=TwoWay}"
+                      ToolTip.Tip="Simulates the .docx page: the template's font at real A4 text width (17 cm), so line breaks land where Word breaks them. Off = exact .txt projection (78 columns; ASCII tables align)." />
+            
+            <TextBlock Classes="paneHeader"
+                       Text="PREVIEW"
+                       ToolTip.Tip="Generated output, rendered with LaTeX markup when it is enabled" />
+
+          </DockPanel>
+          <Panel>
+
+            <!-- Text view: the exact .txt projection (monospace, ASCII tables align). -->
+            <TextBox Text="{Binding PreviewText}"
+                     IsReadOnly="True"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     IsVisible="{Binding !ShowPagePreview}"
+                     Classes.page="{Binding PreviewPageView}"
+                     FontFamily="{Binding PreviewFontFamily}"
+                     FontSize="{Binding PreviewFontSize}"
+                     MaxWidth="{Binding PreviewMaxWidth}" />
+
+            <!-- Page view with markup on: prose as text, tables as native grids. -->
+            <ctrl:MarkupPreview x:Name="PagePreviewControl"
+                                Document="{Binding PreviewDocument}"
+                                PageFontFamily="{Binding PreviewFontFamily}"
+                                PageFontSize="{Binding PreviewFontSize}"
+                                IsVisible="{Binding ShowPagePreview}" />
+          </Panel>
+        </DockPanel>
+      </Grid>
+
+      <GridSplitter Grid.Column="1" />
+
+      <!-- RIGHT PANE: script and declarations (template only), diagnostics below.
+           For a baked child the script + variable rows are collapsed in code-behind. -->
+      <Grid x:Name="RightPane" Grid.Column="2" RowDefinitions="2*,6,2*,6,*">
+        <DockPanel Grid.Row="0" IsVisible="{Binding IsTemplate}">
+          <DockPanel DockPanel.Dock="Top">
+
+            <Button DockPanel.Dock="Right"
+                    Classes="helpButton"
+                    Content="?"
+                    Click="OnScriptHelp"
+                    ToolTip.Tip="Script language reference" />
+
+            <TextBlock Classes="paneHeader"
+                       Text="SCRIPT"
+                       ToolTip.Tip="Python-style — runs before the document. This is where variable values come from (if/elif, match/case)." />
+          
+          </DockPanel>
+          <Border Classes="editorFrame">
+
+            <i:Interaction.Behaviors>
+              <b:WheelRouterBehavior CtrlWheelCommand="{Binding ZoomEditorCommand}" />
+            </i:Interaction.Behaviors>
+
+            <ae:TextEditor x:Name="ScriptEditor"
+                           FontFamily="{StaticResource MonoFontFamily}"
+                           FontSize="{Binding EditorFontSize}"
+                           ShowLineNumbers="True" />
+
+          </Border>
+        </DockPanel>
+
+        <GridSplitter Grid.Row="1" ResizeDirection="Rows" IsVisible="{Binding IsTemplate}" />
+        
+        <DockPanel Grid.Row="2" IsVisible="{Binding IsTemplate}">
+
+          <TextBlock DockPanel.Dock="Top"
+                     Classes="paneHeader"
+                     Text="VARIABLES"
+                     ToolTip.Tip="Templates declare name · type only; values are chosen when generating a child" />
+
+          <StackPanel DockPanel.Dock="Bottom"
+                      Orientation="Horizontal"
+                      Spacing="6"
+                      Margin="0,6,0,0"
+                      IsVisible="{Binding IsTemplate}">
+
+            <Button Content="Add…"
+                    Command="{Binding AddVariableCommand}" />
+
+            <Button Content="Remove"
+                    Command="{Binding RemoveVariableCommand}" />
+
+          </StackPanel>
+
+          <ListBox IsVisible="{Binding ShowDeclarations}"
+                   ItemsSource="{Binding Variables}"
+                   SelectedItem="{Binding SelectedVariable, Mode=TwoWay}"
+                   ItemTemplate="{StaticResource DeclarationRowTemplate}" />
+
+        </DockPanel>
+
+        <GridSplitter Grid.Row="3" ResizeDirection="Rows" IsVisible="{Binding IsTemplate}" />
+        
+        <DockPanel Grid.Row="4">
+
+          <TextBlock DockPanel.Dock="Top"
+                     Classes="paneHeader"
+                     Text="DIAGNOSTICS" />
+
+          <ListBox ItemsSource="{Binding Diagnostics}"
+                   FontSize="12" />
+                   
+        </DockPanel>
+      </Grid>
+    </Grid>
+  </DockPanel>
+</Window>

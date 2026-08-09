@@ -1,0 +1,144 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+        xmlns:vm="using:SimplyDraft.UI.ViewModels"
+        xmlns:ctrl="using:SimplyDraft.UI.Controls"
+        x:Class="SimplyDraft.UI.Views.GenerateChildWindow"
+        x:DataType="vm:GenerateChildWindowViewModel"
+        Title="{Binding WindowTitle}"
+        Width="1060" Height="680" MinWidth="860" MinHeight="520"
+        WindowStartupLocation="CenterOwner">
+        
+  <DockPanel>
+
+    <Border DockPanel.Dock="Bottom" Padding="10,6">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+
+          <Button Content="Cancel"
+                  IsCancel="True"
+                  MinWidth="90"
+                  Click="Cancel_Click" />
+
+          <Button Content="Generate"
+                  IsDefault="True"
+                  MinWidth="110"
+                  Click="Generate_Click" />
+
+        </StackPanel>
+
+        <TextBlock Classes="statusText"
+                   Text="{Binding StatusText}"
+                   VerticalAlignment="Center" />
+
+      </DockPanel>
+    </Border>
+
+    <!-- diagnostics: only takes space when there is something to say -->
+    <Border DockPanel.Dock="Bottom" Classes="panel" Margin="8,0,8,0" Padding="6" IsVisible="{Binding HasDiagnostics}">
+
+      <ListBox ItemsSource="{Binding Diagnostics}"
+               FontSize="12"
+               MaxHeight="96" />
+               
+    </Border>
+
+    <Grid Margin="8,4,8,6" ColumnDefinitions="6*,6,4*">
+
+      <!-- LEFT: the final text, live -->
+      <DockPanel Grid.Column="0">
+        <DockPanel DockPanel.Dock="Top">
+
+          <CheckBox DockPanel.Dock="Right"
+                    Content="Page view"
+                    FontSize="11"
+                    MinHeight="0"
+                    Padding="4,0,0,0"
+                    IsChecked="{Binding PreviewPageView, Mode=TwoWay}"
+                    ToolTip.Tip="Simulates the .docx page: the template's font at real A4 text width, so line breaks land where Word breaks them" />
+          
+          <TextBlock Classes="paneHeader"
+                     Text="PREVIEW"
+                     ToolTip.Tip="Exactly what Generate will bake — updates live" />
+
+        </DockPanel>
+        <Panel>
+
+          <!-- Text view: the exact .txt projection (monospace, ASCII tables align). -->
+          <TextBox Text="{Binding PreviewText}"
+                   IsReadOnly="True"
+                   AcceptsReturn="True"
+                   TextWrapping="Wrap"
+                   IsVisible="{Binding !ShowPagePreview}"
+                   Classes.page="{Binding PreviewPageView}"
+                   FontFamily="{Binding PreviewFontFamily}"
+                   FontSize="{Binding PreviewFontSize}"
+                   MaxWidth="{Binding PreviewMaxWidth}" />
+
+          <!-- Page view with markup on: prose as text, tables as native grids. -->
+          <ctrl:MarkupPreview x:Name="PagePreviewControl"
+                              Document="{Binding PreviewDocument}"
+                              PageFontFamily="{Binding PreviewFontFamily}"
+                              PageFontSize="{Binding PreviewFontSize}"
+                              IsVisible="{Binding ShowPagePreview}" />
+                              
+        </Panel>
+      </DockPanel>
+
+      <GridSplitter Grid.Column="1" />
+
+      <!-- RIGHT: per-run script, scenario picks, remaining inputs -->
+      <Grid Grid.Column="2" RowDefinitions="2*,6,3*">
+        <DockPanel Grid.Row="0">
+          <DockPanel DockPanel.Dock="Top">
+
+            <Button DockPanel.Dock="Right"
+                    Classes="helpButton"
+                    Content="?"
+                    Click="OnScriptHelp"
+                    ToolTip.Tip="Script language reference" />
+
+            <TextBlock Classes="paneHeader"
+                       Text="SCRIPT (THIS RUN)"
+                       ToolTip.Tip="Python-style — starts as the template's script; edits apply to this child only" />
+
+          </DockPanel>
+          <Border Classes="editorFrame">
+
+            <ae:TextEditor x:Name="ScriptEditor"
+                           FontFamily="{StaticResource MonoFontFamily}"
+                           FontSize="13"
+                           ShowLineNumbers="True" />
+
+          </Border>
+        </DockPanel>
+
+        <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+
+        <DockPanel Grid.Row="2">
+          <StackPanel DockPanel.Dock="Top" IsVisible="{Binding HasScenarios}">
+
+            <TextBlock Classes="paneHeader"
+                       Text="SCENARIO"
+                       ToolTip.Tip="From the script's match blocks — pick which case applies" />
+
+            <ItemsControl ItemsSource="{Binding Scenarios}"
+                          ItemTemplate="{StaticResource ScenarioRowTemplate}" />
+
+          </StackPanel>
+
+          <TextBlock DockPanel.Dock="Top"
+                     Classes="paneHeader"
+                     Text="VARIABLES"
+                     ToolTip.Tip="Only the values the script does not set itself" />
+
+          <ListBox ItemsSource="{Binding Variables}"
+                   SelectedItem="{Binding SelectedVariable, Mode=TwoWay}"
+                   ItemTemplate="{StaticResource VariableRowTemplate}"
+                   KeyboardNavigation.TabNavigation="Continue" />
+                   
+        </DockPanel>
+      </Grid>
+    </Grid>
+  </DockPanel>
+</Window>

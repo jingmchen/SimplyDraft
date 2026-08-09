@@ -1,0 +1,152 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        xmlns:b="using:SimplyDraft.UI.Behaviors"
+        xmlns:vm="using:SimplyDraft.UI.ViewModels"
+        xmlns:vmc="using:SimplyDraft.UI.ViewModels.Components">
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!--  SHARED DATA TEMPLATES                                      -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+
+  <Styles.Resources>
+    <ResourceDictionary>
+
+      <!-- Variable value row -->
+      <DataTemplate x:Key="VariableRowTemplate"
+                    x:DataType="vmc:VariableRowViewModel">
+
+        <Grid ColumnDefinitions="92,52,*"
+              Margin="0,2">
+
+          <TextBlock Text="{Binding DisplayName}"
+                     VerticalAlignment="Center"
+                     TextTrimming="CharacterEllipsis"
+                     ToolTip.Tip="{Binding Name}"
+                     IsTabStop="False" />
+
+          <TextBlock Grid.Column="1"
+                     Classes="typeTag"
+                     Text="{Binding TypeName}"
+                     VerticalAlignment="Center"
+                     IsTabStop="False" />
+
+          <Panel Grid.Column="2">
+
+            <TextBox Text="{Binding Value, Mode=TwoWay}"
+                     FontSize="12"
+                     IsVisible="{Binding ShowTextBox}" />
+
+            <CheckBox IsChecked="{Binding BoolValue, Mode=TwoWay}"
+                      IsVisible="{Binding ShowYesNo}"
+                      HorizontalAlignment="Left" />
+
+            <DatePicker SelectedDate="{Binding DateValue, Mode=TwoWay}"
+                        IsVisible="{Binding ShowDate}"
+                        FontSize="11" />
+
+            <TimePicker SelectedTime="{Binding TimeValue, Mode=TwoWay}"
+                        IsVisible="{Binding ShowTime}"
+                        FontSize="11" />
+
+          </Panel>
+        </Grid>
+      </DataTemplate>
+
+      <!-- Declaration row -->
+      <DataTemplate x:Key="DeclarationRowTemplate"
+                    x:DataType="vmc:VariableRowViewModel">
+
+        <Grid ColumnDefinitions="*,64"
+              Margin="0,2">
+
+          <TextBlock Text="{Binding DisplayName}"
+                     VerticalAlignment="Center"
+                     TextTrimming="CharacterEllipsis"
+                     ToolTip.Tip="{Binding Name}" />
+
+          <TextBlock Grid.Column="1"
+                     Classes="typeTag"
+                     Text="{Binding TypeName}"
+                     VerticalAlignment="Center" />
+
+        </Grid>
+      </DataTemplate>
+
+      <!-- Main-window library row -->
+      <DataTemplate x:Key="LibraryRowTemplate"
+                    x:DataType="vmc:LibraryItemViewModel">
+
+        <Grid ColumnDefinitions="*,Auto,Auto"
+              Background="Transparent">
+
+          <i:Interaction.Behaviors>
+            <b:HoverTrackerBehavior Item="{Binding}"
+                                    Tracker="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Library}" />
+
+            <b:DragSourceBehavior Payload="{Binding Item.FilePath}" />
+          </i:Interaction.Behaviors>
+
+          <TextBlock Text="{Binding Name}"
+                     TextTrimming="CharacterEllipsis"
+                     VerticalAlignment="Center" />
+
+          <TextBlock Grid.Column="1"
+                     Text="{Binding Detail}"
+                     Opacity="0.55"
+                     FontSize="12"
+                     Margin="12,0"
+                     VerticalAlignment="Center" />
+
+          <TextBlock Grid.Column="2"
+                     Text="{Binding ModifiedText}"
+                     Opacity="0.45"
+                     FontSize="11"
+                     VerticalAlignment="Center" />
+
+        </Grid>
+      </DataTemplate>
+
+      <!-- Generate-child scenario row -->
+      <DataTemplate x:Key="ScenarioRowTemplate"
+                    x:DataType="vmc:ScenarioViewModel">
+
+        <DockPanel Margin="0,0,0,6">
+
+          <TextBlock DockPanel.Dock="Left"
+                     Text="{Binding Variable}"
+                     Width="92"
+                     VerticalAlignment="Center"
+                     TextTrimming="CharacterEllipsis" />
+
+          <ComboBox ItemsSource="{Binding Options}"
+                    SelectedItem="{Binding Selected, Mode=TwoWay}"
+                    HorizontalAlignment="Stretch"
+                    FontSize="12" />
+
+        </DockPanel>
+      </DataTemplate>
+
+      <!-- Variable-manager declaration row -->
+      <DataTemplate x:Key="ManagerRowTemplate"
+                    x:DataType="vmc:ManagerRowViewModel">
+
+        <Grid ColumnDefinitions="*,140"
+              Margin="0,2">
+
+          <TextBox Text="{Binding Name, Mode=TwoWay}"
+                   FontSize="12" />
+
+          <ComboBox Grid.Column="1"
+                    ItemsSource="{Binding TypeChoices}"
+                    SelectedItem="{Binding Type, Mode=TwoWay}"
+                    FontSize="12"
+                    Margin="4,0" />
+
+        </Grid>
+      </DataTemplate>
+
+    </ResourceDictionary>
+  </Styles.Resources>
+
+</Styles>
