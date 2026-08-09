@@ -13,7 +13,7 @@ internal static class HelpContent
             "above the preview (or Template ▸ LaTeX markup) switches it on/off.",
             [
                 new(@"\command{…}", "Structural commands go at the start of their own line."),
-                new(@"\title{IOQ Protocol}", "Set the document title."),
+                new(@"\title{TITLE}", "Set the document title."),
                 new(@"\author{NAME}   \date{…}", "Optional; \\date defaults to today."),
                 new(@"\maketitle", "Print the centered title block."),
             ]),
