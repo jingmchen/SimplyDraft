@@ -70,7 +70,7 @@ Once done, check the Diagnostic pane and Preview pane. If all looks good, click 
 
 Copyright (c) 2026 Tan Jing Ming
 
-This project is licensed under the **PolyForm Noncommercial License 1.0.0**.
+This project is licensed under the **PolyForm Strict License 1.0.0**.
 
 You may use this software for permitted non-commercial purposes. Redistribution, modification, and creation of derivative works are not permitted.
 
