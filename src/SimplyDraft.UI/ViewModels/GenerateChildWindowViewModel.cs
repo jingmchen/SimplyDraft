@@ -207,9 +207,10 @@ public sealed partial class GenerateChildWindowViewModel : ViewModelBase, IDispo
         {
             if (!addedScenarios.Add(sc.Variable))
                 continue;
-            var vm = new ScenarioViewModel(sc.Variable, sc.Options, OnScenarioPicked);
+            
+            var vm = new ScenarioViewModel(sc.Variable, sc.Options, sc.HasFallback, OnScenarioPicked);
 
-            vm.Selected = previous.TryGetValue(sc.Variable, out var old) && old != null && sc.Options.Contains(old)
+            vm.Selected = previous.TryGetValue(sc.Variable, out var old) && old != null && vm.Options.Contains(old)
                 ? old
                 : sc.Options[0];
             
