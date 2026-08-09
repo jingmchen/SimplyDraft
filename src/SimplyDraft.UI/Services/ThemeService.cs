@@ -13,6 +13,8 @@ using Avalonia.Threading;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.Core.Enums;
+using SimplyDraft.UI.Common.Editor;
+using SimplyDraft.UI.Constants;
 
 namespace SimplyDraft.UI.Services;
 
@@ -121,20 +123,24 @@ public sealed class ThemeService : IThemeService
         CurrentAccent = accent;
         
         var effectiveTheme = theme == AppTheme.System ? GetSystemTheme() : theme;
+        var isDark = IsDarkTheme(effectiveTheme);
 
         // Fluent theme for built-in control styles
         Application.Current!.RequestedThemeVariant =
-            IsDarkTheme(effectiveTheme) ? ThemeVariant.Dark : ThemeVariant.Light;
-        
+            isDark ? ThemeVariant.Dark : ThemeVariant.Light;
+
         var merged = Application.Current!.Resources.MergedDictionaries;
+        var themeDictionary = GetOrLoadDictionary(_themeCache, effectiveTheme, ThemeUri);
+        var accentDictionary = GetOrLoadDictionary(_accentCache, CurrentAccent, AccentUri);
 
         _themeSlot?.MergedDictionaries.Clear();
-        _themeSlot?.MergedDictionaries.Add(
-            GetOrLoadDictionary(_themeCache, effectiveTheme, ThemeUri));
+        _themeSlot?.MergedDictionaries.Add(themeDictionary);
 
         _accentSlot?.MergedDictionaries.Clear();
-        _accentSlot?.MergedDictionaries.Add(
-            GetOrLoadDictionary(_accentCache, CurrentAccent, AccentUri));
+        _accentSlot?.MergedDictionaries.Add(accentDictionary);
+        
+        // Call EditorSyntax to update palette
+        EditorSyntax.SetTheme(isDark, GetColor(accentDictionary));
 
         if (persist)
             Persist();
@@ -177,6 +183,18 @@ public sealed class ThemeService : IThemeService
             AppTheme.Light or AppTheme.White => false,
             _ => throw new ArgumentOutOfRangeException(nameof(theme), theme, "Invalid theme.")
         };
+    
+    // Color helpers for AvalonEditor
+    private Color GetColor(ResourceDictionary dictionary)
+    {
+        if (dictionary.TryGetValue(UIConstants.ThemeManagement.AccentKey, out var value1) && value1 is Color color)
+            return color;
+        
+        if (dictionary.TryGetValue(UIConstants.ThemeManagement.AccentBrushKey, out var value2) && value2 is SolidColorBrush brush)
+            return brush.Color;
+
+        throw new KeyNotFoundException($"Accent keys not found in {CurrentAccent}.");
+    }
 
     // Cache helpers
     private static ResourceDictionary GetOrLoadDictionary<TKey>(
