@@ -41,6 +41,7 @@ Once you have configured your templates in the Editor Window, return to the Main
 Right click the workspace and click 'New Child (generate)...'
 
 This would show a new dialog:
+
 <img width="517" height="502" alt="image" src="https://github.com/user-attachments/assets/55922f38-bf4c-4f05-9586-2815e874b8a0" />
 
 Select the template you want, give the child document a name, and then substitute in the variable values:
