@@ -13,6 +13,7 @@ using SimplyDraft.Infrastructure.Services;
 using SimplyDraft.Infrastructure.Utils;
 using SimplyDraft.UI;
 using SimplyDraft.UI.DependencyInjection;
+using SimplyDraft.UI.Services;
 
 namespace SimplyDraft.AppHost;
 
@@ -89,7 +90,7 @@ internal sealed class Program
             ContentRootPath = AppContext.BaseDirectory
         });
 
-        builder.Services.AddSerilog(configuration => configuration
+        builder.Services.AddSerilog((services, configuration) => configuration
             .MinimumLevel.Is(appSettings.Current.LoggingSection.MinimumLevel)
             .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
@@ -100,7 +101,8 @@ internal sealed class Program
                 formatter: new ExpressionTemplate(LoggerFormat))
             .WriteTo.File(
                 path: appPaths.LatestLogFile,
-                formatter: new ExpressionTemplate(LoggerFormat)));
+                formatter: new ExpressionTemplate(LoggerFormat))
+            .WriteTo.ConsolePane(services));  
         
         builder.Services.AddSingleton(typeof(Program).Assembly);
         builder.Services.AddInfrastructureServices();
