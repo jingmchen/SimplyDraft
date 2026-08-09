@@ -15,6 +15,7 @@ public sealed class ConsoleLogService : IConsoleLogService, ILogger, ILoggerProv
     private const int Cap = 400;
     private readonly IAppInfo _appInfo;
     public ObservableCollection<string> Entries {get;} = [];
+    private static readonly string RootNamespacePrefix = GetRootNamespacePrefix();
 
     public ConsoleLogService(IAppInfo appInfo)
         => _appInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
@@ -67,6 +68,13 @@ public sealed class ConsoleLogService : IConsoleLogService, ILogger, ILoggerProv
             Add(message);
         else
             Dispatcher.UIThread.Post(() => Add(message));
+    }
+
+    private static string GetRootNamespacePrefix()
+    {
+        string ns = typeof(ConsoleLogService).Namespace!;
+        int firstDot = ns.IndexOf('.');
+        return firstDot < 0 ? ns : ns[..firstDot];
     }
 
     private void Add(string message)
