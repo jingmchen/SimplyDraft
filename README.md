@@ -12,8 +12,8 @@ Use cases:
 **1. Create a new template**
 <img width="1231" height="757" alt="image" src="https://github.com/user-attachments/assets/0765e9ff-ba49-4245-8034-649a3b6c6c4f" />
 - You can create a new template, or use the existing templates shipped with the app (.exe).
-\
-\
+
+
 **2. Edit your template**
 <img width="1917" height="985" alt="image" src="https://github.com/user-attachments/assets/e52b7c02-af24-4587-a32e-d7d433e67bec" />
 
@@ -45,9 +45,11 @@ This would show a new dialog:
 <img width="517" height="502" alt="image" src="https://github.com/user-attachments/assets/55922f38-bf4c-4f05-9586-2815e874b8a0" />
 
 Select the template you want, give the child document a name, and then substitute in the variable values:
+
 <img width="1315" height="877" alt="image" src="https://github.com/user-attachments/assets/4f406cca-0e8c-4e9b-a802-2a7bb9ec47db" />
 
 Once done, check the Diagnostic pane and Preview pane. If all looks good, click the MenuHeader File -> Export to .txt or .docx
+
 <img width="1436" height="947" alt="image" src="https://github.com/user-attachments/assets/fe82c667-7aed-4309-a798-d11245bf317d" />
 
 
