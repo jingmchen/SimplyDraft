@@ -38,6 +38,7 @@ public sealed partial class GenerateChildWindow : Window
         if (EditorSyntax.Script != null)
             ScriptEditor.SyntaxHighlighting = EditorSyntax.Script;
         
+        EditorSyntax.ApplySelectionColors(ScriptEditor);
         ScriptEditor.TextChanged += OnScriptEditorTextChanged;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
@@ -76,7 +77,9 @@ public sealed partial class GenerateChildWindow : Window
 
     private void OnPaletteChanged()
     {
-        if (EditorSyntax.Script != null) ScriptEditor.SyntaxHighlighting = EditorSyntax.Script;
+        if (EditorSyntax.Script != null)
+            ScriptEditor.SyntaxHighlighting = EditorSyntax.Script;
+        EditorSyntax.ApplySelectionColors(ScriptEditor);
     }
 
     private async void Generate_Click(object? sender, RoutedEventArgs e)
