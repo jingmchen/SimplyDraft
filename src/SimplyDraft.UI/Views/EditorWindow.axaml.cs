@@ -114,6 +114,8 @@ public sealed partial class EditorWindow : Window, IDisposable
 
         if (syntax != null)
             editor.SyntaxHighlighting = syntax;
+        
+        EditorSyntax.ApplySelectionColors(editor);
     }
 
     private void OnScriptEditorTextChanged(object? sender, EventArgs e)
@@ -160,6 +162,9 @@ public sealed partial class EditorWindow : Window, IDisposable
         
         if (EditorSyntax.Template != null)
             ContentEditor.SyntaxHighlighting = EditorSyntax.Template;
+        
+        EditorSyntax.ApplySelectionColors(ScriptEditor);
+        EditorSyntax.ApplySelectionColors(ContentEditor);
     }
 
     private TextEditor? FocusedEditor()
