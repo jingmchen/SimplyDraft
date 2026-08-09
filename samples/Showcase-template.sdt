@@ -1,0 +1,325 @@
+---
+name: "Showcase — Script & Markup"
+markup: true
+variables:
+  DOCTITLE: ""
+  DOCSUBTITLE: ""
+  AUTHORNAME: ""
+  INTRO: ""
+  AUDIENCE: ""
+  REVIEWDATE: ""
+  PAGES: ""
+  PUBLISHED: ""
+  MEETINGTIME: ""
+types:
+  REVIEWDATE: date
+  PAGES: number
+  PUBLISHED: yesno
+  MEETINGTIME: time
+---
+#SCRIPT
+# =====================================================================
+#  SCRIPT SHOWCASE  -  every feature of the mini-Python dialect.
+#  '#' starts a comment. Blocks are indented with 4 spaces, like Python.
+#  Everything assigned below is an OUTPUT: it is filled in for you and is
+#  NOT asked as an input when you generate a document.
+# =====================================================================
+
+# --- values & assignment --------------------------------------------
+name = "mini-latex"        # a str  ("double" or 'single' quotes)
+count = 3                  # a number
+ready = True               # a bool  (True / False)
+
+# --- string methods -------------------------------------------------
+shout   = name.upper()                 # MINI-LATEX
+lowered = shout.lower()                # mini-latex
+calm    = "  padded  ".strip()         # padded
+spaced  = name.replace("-", " ")       # mini latex
+zeroed  = str(count).rjust(3, "0")     # 003
+dotted  = name.ljust(12, ".")          # mini-latex..
+starts  = "yes" if name.startswith("mini") else "no"   # startswith -> yes
+ends    = "yes" if name.endswith("x") else "no"        # endswith   -> yes
+
+# --- functions: len / str / float / format --------------------------
+name_length = str(len(name))                  # len() -> number -> str()
+pi_twice    = str(float("3.14") * 2)          # float() parses text -> 6.28
+today       = format(system.date, "MMMM d, yyyy")   # format a date
+clock       = format(system.now, "HH:mm")           # format a time
+ratio       = format(count / 2, "0.00")             # format a number -> 1.50
+
+# --- slicing & indexing  (on a literal, so it is never empty) -------
+first = name[0]        # m
+head  = name[:4]       # mini
+tail  = name[-5:]      # latex
+mid   = name[5:10]     # latex
+
+# --- operators & booleans -------------------------------------------
+total     = count * 2 + 1            # 7
+leftover  = total % count            # 1
+enough    = count >= 3 and ready     # True
+has_dash  = "-" in name              # True
+missing_x = "x" not in name          # True
+plural    = "items" if count != 1 else "item"      # inline choice
+
+# bools rendered as text so they can be printed in the body
+enough_txt = "yes" if enough else "no"
+dash_txt   = "yes" if has_dash else "no"
+x_txt      = "yes" if missing_x else "no"
+
+# --- built-ins: system.* and doc.* ----------------------------------
+who       = system.username
+machine   = system.machine
+platform  = system.os
+this_year = str(system.year)
+month     = str(system.month)
+day       = str(system.day)
+at_time   = format(system.time, "HH:mm")
+source    = doc.template
+created   = format(doc.created, "yyyy-MM-dd HH:mm")
+modified  = format(doc.modified, "yyyy-MM-dd HH:mm")
+
+# --- if / elif / else -----------------------------------------------
+if count >= 5:
+    size = "large"
+elif count >= 2:
+    size = "medium"
+else:
+    size = "small"
+
+# --- match / case  (AUDIENCE becomes a drop-down when you generate) --
+match AUDIENCE:
+    case "Beginner":
+        tone = "Gentle pace - every step is explained."
+    case "Expert":
+        tone = "Terse and straight to the point."
+    case _:
+        tone = "A balanced walkthrough for a general reader."
+#ENDSCRIPT
+% A line beginning with an unescaped % is a MARKUP comment: it is dropped
+% from the output. (Inside the SCRIPT pane above, comments start with #.)
+
+\title{ {DOCTITLE}}
+\author{ {AUTHORNAME}}
+\date{ {today}}
+\maketitle
+
+\begin{center}
+\emph{ {DOCSUBTITLE}}
+\end{center}
+
+\tableofcontents
+
+\section{Introduction}
+
+{INTRO}
+
+This template renders the value of every script variable below. Inline styles: \textbf{bold}, \textit{italic}, \emph{emphasis}, \underline{underline}, \texttt{monospace}, \textsc{small caps}. Symbols: \today, \LaTeX, \TeX, an ellipsis\ldots and a wide\quad gap. Escapes: \% \& \# \$ \_ and a literal backslash \textbackslash. (Braces are written by doubling them, since the template reads a single brace as a placeholder — see the Placeholders section.)
+
+\section{Text styles}
+
+\begin{tabular}{ll}
+\textbf{Command} & \textbf{Renders as} \\
+\textbackslash textbf & \textbf{bold text} \\
+\textbackslash textit & \textit{italic text} \\
+\textbackslash emph & \emph{emphasised text} \\
+\textbackslash underline & \underline{underlined text} \\
+\textbackslash texttt & \texttt{typewriter text} \\
+\textbackslash textsc & \textsc{small caps} \\
+\textbackslash textsl & \textsl{slanted text} \\
+\end{tabular}
+
+\section{Lists}
+
+\subsection{Bulleted}
+
+\begin{itemize}
+\item First bullet
+\item Second bullet, with \textbf{bold} inside
+\item Third bullet
+\end{itemize}
+
+\subsection{Numbered}
+
+\begin{enumerate}
+\item Step one
+\item Step two
+\item Step three
+\end{enumerate}
+
+\subsection{Description}
+
+\begin{description}
+\item[Script] Runs first and sets the variables.
+\item[Markup] Formats the substituted text.
+\item[Export] Writes the .docx or .txt.
+\end{description}
+
+\section{Script output} \label{sec:script}
+
+\subsection{Values, strings and functions}
+
+\begin{tabular}{ll}
+\textbf{Expression} & \textbf{Result} \\
+name & {name} \\
+name.upper() & {shout} \\
+shout.lower() & {lowered} \\
+"  padded  ".strip() & {calm} \\
+name.replace("-", " ") & {spaced} \\
+str(count).rjust(3, "0") & {zeroed} \\
+name.ljust(12, ".") & {dotted} \\
+name.startswith("mini") & {starts} \\
+name.endswith("x") & {ends} \\
+len(name) & {name_length} \\
+float("3.14") * 2 & {pi_twice} \\
+format(count / 2, "0.00") & {ratio} \\
+\end{tabular}
+
+\subsection{Slicing}
+
+\begin{tabular}{ll}
+\textbf{Slice} & \textbf{Result} \\
+name[0] & {first} \\
+name[:4] & {head} \\
+name[-5:] & {tail} \\
+name[5:10] & {mid} \\
+\end{tabular}
+
+\subsection{Numbers, operators and logic}
+
+\begin{tabular}{ll}
+\textbf{Expression} & \textbf{Result} \\
+count * 2 + 1 & {total} \\
+total \% count & {leftover} \\
+count >= 3 and ready & {enough_txt} \\
+"-" in name & {dash_txt} \\
+"x" not in name & {x_txt} \\
+"items" if count != 1 else "item" & {plural} \\
+if / elif / else -> size & {size} \\
+\end{tabular}
+
+\subsection{Built-ins and the scenario}
+
+\begin{tabular}{ll}
+\textbf{Source} & \textbf{Value} \\
+system.username & {who} \\
+system.machine & {machine} \\
+system.os & {platform} \\
+system.year & {this_year} \\
+system.month & {month} \\
+system.day & {day} \\
+system.date & {today} \\
+system.time & {at_time} \\
+system.now & {clock} \\
+doc.template & {source} \\
+doc.created & {created} \\
+doc.modified & {modified} \\
+AUDIENCE tone (match) & {tone} \\
+\end{tabular}
+
+\section{Inline expressions}
+
+An inline expression — an equals sign and an expression inside braces — is evaluated where it sits and can read any script variable:
+
+\begin{itemize}
+\item Two plus three is {= 2 + 3 }.
+\item name in capitals: {= name.upper() }.
+\item count times one hundred: {= count * 100 }.
+\item first four letters: {= name[:4] }.
+\item enough? {= "yes" if enough else "no" }.
+\end{itemize}
+
+\section{Tables and alignment} \label{sec:tables}
+
+Column specifiers \texttt{l}, \texttt{c}, \texttt{r} set left / centre / right alignment:
+
+\begin{tabular}{lcr}
+\textbf{Left} & \textbf{Centre} & \textbf{Right} \\
+apples & 3 & 1.50 \\
+pears & 12 & 24.00 \\
+figs & 1 & 0.75 \\
+\end{tabular}
+
+\section{Quote and centre}
+
+\begin{quote}
+A block quote is indented as a unit. Good for pull-quotes and notes.
+\end{quote}
+
+\begin{center}
+This paragraph is centred.
+\end{center}
+
+\hrule
+
+\section{Placeholders and literal braces}
+
+A placeholder in braces inserts a variable; a dotted one inserts a built-in. Doubling a brace prints it literally:
+
+\begin{itemize}
+\item Document title: {DOCTITLE}
+\item Built-in date: {system.date}
+\item Built-in doc name: {doc.name}
+\item Literal braces: {{not a placeholder}}
+\end{itemize}
+
+\section{Typed inputs}
+
+These variables declare a type in the front matter, so the generate window offers the right control (date picker, number, yes/no, time). They stay blank until you fill them in:
+
+\begin{tabular}{ll}
+\textbf{Field (type)} & \textbf{Value} \\
+Review date (date) & {REVIEWDATE} \\
+Pages (number) & {PAGES} \\
+Published (yes/no) & {PUBLISHED} \\
+Meeting time (time) & {MEETINGTIME} \\
+\end{tabular}
+
+\newpage
+
+\section{Headings and run-in}
+
+\subsection{A subsection}
+
+\subsubsection{A subsubsection}
+
+\paragraph{Run-in heading.} A \texttt{paragraph} command makes a bold run-in lead-in, and the text continues on the same line.
+
+\section*{Unnumbered section}
+
+A \texttt{section*} heading is not numbered and stays out of the table of contents.
+
+\section{The = formula tier (no-code)}
+
+Separately from the SCRIPT pane, a variable whose \emph{value} begins with \texttt{=} is an Excel-style formula, evaluated once before the script (in dependency order). Type these as a variable's value when generating:
+
+\begin{verbatim}
+=2 + 2               a number formula -> 4
+=PAGES * 2           references another variable
+=upper("hello")      no - methods are script-only; use the SCRIPT pane
+'=literal            a leading ' keeps a literal leading =
+\end{verbatim}
+
+\section{Literal source (verbatim)}
+
+Verbatim renders text exactly. Braces are doubled so the tokens print literally:
+
+\begin{verbatim}
+{{NAME}}                 a variable placeholder
+{{system.date}}          a built-in placeholder
+{{= 1 + 2 }}             an inline expression -> 3
+\section{{Heading}}      a numbered heading
+\textbf{{bold}}          inline bold
+\begin{{figure}}         a figure (needs a real image file)
+\includegraphics{{pic.png}}
+\caption{{A caption}}
+\end{{figure}}
+\listoffigures           lists captioned figures
+\end{verbatim}
+
+\section{Cross-references}
+
+\ref refers to a numbered \label. This document's tables are in section \ref{sec:tables}, and the script output is in section \ref{sec:script}.
+
+\hrule
+
+\emph{Rendered by MiniLatex on {= format(system.now, "yyyy-MM-dd HH:mm") } — audience tone: {tone}}

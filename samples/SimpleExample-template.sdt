@@ -1,0 +1,63 @@
+---
+name: "Simple Example"
+markup: true
+variables:
+  name: ""
+  greeting: ""
+  date: ""
+  time: ""
+  line1: ""
+  documentName: ""
+  documentType: ""
+  paragraphbody: ""
+---
+#SCRIPT
+if system.time < "12:00":
+    greeting = "Good morning"
+elif system.time > "12:00" and  system.time < "18:00":
+    greeting = "Good afternoon"
+else:
+    greeting = "Good evening"
+
+date = system.date
+time = system.time
+
+match documentType:
+    case "report":
+        line1 = "this is a document"
+    case "essay":
+        line2 = "this is perhaps an essay"
+    case _:
+        line3 = "unknown document type"
+   
+#ENDSCRIPT
+\section{Introduction To SimplyDraft}
+{greeting} {name}! This example is a simple showcase of what SimplyDraft is capable of.
+
+Today is {date}, and the time is {time}.
+
+\subsection{Key Features}
+\begin{itemize}
+\item Text can be edited simply in the Content Pane
+\item You can create variables by using curly brackets (no spaces inside the brackets!)
+\item You can write Python scripting in the Script Pane to set the variable values
+\item You can format the document using LaTeX-like markups
+\item Click the ? buttons to learn more about the Python-like scripting & LaTeX-like markups
+\end{itemize}
+
+\subsection{QOL Features}
+\begin{itemize}
+\item You can set theme or accent changes in the menu header
+\item There are keyboard shortcuts! Click on the menu headers to learn more
+\item Files and logs are saved to \%LOCALAPPDATA\%SimplyDraft
+\end{itemize}
+
+\subsection{Examples!}
+Title of Document: {documentName}
+Type of Document: {documentType}
+{line1}
+
+\pagebreak
+\begin{quote}
+Auto-generated & 100\% reproducible
+\end{quote}
