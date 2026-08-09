@@ -70,4 +70,4 @@ This project is licensed under the **PolyForm Noncommercial License 1.0.0**.
 
 You may use this software for permitted non-commercial purposes. Redistribution, modification, and creation of derivative works are not permitted.
 
-See [LICENSE](LICENSE) for the full terms.
+See [LICENSE](LICENSE.md) for the full terms.
