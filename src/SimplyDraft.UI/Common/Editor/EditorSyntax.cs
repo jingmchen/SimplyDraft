@@ -1,14 +1,11 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
 using System.Xml;
-using Avalonia;
 using Avalonia.Media;
-using Avalonia.Styling;
 using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
 using SimplyDraft.Core.Domains.Editor;
-using SimplyDraft.Core.Enums;
 
 namespace SimplyDraft.UI.Common.Editor;
 
