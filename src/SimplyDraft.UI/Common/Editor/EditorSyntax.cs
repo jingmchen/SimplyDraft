@@ -15,7 +15,7 @@ public static class EditorSyntax
     private const byte SelectionAlphaDark = 0x66;
     private const string FallbackAccent = "#007ACC";
     private static bool _dark = true;
-    private static Color _accentColor;
+    private static Color _accentColor = Color.Parse(FallbackAccent);
     private static IHighlightingDefinition? _scriptDark, _scriptLight, _templateDark, _templateLight;
 
     public static IHighlightingDefinition? Script
