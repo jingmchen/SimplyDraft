@@ -226,14 +226,21 @@
 
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" IsVisible="{Binding IsTemplate}" />
         
-        <DockPanel Grid.Row="2" IsVisible="{Binding IsTemplate}">
-
-          <TextBlock DockPanel.Dock="Top"
+        <Grid Grid.Row="2" RowDefinitions="Auto,*,Auto" MinHeight="0" ClipToBounds="True" IsVisible="{Binding IsTemplate}">
+        
+          <TextBlock Grid.Row="0"
                      Classes="paneHeader"
                      Text="VARIABLES"
                      ToolTip.Tip="Templates declare name · type only; values are chosen when generating a child" />
 
-          <StackPanel DockPanel.Dock="Bottom"
+          <ListBox Grid.Row="1"
+                   MinHeight="0"
+                   IsVisible="{Binding ShowDeclarations}"
+                   ItemsSource="{Binding Variables}"
+                   SelectedItem="{Binding SelectedVariable, Mode=TwoWay}"
+                   ItemTemplate="{StaticResource DeclarationRowTemplate}" />
+          
+          <StackPanel Grid.Row="2"
                       Orientation="Horizontal"
                       Spacing="6"
                       Margin="0,6,0,0"
@@ -247,12 +254,7 @@
 
           </StackPanel>
 
-          <ListBox IsVisible="{Binding ShowDeclarations}"
-                   ItemsSource="{Binding Variables}"
-                   SelectedItem="{Binding SelectedVariable, Mode=TwoWay}"
-                   ItemTemplate="{StaticResource DeclarationRowTemplate}" />
-
-        </DockPanel>
+        </Grid>
 
         <GridSplitter Grid.Row="3" ResizeDirection="Rows" IsVisible="{Binding IsTemplate}" />
         
