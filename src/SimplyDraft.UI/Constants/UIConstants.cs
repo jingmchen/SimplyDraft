@@ -21,4 +21,10 @@ internal static class UIConstants
             internal const string TermsConditions = "TERMS_CONDITIONS.md";
         }
     }
+
+    internal static class ThemeManagement
+    {
+        internal const string AccentKey = "SystemAccentColor";
+        internal const string AccentBrushKey = "AccentBrush";
+    }
 }
