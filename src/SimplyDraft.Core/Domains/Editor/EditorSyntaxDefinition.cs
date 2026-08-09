@@ -1,7 +1,5 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
-using SimplyDraft.Core.Domains.UI;
-
 namespace SimplyDraft.Core.Domains.Editor;
 
 public static class EditorSyntaxDefinitions
