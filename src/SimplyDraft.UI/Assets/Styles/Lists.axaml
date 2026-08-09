@@ -1,0 +1,89 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!--  LISTBOX                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <Style Selector="ListBox">
+    <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}" />
+    <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="4" />
+  </Style>
+
+  <Style Selector="ListBoxItem">
+    <Setter Property="Padding" Value="10,6" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}" />
+  </Style>
+
+  <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource ThemeHoverBrush}" />
+  </Style>
+
+  <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+  </Style>
+
+  <!-- Bugfix to resolve foreground and font color = same.
+       We pair at the TextBlock level to outrank the setters in Base.axaml
+       In Base.axaml, the app-wide "TextBlock" style outranks inheritance so
+       selected rows kept theme-colored text on accent fill, making them the same color -->
+  <Style Selector="ListBoxItem:selected">
+    <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+  </Style>
+  <Style Selector="ListBoxItem:selected TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+  </Style>
+  <Style Selector="ListBoxItem:selected SelectableTextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+  </Style>
+
+  <!-- Console rows -->
+  <Style Selector="ListBox.console ListBoxItem">
+    <Setter Property="Padding" Value="8,3" />
+  </Style>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!--  MENU                                                       -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <Style Selector="Menu">
+    <Setter Property="Background" Value="{DynamicResource ThemeBg1Brush}" />
+    <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}" />
+  </Style>
+
+  <Style Selector="MenuItem">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}" />
+    <Setter Property="Padding" Value="10,6" />
+  </Style>
+
+  <Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{DynamicResource ThemeHoverBrush}" />
+  </Style>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!--  TABCONTROL                                                 -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <Style Selector="TabControl">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style Selector="TabItem">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeFg2Brush}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Padding" Value="14,8" />
+    <Setter Property="MinHeight" Value="36" />
+  </Style>
+
+  <Style Selector="TabItem:selected">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}" />
+  </Style>
+
+  <Style Selector="TabItem:pointerover">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeFg0Brush}" />
+  </Style>
+
+</Styles>

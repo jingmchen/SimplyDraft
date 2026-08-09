@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SimplyDraft.UI.Views.Dialogs.TermsDialog"
+        Title="Terms and Conditions"
+        Width="680" Height="680" MinWidth="540" MinHeight="460"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource ThemeBg0Brush}">
+  <DockPanel Margin="16">
+
+    <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,12">
+      <TextBlock Text="Terms and Conditions" FontSize="20" FontWeight="SemiBold"
+                 Foreground="{DynamicResource ThemeFg0Brush}" />
+      <TextBlock Text="Please review the terms below. Accepting them is required to use the app."
+                 Foreground="{DynamicResource ThemeFg2Brush}" TextWrapping="Wrap" />
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right"
+                Spacing="8" Margin="0,12,0,0">
+      <Button Content="Decline" MinWidth="90" IsCancel="True" Click="OnDecline" />
+      <Button Content="Accept" Classes="accent" MinWidth="90" IsDefault="True" Click="OnAccept" />
+    </StackPanel>
+
+    <Border Classes="editorFrame">
+      <ScrollViewer x:Name="TermsScroll">
+        <ContentControl x:Name="TermsHost" Margin="14,10" />
+      </ScrollViewer>
+    </Border>
+
+  </DockPanel>
+</Window>
