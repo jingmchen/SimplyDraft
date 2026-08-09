@@ -7,6 +7,7 @@ namespace SimplyDraft.UI.ViewModels.Components;
 
 public sealed partial class ScenarioViewModel : ViewModelBase
 {
+    public const string FallbackLabel = "(other)";
     private readonly Action<string, string?> _picked;
     public string Variable {get;}
     public IReadOnlyList<string> Options {get;}
@@ -14,14 +15,16 @@ public sealed partial class ScenarioViewModel : ViewModelBase
     [ObservableProperty]
     public partial string? Selected {get; set;}
 
-    public ScenarioViewModel(string variable, IReadOnlyList<string> options, Action<string, string?> picked)
+    public ScenarioViewModel(string variable, IReadOnlyList<string> options, bool hasFallback, Action<string, string?> picked)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(variable);
+        ArgumentNullException.ThrowIfNull(options);
         
         Variable = variable;
-        Options = options ?? throw new ArgumentNullException(nameof(options));
+        Options = hasFallback ? new List<string>(options) { FallbackLabel } : options;
         _picked = picked ?? throw new ArgumentNullException(nameof(picked));
     }
 
-    partial void OnSelectedChanged(string? value) => _picked(Variable, value);
+    partial void OnSelectedChanged(string? value)
+        => _picked(Variable, value == FallbackLabel ? "" : value);
 }
