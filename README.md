@@ -45,7 +45,7 @@ This is the Editor window:
 
 You can drag the other panes to minimize them. For example,
 
-<img width="850" height="485" alt="image" src="https://github.com/user-attachments/assets/f4c84183-37ee-4a67-8b35-b28170117e2d" />
+<img width="850" height="485" alt="image" src="https://github.com/user-attachments/assets/23c88ae8-1cba-49e0-b50f-4c2a74941a0c" />
 
 <br><br>
 
