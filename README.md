@@ -2,6 +2,10 @@
   <img src="./assets/banner.png" alt="SimplyDraft" width="500">
 </p>
 
+<p align="center">
+  <sub><b>v1.0.0</b></sub>
+</p>
+
 ---
 
 SimplyDraft is a desktop software that generate documents from reusable templates that you define.
@@ -70,4 +74,4 @@ This project is licensed under the **PolyForm Noncommercial License 1.0.0**.
 
 You may use this software for permitted non-commercial purposes. Redistribution, modification, and creation of derivative works are not permitted.
 
-See [LICENSE](LICENSE.md) for the full terms.
+See [LICENSE](./LICENSE.md) for the full terms.
