@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <sub><b>v1.0.0</b></sub>
+  <sub><b>v1.0.2</b></sub>
 </p>
 
 ---
