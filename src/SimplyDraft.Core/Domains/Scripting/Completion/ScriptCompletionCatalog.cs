@@ -22,15 +22,15 @@ public static class ScriptCompletionCatalog
 
     public static readonly CompletionItem[] Keywords =
     {
-        new("if", "if ", "if condition:  — condition must be True/False"),
-        new("elif", "elif ", "elif condition:"),
+        new("if", "if", "if condition:  — condition must be True/False"),
+        new("elif", "elif", "elif condition:"),
         new("else", "else:", "else:"),
-        new("match", "match ", "match name:  — then case \"label\": clauses"),
-        new("case", "case ", "case \"label\":  or  case _:  (fallback)"),
-        new("and", "and ", "both sides True"),
-        new("or", "or ", "either side True"),
-        new("not", "not ", "negation"),
-        new("in", "in ", "\"needle\" in text — contains (case-sensitive)"),
+        new("match", "match", "match name:  — then case \"label\": clauses"),
+        new("case", "case", "case \"label\":  or  case _:  (fallback)"),
+        new("and", "and", "both sides True"),
+        new("or", "or", "either side True"),
+        new("not", "not", "negation"),
+        new("in", "in", "\"needle\" in text — contains (case-sensitive)"),
         new("True", "True", "boolean true"),
         new("False", "False", "boolean false"),
     };
