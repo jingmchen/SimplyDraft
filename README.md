@@ -1,9 +1,9 @@
 # SimplyDraft
 C# Avalonia desktop application to ease document creation.
-<br>
+
 Template-based document generation- write a template once, and then use embedded scripting (Python-style) or markups (LaTeX-style) to generate documents.
 -> Currently supported outputs: docx and txt
-<br>
+
 Use cases:
 1. Easier generation of repetitive documents, such as document templates for different projects or clients, or video recording transcripts
 
