@@ -33,7 +33,7 @@ Create reusable document templates for standardized or repetitive documentation,
 
 This is the Editor window:
 
-<img width="850" height="485" alt="image" src="https://github.com/user-attachments/assets/bddb8193-f41b-4565-beb2-e8afe9479aae" />
+<img width="850" height="485" alt="image" src="https://github.com/user-attachments/assets/0be4db58-cb03-4f37-b6c7-55ba3fc21073" />
 
 * The top left pane is the Editor pane, where you can do edits.
 * The bottom left pane is the Preview pane, which simulates what the document may look like after you export to docx or txt.
