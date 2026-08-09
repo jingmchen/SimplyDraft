@@ -33,7 +33,7 @@ Create reusable document templates for standardized or repetitive documentation,
 
 This is the Editor window:
 
-<img width="850" height="485" alt="image" src="https://github.com/user-attachments/assets/29297405-059b-4269-ac20-ae72b22157df" />
+<img width="850" height="485" alt="image" src="https://github.com/user-attachments/assets/bddb8193-f41b-4565-beb2-e8afe9479aae" />
 
 * The top left pane is the Editor pane, where you can do edits.
 * The bottom left pane is the Preview pane, which simulates what the document may look like after you export to docx or txt.
@@ -45,7 +45,8 @@ This is the Editor window:
 
 You can drag the other panes to minimize them. For example,
 
-<img width="850" height="485" alt="image" src="https://github.com/user-attachments/assets/23c88ae8-1cba-49e0-b50f-4c2a74941a0c" />
+<img width="850" height="485" alt="image" src="https://github.com/user-attachments/assets/cec6a6ac-e210-4021-9f25-b9c93afd5216" />
+
 
 <br><br>
 
@@ -56,15 +57,17 @@ For the Python-like scripting, or LaTeX-like markups, if you need in-app help, s
 
 <br><br>
 
-Once you have configured your templates in the Editor Window, you can generate child documents:
+Once you have configured your templates in the Editor Window, you can generate child documents here:
 
-<img width="1400" height="877" alt="image" src="https://github.com/user-attachments/assets/4f406cca-0e8c-4e9b-a802-2a7bb9ec47db" />
+<img width="850" height="485" alt="image" src="https://github.com/user-attachments/assets/3649587f-6894-4679-8188-20d9c69507b1" />
 
 <br><br>
 
-Once done, check the Diagnostic pane and Preview pane. If all looks good, click the MenuHeader File -> Export to .txt or .docx
+Once done, click the MenuHeader File -> Export to .txt or .docx
 
-<img width="1436" height="947" alt="image" src="https://github.com/user-attachments/assets/fe82c667-7aed-4309-a798-d11245bf317d" />
+<img width="850" height="647" alt="image" src="https://github.com/user-attachments/assets/dca73732-9df1-4ae4-9963-7cafbed6eb0c" />
+
+<br><br>
 
 ## Licensing
 
