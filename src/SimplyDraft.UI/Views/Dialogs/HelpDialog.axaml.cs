@@ -20,7 +20,7 @@ public sealed partial class HelpDialog : Window
         => Show(owner, "Markup reference — LaTeX-style", HelpContent.Markup);
 
     public static void ShowScript(Window owner)
-        => Show(owner, "Script reference — mini-Python", HelpContent.Script);
+        => Show(owner, "Script reference — Python-style", HelpContent.Script);
 
     private static void Show(Window owner, string title, IReadOnlyList<HelpTopic> topics)
     {
