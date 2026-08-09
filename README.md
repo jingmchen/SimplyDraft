@@ -31,8 +31,8 @@ For example, simply drag the panes to minimize them:
 
 
 For the Python-like scripting, or LaTeX-like markups, if you need in-app help, simply click the '?' button which would show:
-<img width="1007" height="822" alt="image" src="https://github.com/user-attachments/assets/5e04b939-a193-46a6-9059-7e1a926e327d" />
-<img width="1012" height="826" alt="image" src="https://github.com/user-attachments/assets/48b5e1ca-2e64-45ba-b667-b77a5fb2eaf3" />
+<img width="500" height="422" alt="image" src="https://github.com/user-attachments/assets/5e04b939-a193-46a6-9059-7e1a926e327d" />
+<img width="500" height="426" alt="image" src="https://github.com/user-attachments/assets/48b5e1ca-2e64-45ba-b667-b77a5fb2eaf3" />
 
 
 **3. Template to Child**
