@@ -23,7 +23,6 @@ public sealed partial class BatchCreateWindowViewModel : ViewModelBase
     private readonly ExporterCatalog _exporterCatalog;
     private readonly ILibrary _library;
     private readonly IFilePickerService _filePicker;
-    private readonly IFileSystem _fileSystem;
     private readonly ILibraryPaths _libraryPaths;
     private readonly IAppSettingsProvider _settings;
     private readonly ILogger<BatchCreateWindowViewModel> _logger;
@@ -62,7 +61,6 @@ public sealed partial class BatchCreateWindowViewModel : ViewModelBase
         ExporterCatalog exporterCatalog,
         ILibrary library,
         IFilePickerService filePicker,
-        IFileSystem fileSystem,
         ILibraryPaths libraryPaths,
         IAppSettingsProvider settings,
         ILogger<BatchCreateWindowViewModel> logger)
@@ -71,7 +69,6 @@ public sealed partial class BatchCreateWindowViewModel : ViewModelBase
         _exporterCatalog = exporterCatalog ?? throw new ArgumentNullException(nameof(exporterCatalog));
         _library = library ?? throw new ArgumentNullException(nameof(library));
         _filePicker = filePicker ?? throw new ArgumentNullException(nameof(filePicker));
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _libraryPaths = libraryPaths ?? throw new ArgumentNullException(nameof(libraryPaths));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

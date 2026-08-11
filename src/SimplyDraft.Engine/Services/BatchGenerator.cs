@@ -68,9 +68,9 @@ public sealed class BatchGenerator : IBatchGenerator
         return batchResult;
     }
 
-    private async Task<List<string[]>> ReadCsvAsync(string csvPath, CancellationToken cancellationToken)
+    private static async Task<List<string[]>> ReadCsvAsync(string csvPath, CancellationToken cancellationToken)
     {
-        string csvText = await _fileSystem.ReadAllTextAsync(csvPath, cancellationToken).ConfigureAwait(false);
+        string csvText = await File.ReadAllTextAsync(csvPath, cancellationToken).ConfigureAwait(false);
         int firstNewline = csvText.IndexOf('\n');
         string headerLine = firstNewline < 0 ? csvText : csvText[..firstNewline];
         char delimiter = headerLine.Contains('\t') ? '\t' : ',';
@@ -171,7 +171,7 @@ public sealed class BatchGenerator : IBatchGenerator
         }
     }
 
-    private async Task<string> WriteReportAsync(
+    private static async Task<string> WriteReportAsync(
         BatchResult batchResult, string outputDir, CancellationToken ct)
     {
         var report = new StringBuilder("row,file,status,message\n");
@@ -183,7 +183,7 @@ public sealed class BatchGenerator : IBatchGenerator
                   .Append(CsvQuote(row.Message)).Append('\n');
         
         string reportPath = Path.Combine(outputDir, $"batch-report-{DateTime.Now:yyyyMMdd-HHmmss}.csv");
-        await _fileSystem.WriteAllTextAsync(reportPath, report.ToString(), ct).ConfigureAwait(false);
+        await File.WriteAllTextAsync(reportPath, report.ToString(), ct).ConfigureAwait(false);
         return reportPath;
     }
 

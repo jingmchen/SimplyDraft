@@ -16,7 +16,6 @@ public static class InfrastructureServiceExtension
         services.AddSingleton<IDocumentExporter, TxtExporter>();
         services.AddSingleton<ILibrary, Library>();
         services.AddSingleton<ILibraryWatcher, LibraryWatcher>();
-        services.AddSingleton<IFileSystem, FileSystem>();
         services.AddSingleton<IAppInfo, AppInfo>();
         services.AddSingleton<IAppPaths, AppPaths>();
         services.AddSingleton<ILibraryPaths, LibraryPaths>();
