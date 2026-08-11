@@ -3,7 +3,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
-using Serilog.Events;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Configuration;
 using SimplyDraft.Core.Enums;
@@ -111,7 +110,7 @@ public sealed partial class AppSettingsProvider : IAppSettingsProvider
         settings.ThemeSection ??= new();
 
         if (!Enum.IsDefined(settings.LoggingSection.MinimumLevel))
-            settings.LoggingSection.MinimumLevel = LogEventLevel.Information;
+            settings.LoggingSection.MinimumLevel = LogLevel.Information;
         
         settings.LoggingSection.RetainedFileCountLimit =
             Math.Clamp(settings.LoggingSection.RetainedFileCountLimit, MinRetainedFiles, MaxRetainedFiles);
