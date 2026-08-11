@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Serilog.Extensions.Logging;
 using Serilog.Templates;
 using SimplyDraft.Engine.DependencyInjection;
@@ -90,8 +91,10 @@ internal sealed class Program
             ContentRootPath = AppContext.BaseDirectory
         });
 
+        var level = Enum.Parse<LogEventLevel>(appSettings.Current.LoggingSection.MinimumLevel.ToString());
+
         builder.Services.AddSerilog((services, configuration) => configuration
-            .MinimumLevel.Is(appSettings.Current.LoggingSection.MinimumLevel)
+            .MinimumLevel.Is(level)
             .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
             .Enrich.FromLogContext()
