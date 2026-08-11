@@ -94,17 +94,6 @@ public sealed class ThemeService : IThemeService
         InvokeOnUiThread(() => ApplyCore(theme, accent, fireEvent: true, persist: true));
     }
 
-    public IBrush GetAccentSwatch(AppAccent accent)
-    {
-        ThrowIfNotInitialized();
-
-        var dict = GetOrLoadDictionary(_accentCache, accent, AccentUri);
-
-        return dict.TryGetResource("AccentBrush", null, out var value) && value is IBrush brush
-            ? brush
-            : Brushes.Transparent;
-    }
-
     public void Dispose()
     {
         if (_isDisposed) return;
