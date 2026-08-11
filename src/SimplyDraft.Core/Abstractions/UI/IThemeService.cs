@@ -1,6 +1,5 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
-using Avalonia.Media;
 using SimplyDraft.Core.Enums;
 
 namespace SimplyDraft.Core.Abstractions.UI;
@@ -20,5 +19,4 @@ public interface IThemeService : IDisposable
     void SetTheme(AppTheme theme);
     void SetAccent(AppAccent accent);
     void SetBoth(AppTheme theme, AppAccent accent);
-    IBrush GetAccentSwatch(AppAccent accent);
 }
