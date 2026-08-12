@@ -39,7 +39,7 @@
         <Separator />
 
         <MenuItem Header="_Settings…"
-                  Command="{Binding SettingsCommand}" />
+                  Command="{Binding OpenSettingsCommand}" />
 
         <Separator />
 

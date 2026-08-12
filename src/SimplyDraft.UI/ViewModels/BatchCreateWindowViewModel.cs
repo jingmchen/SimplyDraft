@@ -1,7 +1,7 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Engine;
 using SimplyDraft.Core.Abstractions.Infrastructure;
@@ -13,11 +13,10 @@ using SimplyDraft.Core.Domains.UI;
 using SimplyDraft.Core.Enums;
 using SimplyDraft.Core.Export;
 using SimplyDraft.Engine.Utils;
-using SimplyDraft.UI.Common.MVVM;
 
 namespace SimplyDraft.UI.ViewModels;
 
-public sealed partial class BatchCreateWindowViewModel : ViewModelBase
+public sealed partial class BatchCreateWindowViewModel : ObservableObject
 {
     private readonly IBatchGenerator _batch;
     private readonly ExporterCatalog _exporterCatalog;
@@ -52,10 +51,6 @@ public sealed partial class BatchCreateWindowViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool IsRunning {get; private set;}
 
-    public ICommand BrowseCsvCommand {get;}
-    public ICommand BrowseOutCommand {get;}
-    public ICommand RunCommand {get;}
-
     public BatchCreateWindowViewModel(
         IBatchGenerator batch,
         ExporterCatalog exporterCatalog,
@@ -78,10 +73,6 @@ public sealed partial class BatchCreateWindowViewModel : ViewModelBase
         FormatKind = _settings.Current.ExportSection.DefaultFormat;
         Pattern = "";
         Report = "";
-
-        BrowseCsvCommand = new RelayCommandAsync(BrowseCsvAsync, logger: _logger);
-        BrowseOutCommand = new RelayCommandAsync(BrowseOutAsync, logger: _logger);
-        RunCommand = new RelayCommandAsync(RunAsync, CanRun, logger: _logger);
     }
 
     public void Load(TemplateDocument template)
@@ -90,10 +81,7 @@ public sealed partial class BatchCreateWindowViewModel : ViewModelBase
         Pattern = template.Fm.Variables.Keys.FirstOrDefault() is string v ? "{" + v + "}" : "document";
     }
 
-    partial void OnIsRunningChanged(bool value) => (RunCommand as RelayCommandBase)?.RaiseCanExecuteChanged();
-
-    private bool CanRun() => !IsRunning;
-
+    [RelayCommand]
     private async Task BrowseCsvAsync()
     {
         try
@@ -108,6 +96,7 @@ public sealed partial class BatchCreateWindowViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
     private async Task BrowseOutAsync()
     {
         try
@@ -122,6 +111,7 @@ public sealed partial class BatchCreateWindowViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
     private async Task RunAsync()
     {
         if (string.IsNullOrWhiteSpace(CsvPath) || !File.Exists(CsvPath))
@@ -180,6 +170,8 @@ public sealed partial class BatchCreateWindowViewModel : ViewModelBase
             IsRunning = false;
         }
     }
+
+    partial void OnIsRunningChanged(bool value) => RunCommand.NotifyCanExecuteChanged();
 
     private void OnBatchProgress((int Done, int Total) p)
         => Progress = p.Total == 0 ? 0 : 100.0 * p.Done / p.Total;

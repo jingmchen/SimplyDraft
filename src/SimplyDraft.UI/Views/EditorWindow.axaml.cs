@@ -218,7 +218,7 @@ public sealed partial class EditorWindow : Window, IDisposable
             return;
         
         if (idx == 2)
-            await _viewModel.SaveAsync();
+            await _viewModel.SaveCommand.ExecuteAsync(null);
         
         _forceClose = true;
         Close();

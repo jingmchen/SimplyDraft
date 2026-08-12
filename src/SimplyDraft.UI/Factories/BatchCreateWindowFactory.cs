@@ -16,7 +16,6 @@ public sealed class BatchCreateWindowFactory : IWindowFactory<BatchCreateWindow>
     private readonly ExporterCatalog _exporterCatalog;
     private readonly ILibrary _library;
     private readonly IFilePickerService _filePicker;
-    private readonly IFileSystem _fileSystem;
     private readonly ILibraryPaths _libraryPaths;
     private readonly IAppSettingsProvider _settings;
     private readonly ILogger<BatchCreateWindowViewModel> _viewModelLogger;
@@ -26,7 +25,6 @@ public sealed class BatchCreateWindowFactory : IWindowFactory<BatchCreateWindow>
         ExporterCatalog exporterCatalog,
         ILibrary library,
         IFilePickerService filePicker,
-        IFileSystem fileSystem,
         ILibraryPaths libraryPaths,
         IAppSettingsProvider settings,
         ILogger<BatchCreateWindowViewModel> viewModelLogger)
@@ -35,7 +33,6 @@ public sealed class BatchCreateWindowFactory : IWindowFactory<BatchCreateWindow>
         _exporterCatalog = exporterCatalog ?? throw new ArgumentNullException(nameof(exporterCatalog));
         _library = library ?? throw new ArgumentNullException(nameof(library));
         _filePicker = filePicker ?? throw new ArgumentNullException(nameof(filePicker));
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _libraryPaths = libraryPaths ?? throw new ArgumentNullException(nameof(libraryPaths));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _viewModelLogger = viewModelLogger ?? throw new ArgumentNullException(nameof(viewModelLogger));
@@ -43,5 +40,5 @@ public sealed class BatchCreateWindowFactory : IWindowFactory<BatchCreateWindow>
 
     public BatchCreateWindow Create()
         => new(new BatchCreateWindowViewModel(
-            _batch, _exporterCatalog, _library, _filePicker, _fileSystem, _libraryPaths, _settings, _viewModelLogger));
+            _batch, _exporterCatalog, _library, _filePicker, _libraryPaths, _settings, _viewModelLogger));
 }

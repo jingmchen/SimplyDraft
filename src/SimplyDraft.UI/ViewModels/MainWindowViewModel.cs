@@ -1,16 +1,15 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SimplyDraft.Core.Abstractions.UI;
-using SimplyDraft.UI.Common.MVVM;
 using SimplyDraft.UI.ViewModels.Components;
+using CommunityToolkit.Mvvm.Input;
 
 namespace SimplyDraft.UI.ViewModels;
 
-public sealed partial class MainWindowViewModel : ViewModelBase
+public sealed partial class MainWindowViewModel : ObservableObject
 {
     private readonly ILibraryActions _libraryActions;
     private readonly IConsoleLogService _console;
@@ -24,18 +23,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     public partial bool ConsoleVisible {get; set;}
-
-    public ICommand NewTemplateCommand {get;}
-    public ICommand NewChildCommand {get;}
-    public ICommand OpenCommand {get;}
-    public ICommand DuplicateCommand {get;}
-    public ICommand RenameCommand {get;}
-    public ICommand DeleteCommand {get;}
-    public ICommand ExportCommand {get;}
-    public ICommand BatchCommand {get;}
-    public ICommand RevealCommand {get;}
-    public ICommand SettingsCommand {get;}
-    public ICommand TrashDroppedCommand {get;}
 
     public MainWindowViewModel(
         LibraryBrowserViewModel library,
@@ -59,22 +46,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _libraryActions.Changed += Library.Refresh;
         _libraryActions.SectionRequested += OnSectionRequested;
 
-        NewTemplateCommand = new RelayCommandAsync(_libraryActions.NewTemplateAsync, logger: _logger);
-        NewChildCommand = new RelayCommandAsync(NewChildAsync, logger: _logger);
-        OpenCommand = new RelayCommand(OpenTarget, logger: _logger);
-        DuplicateCommand = new RelayCommand(DuplicateTarget, logger: _logger);
-        RenameCommand = new RelayCommandAsync(RenameAsync, logger: _logger);
-        DeleteCommand = new RelayCommandAsync(DeleteAsync, logger: _logger);
-        ExportCommand = new RelayCommandAsync(ExportAsync, logger: _logger);
-        BatchCommand = new RelayCommandAsync(BatchAsync, logger: _logger);
-        RevealCommand = new RelayCommand(RevealTarget, logger: _logger);
-        SettingsCommand = new RelayCommandAsync(OpenSettingsAsync, logger: _logger);
-        TrashDroppedCommand = new RelayCommand<string?>(TrashDropped, CanTrashDrop, logger: _logger);
-
         Library.Refresh();
     }
 
-    // ─── PUBLIC METHODS ────────────────────────
     public void ClearConsole() => _console.Clear();
     public void OpenSelected() => _libraryActions.Open(Library.Target);
     public void Dispose()
@@ -86,32 +60,42 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Library.Dispose();
     }
 
-    // ─── PRIVATE METHODS ───────────────────────
-    private void OnBrowserStatus(string s) => StatusText = s;
+    [RelayCommand]
+    private Task NewTemplateAsync() => _libraryActions.NewTemplateAsync();
 
-    private void OnActionStatus(string s) => StatusText = s;
+    [RelayCommand]
+    private async Task NewChildAsync() => await _libraryActions.NewChildAsync(Library.Target);
 
-    private void OnSectionRequested(string section) => Library.SelectedSection = section;
+    [RelayCommand]
+    private void Open() => _libraryActions.Open(Library.Target);
 
-    private Task NewChildAsync() => _libraryActions.NewChildAsync(Library.Target);
+    [RelayCommand]
+    private void Duplicate() => _libraryActions.Duplicate(Library.Target);
 
-    private void OpenTarget() => _libraryActions.Open(Library.Target);
+    [RelayCommand]
+    private async Task RenameAsync() => await _libraryActions.RenameAsync(Library.Target);
 
-    private void DuplicateTarget() => _libraryActions.Duplicate(Library.Target);
+    [RelayCommand]
+    private async Task DeleteAsync() => await _libraryActions.DeleteAsync(Library.Target);
 
-    private Task RenameAsync() => _libraryActions.RenameAsync(Library.Target);
+    [RelayCommand]
+    private async Task ExportAsync() => await _libraryActions.ExportAsync(Library.Target);
 
-    private Task DeleteAsync() => _libraryActions.DeleteAsync(Library.Target);
+    [RelayCommand]
+    private async Task BatchAsync() => await _libraryActions.BatchAsync(Library.Target);
 
-    private Task ExportAsync() => _libraryActions.ExportAsync(Library.Target);
+    [RelayCommand]
+    private void Reveal() => _libraryActions.Reveal(Library.Target);
 
-    private Task BatchAsync() => _libraryActions.BatchAsync(Library.Target);
-
-    private void RevealTarget() => _libraryActions.Reveal(Library.Target);
-
-    private bool CanTrashDrop(string? path)
-        => path != null && Library.All.Any(i => i.FilePath == path);
-
+    [RelayCommand]
+    private async Task OpenSettingsAsync()
+    {
+        var saved = await _window.OpenSettingsAsync();
+        if (saved)
+            Library.RebuildAfterRelocation();
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanTrashDrop))]
     private void TrashDropped(string? path)
     {
         if (path is null)
@@ -123,10 +107,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             _libraryActions.MoveToTrash(item);
     }
 
-    private async Task OpenSettingsAsync()
-    {
-        var saved = await _window.OpenSettingsAsync();
-        if (saved)
-            Library.RebuildAfterRelocation(); // relocation swapped the Library instance — watch the new one + rescan
-    }
+    private bool CanTrashDrop(string? path)
+        => path != null && Library.All.Any(i => i.FilePath == path);
+
+    private void OnBrowserStatus(string s) => StatusText = s;
+    private void OnActionStatus(string s) => StatusText = s;
+    private void OnSectionRequested(string section) => Library.SelectedSection = section;
 }

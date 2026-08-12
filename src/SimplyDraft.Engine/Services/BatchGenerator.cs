@@ -2,7 +2,6 @@
 
 using System.Text;
 using SimplyDraft.Core.Abstractions.Engine;
-using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Common;
 using SimplyDraft.Core.Domains.Batch;
 using SimplyDraft.Core.Domains.Documents;
@@ -16,14 +15,10 @@ namespace SimplyDraft.Engine.Services;
 public sealed class BatchGenerator : IBatchGenerator
 {
     private readonly IScriptingEngine _scripting;
-    private readonly IFileSystem _fileSystem;
     private static string CsvQuote(string field) => "\"" + field.Replace("\"", "\"\"") + "\"";
 
-    public BatchGenerator(IScriptingEngine scripting, IFileSystem fileSystem)
-    {
-        _scripting = scripting ?? throw new ArgumentNullException(nameof(scripting));
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-    }
+    public BatchGenerator(IScriptingEngine scripting)
+        => _scripting = scripting ?? throw new ArgumentNullException(nameof(scripting));
 
     public async Task<BatchResult> RunAsync(
         BatchRequest request,

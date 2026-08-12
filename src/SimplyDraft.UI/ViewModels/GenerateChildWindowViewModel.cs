@@ -18,12 +18,11 @@ using SimplyDraft.Engine.Scripting;
 using SimplyDraft.Engine.Templates;
 using SimplyDraft.Engine.Utils;
 using SimplyDraft.UI.Common;
-using SimplyDraft.UI.Common.MVVM;
 using SimplyDraft.UI.ViewModels.Components;
 
 namespace SimplyDraft.UI.ViewModels;
 
-public sealed partial class GenerateChildWindowViewModel : ViewModelBase, IDisposable
+public sealed partial class GenerateChildWindowViewModel : ObservableObject, IDisposable
 {
     private const int PreviewDebounceMs = 300;
     private readonly IScriptingEngine _scripting;

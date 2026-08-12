@@ -1,11 +1,10 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using SimplyDraft.UI.Common.MVVM;
 
 namespace SimplyDraft.UI.ViewModels.Components;
 
-public sealed partial class ScenarioViewModel : ViewModelBase
+public sealed partial class ScenarioViewModel : ObservableObject
 {
     public const string FallbackLabel = "(other)";
     private readonly Action<string, string?> _picked;

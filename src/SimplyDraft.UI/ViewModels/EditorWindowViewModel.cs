@@ -3,8 +3,8 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Engine;
 using SimplyDraft.Core.Abstractions.Infrastructure;
@@ -23,12 +23,11 @@ using SimplyDraft.Core.Enums;
 using SimplyDraft.Engine.Templates;
 using SimplyDraft.Engine.Utils;
 using SimplyDraft.UI.Common;
-using SimplyDraft.UI.Common.MVVM;
 using SimplyDraft.UI.ViewModels.Components;
 
 namespace SimplyDraft.UI.ViewModels;
 
-public sealed partial class EditorWindowViewModel : ViewModelBase, IDisposable
+public sealed partial class EditorWindowViewModel : ObservableObject, IDisposable
 {
     private const int PreviewDebounceMs = 300;
     private const double MinEditorFontSize = 9;
@@ -97,14 +96,6 @@ public sealed partial class EditorWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     public partial double EditorFontSize {get; private set;}
 
-    public ICommand SaveCommand {get;}
-    public ICommand ExportTxtCommand {get;}
-    public ICommand ExportDocxCommand {get;}
-    public ICommand OpenVariablesCommand {get;}
-    public ICommand AddVariableCommand {get;}
-    public ICommand RemoveVariableCommand {get;}
-    public ICommand ZoomEditorCommand {get;}
-
     public EditorWindowViewModel(
         IScriptingEngine scripting,
         IMarkupEngine markup,
@@ -128,14 +119,6 @@ public sealed partial class EditorWindowViewModel : ViewModelBase, IDisposable
         StatusText = "";
         PreviewPageView = true;
         EditorFontSize = DefaultEditorFontSize;
-
-        SaveCommand = new RelayCommandAsync(SaveAsync, logger: _logger);
-        ExportTxtCommand = new RelayCommandAsync(ExportTxtAsync, logger: _logger);
-        ExportDocxCommand = new RelayCommandAsync(ExportDocxAsync, logger: _logger);
-        OpenVariablesCommand = new RelayCommandAsync(OpenVariableManagerAsync, logger: _logger);
-        AddVariableCommand = new RelayCommandAsync(AddVariableAsync, logger: _logger);
-        RemoveVariableCommand = new RelayCommandAsync(RemoveVariableAsync, logger: _logger);
-        ZoomEditorCommand = new RelayCommand<double>(ZoomEditor, logger: _logger);
 
         _rows.ValueChanged += OnRowValueChanged;
         _preview = new PreviewScheduler<EditorGenerationInput, EditorGenerationOutput>(
@@ -173,7 +156,8 @@ public sealed partial class EditorWindowViewModel : ViewModelBase, IDisposable
         _preview.Dispose();
     }
 
-    public async Task SaveAsync()
+    [RelayCommand]
+    private async Task SaveAsync()
     {
         try
         {
@@ -214,6 +198,124 @@ public sealed partial class EditorWindowViewModel : ViewModelBase, IDisposable
 
         await Task.CompletedTask;
     }
+
+    [RelayCommand]
+    private async Task ExportTxtAsync() => await ExportAsync(DocumentKind.Txt);
+
+    [RelayCommand]
+    private async Task ExportDocxAsync() => await ExportAsync(DocumentKind.Docx);
+
+    [RelayCommand]
+    private async Task OpenVariablesAsync()
+    {
+        if (!IsTemplate)
+            return;
+        
+        var rows = Variables
+            .Select(v => new VariableDeclaration(v.Name, v.TypeName))
+            .ToList();
+        
+        var result = await _dialog.EditVariablesAsync(rows);
+        
+        if (result is null)
+            return;
+
+        _rows.Clear();
+        _fm.Types.Clear();
+
+        foreach (var r in result)
+        {
+            var row = new VariableRowViewModel(r.Name, "", isImplicit: false) { TypeName = r.Type };
+            _rows.Add(row);
+            if (r.Type is not ("text" or ""))
+                _fm.Types[r.Name] = r.Type;
+        }
+        
+        MarkDirty();
+        _preview.Schedule();
+        StatusText = "Variable declarations updated.";
+    }
+
+    [RelayCommand]
+    private async Task AddVariableAsync()
+    {
+        if (!IsTemplate)
+            return;
+        
+        var name = await _dialog.PromptAsync("Add variable", "Variable name (letters, digits, underscore):");
+        
+        if (string.IsNullOrWhiteSpace(name))
+            return;
+        
+        name = name.Trim();
+
+        if (!IsValidVarName(name))
+        {
+            StatusText = $"'{name}' is not a valid variable name.";
+            return;
+        }
+
+        if (_rows.Has(name))
+        {
+            SelectedVariable = _rows.Find(name);
+            return;
+        }
+
+        _rows.Add(new VariableRowViewModel(name, "", isImplicit: false));
+        MarkDirty();
+        _preview.Schedule();
+    }
+
+    [RelayCommand]
+    private async Task RemoveVariableAsync()
+    {
+        if (!IsTemplate || SelectedVariable is null)
+            return;
+        
+        var row = SelectedVariable;
+        var refRegex = PlaceholderRefRegex(row.Name);
+        int uses = refRegex.Count(ContentText);
+        bool stripped = false;
+
+        if (uses > 0)
+        {
+            var choice = await _dialog.ChooseAsync("Remove variable",
+                $"'{row.Name}' is used by {{{row.Name}}} {uses} time(s) in the content.\n\n" +
+                "Remove the declaration and delete those placeholders too?",
+                "Cancel", "Keep placeholders", "Remove everywhere");
+            
+            if (choice == 0)
+                return;
+            if (choice == 2)
+            {
+                ContentText = refRegex.Replace(ContentText, "");
+                stripped = true;
+            }
+        }
+
+        var found = _rows.Find(row.Name);
+
+        if (found != null)
+        {
+            int idx = Variables.IndexOf(found);
+            if (idx >= 0)
+                _rows.RemoveAt(idx);
+        }
+
+        _fm.Types.Remove(row.Name);
+        MarkDirty();
+        _preview.Schedule();
+
+        StatusText = stripped
+            ? $"Removed '{row.Name}' and {uses} placeholder(s) from the content."
+            : uses > 0
+                ? $"Removed '{row.Name}' — its {{{row.Name}}} placeholders remain, so it stays listed (marked *)."
+                : $"Removed '{row.Name}'.";
+    }
+
+    [RelayCommand]
+    private void ZoomEditor(double delta)
+        => EditorFontSize = Math.Clamp(EditorFontSize + Math.Sign(delta), MinEditorFontSize, MaxEditorFontSize);
 
     private void LoadTemplateItem()
     {
@@ -289,9 +391,6 @@ public sealed partial class EditorWindowViewModel : ViewModelBase, IDisposable
     }
 
     private void MarkDirty() => Dirty = true;
-
-    private void ZoomEditor(double delta)
-        => EditorFontSize = Math.Clamp(EditorFontSize + Math.Sign(delta), MinEditorFontSize, MaxEditorFontSize);
     
     private EditorGenerationInput CreatePreviewSnapshot() => CreateSnapshot(GenerationMode.Preview);
 
@@ -392,8 +491,6 @@ public sealed partial class EditorWindowViewModel : ViewModelBase, IDisposable
     }
 
     private void OnPreviewError(Exception ex) => StatusText = "Preview failed: " + ex.Message;
-    private Task ExportTxtAsync() => ExportAsync(DocumentKind.Txt);
-    private Task ExportDocxAsync() => ExportAsync(DocumentKind.Docx);
 
     private async Task ExportAsync(DocumentKind formatKind)
     {
@@ -416,111 +513,6 @@ public sealed partial class EditorWindowViewModel : ViewModelBase, IDisposable
             StatusText = "Export failed: " + ex.Message;
             LogExportFailed(ex, Item.Name);
         }
-    }
-
-    private async Task OpenVariableManagerAsync()
-    {
-        if (!IsTemplate)
-            return;
-        
-        var rows = Variables
-            .Select(v => new VariableDeclaration(v.Name, v.TypeName))
-            .ToList();
-        
-        var result = await _dialog.EditVariablesAsync(rows);
-        
-        if (result is null)
-            return;
-
-        _rows.Clear();
-        _fm.Types.Clear();
-
-        foreach (var r in result)
-        {
-            var row = new VariableRowViewModel(r.Name, "", isImplicit: false) { TypeName = r.Type };
-            _rows.Add(row);
-            if (r.Type is not ("text" or ""))
-                _fm.Types[r.Name] = r.Type;
-        }
-        
-        MarkDirty();
-        _preview.Schedule();
-        StatusText = "Variable declarations updated.";
-    }
-
-    private async Task AddVariableAsync()
-    {
-        if (!IsTemplate)
-            return;
-        
-        var name = await _dialog.PromptAsync("Add variable", "Variable name (letters, digits, underscore):");
-        
-        if (string.IsNullOrWhiteSpace(name))
-            return;
-        
-        name = name.Trim();
-
-        if (!IsValidVarName(name))
-        {
-            StatusText = $"'{name}' is not a valid variable name.";
-            return;
-        }
-
-        if (_rows.Has(name))
-        {
-            SelectedVariable = _rows.Find(name);
-            return;
-        }
-
-        _rows.Add(new VariableRowViewModel(name, "", isImplicit: false));
-        MarkDirty();
-        _preview.Schedule();
-    }
-
-    private async Task RemoveVariableAsync()
-    {
-        if (!IsTemplate || SelectedVariable is null)
-            return;
-        
-        var row = SelectedVariable;
-        var refRegex = PlaceholderRefRegex(row.Name);
-        int uses = refRegex.Count(ContentText);
-        bool stripped = false;
-
-        if (uses > 0)
-        {
-            var choice = await _dialog.ChooseAsync("Remove variable",
-                $"'{row.Name}' is used by {{{row.Name}}} {uses} time(s) in the content.\n\n" +
-                "Remove the declaration and delete those placeholders too?",
-                "Cancel", "Keep placeholders", "Remove everywhere");
-            
-            if (choice == 0)
-                return;
-            if (choice == 2)
-            {
-                ContentText = refRegex.Replace(ContentText, "");
-                stripped = true;
-            }
-        }
-
-        var found = _rows.Find(row.Name);
-
-        if (found != null)
-        {
-            int idx = Variables.IndexOf(found);
-            if (idx >= 0)
-                _rows.RemoveAt(idx);
-        }
-
-        _fm.Types.Remove(row.Name);
-        MarkDirty();
-        _preview.Schedule();
-
-        StatusText = stripped
-            ? $"Removed '{row.Name}' and {uses} placeholder(s) from the content."
-            : uses > 0
-                ? $"Removed '{row.Name}' — its {{{row.Name}}} placeholders remain, so it stays listed (marked *)."
-                : $"Removed '{row.Name}'.";
     }
 
     private static bool IsValidVarName(string name) => VariableNameChecker.IsValid(name);

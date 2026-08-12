@@ -7,11 +7,10 @@ using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.Core.Domains.Library;
 using SimplyDraft.Core.Enums;
-using SimplyDraft.UI.Common.MVVM;
 
 namespace SimplyDraft.UI.ViewModels.Components;
 
-public sealed partial class LibraryBrowserViewModel : ViewModelBase, IHoverTracker, IDisposable
+public sealed partial class LibraryBrowserViewModel : ObservableObject, IHoverTracker, IDisposable
 {
     private readonly ILibrary _library;
     private readonly ILibraryWatcher _libraryWatcher;

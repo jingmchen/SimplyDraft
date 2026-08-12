@@ -1,6 +1,6 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
-using Microsoft.Extensions.Logging
+using Microsoft.Extensions.Logging;
 
 namespace SimplyDraft.Core.Configuration;
 

@@ -1,13 +1,13 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
 using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
 using SimplyDraft.Core.Domains.Library;
 using SimplyDraft.Core.Enums;
-using SimplyDraft.UI.Common.MVVM;
 
 namespace SimplyDraft.UI.ViewModels.Components;
 
-public sealed class LibraryItemViewModel : ViewModelBase
+public sealed class LibraryItemViewModel : ObservableObject
 {
     public LibraryItem Item {get;}
     public string Name => Item.Name;

@@ -2,11 +2,10 @@
 
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
-using SimplyDraft.UI.Common.MVVM;
 
 namespace SimplyDraft.UI.ViewModels.Components;
 
-public sealed partial class VariableRowViewModel : ViewModelBase
+public sealed partial class VariableRowViewModel : ObservableObject
 {
     private static readonly string[] TimeFormats = ["h\\:mm", "hh\\:mm", "h\\:mm\\:ss", "hh\\:mm\\:ss"];
     private string _typeName = "text";

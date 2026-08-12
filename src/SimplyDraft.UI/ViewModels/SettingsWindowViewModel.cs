@@ -4,11 +4,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Enums;
-using SimplyDraft.UI.Common.MVVM;
 
 namespace SimplyDraft.UI.ViewModels;
 
-public sealed partial class SettingsWindowViewModel : ViewModelBase
+public sealed partial class SettingsWindowViewModel : ObservableObject
 {
     private readonly IAppSettingsProvider _settings;
     private readonly ILogger<SettingsWindowViewModel> _logger;

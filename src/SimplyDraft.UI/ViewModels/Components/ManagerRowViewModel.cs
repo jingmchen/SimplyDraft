@@ -1,11 +1,10 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using SimplyDraft.UI.Common.MVVM;
 
 namespace SimplyDraft.UI.ViewModels.Components;
 
-public sealed partial class ManagerRowViewModel : ViewModelBase
+public sealed partial class ManagerRowViewModel : ObservableObject
 {
     private string _type;
     public IReadOnlyList<string> TypeChoices {get;} = ["text", "number", "date", "time", "yesno"];
