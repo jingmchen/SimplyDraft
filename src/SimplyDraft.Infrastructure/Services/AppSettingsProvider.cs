@@ -24,6 +24,8 @@ public sealed partial class AppSettingsProvider : IAppSettingsProvider
     };
     private const int MinRetainedFiles = 1;
     private const int MaxRetainedFiles = 30;
+    private const int MinAutoSaveMins = 1;
+    private const int MaxAutoSaveMins = 5;
 
     public AppSettingsProvider(ILogger<AppSettingsProvider> logger, IAppPaths appPaths)
     {
@@ -106,8 +108,19 @@ public sealed partial class AppSettingsProvider : IAppSettingsProvider
     {
         ArgumentNullException.ThrowIfNull(settings);
 
+        settings.LibrarySection ??= new();
+        settings.EditorSection ??= new();
+        settings.GenerationSection ??= new();
+        settings.ExportSection ??= new();
+        settings.ThemeSection ??= new();
         settings.LoggingSection ??= new();
         settings.ThemeSection ??= new();
+
+        settings.LibrarySection.TrashPurgeDays =
+            Math.Clamp(settings.LibrarySection.TrashPurgeDays, MinRetainedFiles, MaxRetainedFiles);
+        
+        settings.EditorSection.AutoSaveMinutes =
+            Math.Clamp(settings.EditorSection.AutoSaveMinutes, MinAutoSaveMins, MaxAutoSaveMins);
 
         if (!Enum.IsDefined(settings.LoggingSection.MinimumLevel))
             settings.LoggingSection.MinimumLevel = LogLevel.Information;
