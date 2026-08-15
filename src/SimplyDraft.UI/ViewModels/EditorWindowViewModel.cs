@@ -168,7 +168,7 @@ public sealed partial class EditorWindowViewModel : ObservableObject, IDisposabl
                 foreach (var r in Variables)
                     _fm.Variables[r.Name] = "";
                 
-                _library.SaveTemplate(new TemplateDocument
+                await _library.SaveTemplateAsync(new TemplateDocument
                 {
                     FilePath = Item.FilePath,
                     Fm = _fm,
@@ -177,7 +177,7 @@ public sealed partial class EditorWindowViewModel : ObservableObject, IDisposabl
             }
             else
             {
-                _library.SaveChild(new ChildDocument
+                await _library.SaveChildAsync(new ChildDocument
                 {
                     FilePath = Item.FilePath,
                     Fm = _fm,

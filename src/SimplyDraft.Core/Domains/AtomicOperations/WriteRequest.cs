@@ -2,10 +2,10 @@
 
 using System.Text;
 
-namespace SimplyDraft.Core.Domains.Infrastructure;
+namespace SimplyDraft.Core.Domains.AtomicOperations;
 
-public sealed record AtomicWriteRequest(
+public sealed record WriteRequest(
     string Contents,
     Encoding? Encoding,
     TaskCompletionSource<bool> Completion
-);
+) : FileOperation(Completion);

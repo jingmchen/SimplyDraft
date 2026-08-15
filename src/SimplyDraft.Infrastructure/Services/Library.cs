@@ -22,11 +22,11 @@ public sealed partial class Library : ILibrary
     private const int MaxInputDepth = 8;
     private readonly IScriptingEngine _scripting;
     private readonly ILibraryPaths _libraryPaths;
-    private readonly IAtomicFileWriter _fileWriter;
+    private readonly IAtomicFileAsync _fileWriter;
     private readonly ILogger<Library> _logger;
     private static Assembly _assembly => typeof(Library).Assembly; // Bundle sample files with this dll instead of apphost
 
-    public Library(IScriptingEngine scripting, ILibraryPaths libraryPaths, IAtomicFileWriter fileWriter, ILogger<Library> logger)
+    public Library(IScriptingEngine scripting, ILibraryPaths libraryPaths, IAtomicFileAsync fileWriter, ILogger<Library> logger)
     {
         _scripting = scripting ?? throw new ArgumentNullException(nameof(scripting));
         _libraryPaths = libraryPaths ?? throw new ArgumentNullException(nameof(libraryPaths));
@@ -49,7 +49,7 @@ public sealed partial class Library : ILibrary
         return items;
     }
 
-    public string CreateTemplate(string name)
+    public async Task<string> CreateTemplateAsync(string name)
     {
         var fm = new FrontMatter{Name = name, HasMarkup = true};
         fm.Variables["name"] = "";
@@ -59,7 +59,7 @@ public sealed partial class Library : ILibrary
             FileNameSanitizer.Sanitize(name),
             InfrastructureConstants.FileExtension.Template);
         
-        _fileWriter.QueueWrite(path, FrontMatterParser.Write(fm, ""));
+        await _fileWriter.WriteAsync(path, FrontMatterParser.Write(fm, ""));
 
         return path;
     }
@@ -76,10 +76,10 @@ public sealed partial class Library : ILibrary
         };
     }
 
-    public void SaveTemplate(TemplateDocument doc)
-        => _fileWriter.QueueWrite(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
+    public Task SaveTemplateAsync(TemplateDocument doc)
+        => _fileWriter.WriteAsync(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
     
-    public string CreateChild(string templatePath, string name)
+    public async Task<string> CreateChildAsync(string templatePath, string name)
     {
         var template = LoadTemplate(templatePath);
         var fm = new FrontMatter {Name = name};
@@ -94,12 +94,12 @@ public sealed partial class Library : ILibrary
         foreach (var kv in template.Fm.Variables)
             fm.Values[kv.Key] = kv.Value;
         
-        _fileWriter.QueueWrite(path, FrontMatterParser.Write(fm, ""));
+        await _fileWriter.WriteAsync(path, FrontMatterParser.Write(fm, ""));
 
         return path;
     }
 
-    public string CreateBakedChild(string templatePath, string name, string generatedText, FrontMatter templateFm)
+    public async Task<string> CreateBakedChildAsync(string templatePath, string name, string generatedText, FrontMatter templateFm)
     {
         var fm = new FrontMatter{Name = name};
 
@@ -116,7 +116,7 @@ public sealed partial class Library : ILibrary
 
         string body = generatedText.Replace("{", "{{").Replace("}", "}}");
 
-        _fileWriter.QueueWrite(path, FrontMatterParser.Write(fm, body));
+        await _fileWriter.WriteAsync(path, FrontMatterParser.Write(fm, body));
 
         return path;
     }
@@ -134,10 +134,10 @@ public sealed partial class Library : ILibrary
         };
     }
 
-    public void SaveChild(ChildDocument doc)
-        => _fileWriter.QueueWrite(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
+    public Task SaveChildAsync(ChildDocument doc)
+        => _fileWriter.WriteAsync(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
     
-    public string Duplicate(LibraryItem item)
+    public async Task<string> DuplicateAsync(LibraryItem item)
     {
         string directory = Path.GetDirectoryName(item.FilePath)!;
         string extension = Path.GetExtension(item.FilePath);
@@ -147,17 +147,17 @@ public sealed partial class Library : ILibrary
         fm.Name = newName;
         string target = DirectoryHelper.MakeUniquePath(directory, FileNameSanitizer.Sanitize(newName), extension);
 
-        _fileWriter.QueueWrite(target, FrontMatterParser.Write(fm, body));
+        await _fileWriter.WriteAsync(target, FrontMatterParser.Write(fm, body));
 
         return target;
     }
 
-    public string Rename(LibraryItem item, string newName)
+    public async Task<string> RenameAsync(LibraryItem item, string newName)
     {
         var (fm, body, _) = FrontMatterParser.Parse(File.ReadAllText(item.FilePath));
         fm.Name = newName;
 
-        _fileWriter.QueueWrite(item.FilePath, FrontMatterParser.Write(fm, body));
+        await _fileWriter.WriteAsync(item.FilePath, FrontMatterParser.Write(fm, body));
 
         string directory = Path.GetDirectoryName(item.FilePath)!;
         string extension = Path.GetExtension(item.FilePath);
@@ -169,15 +169,15 @@ public sealed partial class Library : ILibrary
         if (File.Exists(target))
             target = DirectoryHelper.MakeUniquePath(directory, FileNameSanitizer.Sanitize(newName), extension);
         
-        File.Move(item.FilePath, target);
+        await _fileWriter.MoveAsync(item.FilePath, target);
 
         if (item.Kind == LibraryItemKind.Template)
-            RetargetChildren(item.FilePath, target);
+            await RetargetChildrenAsync(item.FilePath, target);
         
         return target;
     }
 
-    public void MoveToTrash(LibraryItem item)
+    public async Task MoveToTrashAsync(LibraryItem item)
     {
         string dest = Path.Combine(
             _libraryPaths.TrashFolder,
@@ -190,7 +190,7 @@ public sealed partial class Library : ILibrary
                 _libraryPaths.TrashFolder,
                 $"{DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture)}_{n++}_{Path.GetFileName(item.FilePath)}");
         
-        File.Move(item.FilePath, dest);
+        await _fileWriter.MoveAsync(item.FilePath, dest).ConfigureAwait(false);
         File.SetLastWriteTime(dest, DateTime.Now);
     }
 
@@ -206,7 +206,7 @@ public sealed partial class Library : ILibrary
             try
             {
                 if (File.GetLastWriteTime(f) < cutoff)
-                    File.Delete(f);
+                    File.Delete(f); // Not through async delete as enqueuing will leak 
             }
             catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
             {
@@ -326,7 +326,7 @@ public sealed partial class Library : ILibrary
             .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
             .ToList();
     
-    public string CreateTemplateFromSeed(string templateName, string? newName = null)
+    public async Task<string> CreateTemplateFromSeedAsync(string templateName, string? newName = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(templateName);
 
@@ -336,13 +336,13 @@ public sealed partial class Library : ILibrary
                 continue;
             
             return newName is null
-                ? WriteSeedCopy(resource, fileBaseName: templateName)
-                : WriteRenamedSeedCopy(resource, newName.Trim());
+                ? await WriteSeedCopyAsync(resource, fileBaseName: templateName)
+                : await WriteRenamedSeedCopyAsync(resource, newName.Trim());
         }
         throw new ArgumentException($"no bundled template named '{templateName}'", nameof(templateName));
     }
 
-    public int SeedMissingTemplates()
+    public async Task<int> SeedMissingTemplatesAsync()
     {
         int added = 0;
 
@@ -355,14 +355,14 @@ public sealed partial class Library : ILibrary
             if (File.Exists(target))
                 continue;
             
-            _fileWriter.QueueWrite(target, ReadResource(resource));
+            await _fileWriter.WriteAsync(target, ReadResource(resource));
             added++;
         }
         return added;
     }
 
     // ─── PRIVATE METHODS ───────────────────────
-    private void RetargetChildren(string oldTemplatePath, string newTemplatePath)
+    private async Task RetargetChildrenAsync(string oldTemplatePath, string newTemplatePath)
     {
         foreach (var f in EnumerateFilesSafe(_libraryPaths.ChildrenFolder, InfrastructureConstants.FileExtension.Children))
         {
@@ -378,7 +378,7 @@ public sealed partial class Library : ILibrary
                 if (resolved != null && DirectoryHelper.PathsEqual(resolved, oldTemplatePath))
                 {
                     fm.TemplatePath = DirectoryHelper.MakeRelativePath(f, newTemplatePath);
-                    _fileWriter.QueueWrite(f, FrontMatterParser.Write(fm, body));
+                    await _fileWriter.WriteAsync(f, FrontMatterParser.Write(fm, body));
                 }
             }
             catch { }
@@ -460,18 +460,18 @@ public sealed partial class Library : ILibrary
         return null;
     }
 
-    private string WriteSeedCopy(string resource, string fileBaseName)
+    private async Task<string> WriteSeedCopyAsync(string resource, string fileBaseName)
     {
         string path = DirectoryHelper.MakeUniquePath(
             _libraryPaths.TemplatesFolder,
             FileNameSanitizer.Sanitize(fileBaseName),
             InfrastructureConstants.FileExtension.Template);
         
-        _fileWriter.QueueWrite(path, ReadResource(resource));
+        await _fileWriter.WriteAsync(path, ReadResource(resource));
         return path;
     }
 
-    private string WriteRenamedSeedCopy(string resource, string newName)
+    private async Task<string> WriteRenamedSeedCopyAsync(string resource, string newName)
     {
         var (fm, body, _) = FrontMatterParser.Parse(ReadResource(resource));
         fm.Name = newName;
@@ -480,7 +480,7 @@ public sealed partial class Library : ILibrary
             FileNameSanitizer.Sanitize(newName),
             InfrastructureConstants.FileExtension.Template);
         
-        _fileWriter.QueueWrite(path, FrontMatterParser.Write(fm, body));
+        await _fileWriter.WriteAsync(path, FrontMatterParser.Write(fm, body));
         return path;
     }
 

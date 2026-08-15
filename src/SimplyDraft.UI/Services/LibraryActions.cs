@@ -53,8 +53,8 @@ public sealed partial class LibraryActions : ILibraryActions
                 return;
             
             var path = selection.SeedTemplateName is null
-                ? _library.CreateTemplate(name)
-                : _library.CreateTemplateFromSeed(selection.SeedTemplateName, name);
+                ? await _library.CreateTemplateAsync(name)
+                : await _library.CreateTemplateFromSeedAsync(selection.SeedTemplateName, name);
             
             Changed?.Invoke();
             SectionRequested?.Invoke("Templates");
@@ -136,7 +136,7 @@ public sealed partial class LibraryActions : ILibraryActions
         catch (Exception ex) { StatusReported?.Invoke($"Couldn't open \"{item.Name}\": {ex.Message}"); }
     }
 
-    public void Duplicate(LibraryItem? item)
+    public async Task DuplicateAsync(LibraryItem? item)
     {
         if (item is null)
         {
@@ -144,8 +144,15 @@ public sealed partial class LibraryActions : ILibraryActions
             return;
         }
 
-        try { _library.Duplicate(item); Changed?.Invoke(); }
-        catch (Exception ex) { StatusReported?.Invoke("Duplicate failed: " + ex.Message); }
+        try
+        {
+            await _library.DuplicateAsync(item);
+            Changed?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            StatusReported?.Invoke("Duplicate failed: " + ex.Message);
+        }
     }
 
     public async Task RenameAsync(LibraryItem? item)
@@ -161,7 +168,11 @@ public sealed partial class LibraryActions : ILibraryActions
         if (string.IsNullOrWhiteSpace(name) || name.Trim() == item.Name)
             return;
         
-        try { _library.Rename(item, name.Trim()); Changed?.Invoke(); }
+        try
+        {
+            await _library.RenameAsync(item, name.Trim());
+            Changed?.Invoke();
+        }
         catch (Exception ex) { StatusReported?.Invoke("Rename failed: " + ex.Message); }
     }
 
@@ -180,15 +191,22 @@ public sealed partial class LibraryActions : ILibraryActions
         if (idx != 1)
             return;
         
-        try { _library.MoveToTrash(item); Changed?.Invoke(); }
-        catch (Exception ex) { StatusReported?.Invoke("Delete failed: " + ex.Message); }
+        try
+        {
+            await _library.MoveToTrashAsync(item);
+            Changed?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            StatusReported?.Invoke("Delete failed: " + ex.Message);
+        }
     }
 
-    public void MoveToTrash(LibraryItem item)
+    public async Task MoveToTrashAsync(LibraryItem item)
     {
         try
         {
-            _library.MoveToTrash(item);
+            await _library.MoveToTrashAsync(item);
             Changed?.Invoke();
             StatusReported?.Invoke($"Moved \"{item.Name}\" to trash  ·  drag-drop");
         }

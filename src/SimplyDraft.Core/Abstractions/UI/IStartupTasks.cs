@@ -4,5 +4,5 @@ namespace SimplyDraft.Core.Abstractions.UI;
 
 public interface IStartupTasks
 {
-    void Run();
+    Task Run();
 }

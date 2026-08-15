@@ -70,7 +70,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     private void Open() => _libraryActions.Open(Library.Target);
 
     [RelayCommand]
-    private void Duplicate() => _libraryActions.Duplicate(Library.Target);
+    private async Task DuplicateAsync() => await _libraryActions.DuplicateAsync(Library.Target);
 
     [RelayCommand]
     private async Task RenameAsync() => await _libraryActions.RenameAsync(Library.Target);
@@ -96,7 +96,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     }
     
     [RelayCommand(CanExecute = nameof(CanTrashDrop))]
-    private void TrashDropped(string? path)
+    private async Task TrashDroppedAsync(string? path)
     {
         if (path is null)
             return;
@@ -104,7 +104,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
         var item = Library.All.FirstOrDefault(i => i.FilePath == path);
         
         if (item != null)
-            _libraryActions.MoveToTrash(item);
+            await _libraryActions.MoveToTrashAsync(item);
     }
 
     private bool CanTrashDrop(string? path)

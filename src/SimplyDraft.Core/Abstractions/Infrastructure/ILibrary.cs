@@ -10,23 +10,23 @@ public interface ILibrary
 {
     List<LibraryItem> Scan();
 
-    string CreateTemplate(string name);
+    Task<string> CreateTemplateAsync(string name);
     TemplateDocument LoadTemplate(string path);
-    void SaveTemplate(TemplateDocument doc);
+    Task SaveTemplateAsync(TemplateDocument doc);
 
-    string CreateChild(string templatePath, string name);
-    string CreateBakedChild(string templatePath, string name, string generatedText, FrontMatter templateFm);
+    Task<string> CreateChildAsync(string templatePath, string name);
+    Task<string> CreateBakedChildAsync(string templatePath, string name, string generatedText, FrontMatter templateFm);
     ChildDocument LoadChild(string path);
-    void SaveChild(ChildDocument doc);
+    Task SaveChildAsync(ChildDocument doc);
 
-    string Duplicate(LibraryItem item);
-    string Rename(LibraryItem item, string newName);
-    void MoveToTrash(LibraryItem item);
+    Task<string> DuplicateAsync(LibraryItem item);
+    Task<string> RenameAsync(LibraryItem item, string newName);
+    Task MoveToTrashAsync(LibraryItem item);
     void PurgeTrash(int days);
     
     (string Text, List<Diagnostic> Warnings) ExpandIncludes(string contentText);
     (DateTime Created, DateTime Modified) GetTimestamps(string filePath);
     IReadOnlyList<string> ListSeedTemplates();
-    string CreateTemplateFromSeed(string templateName, string? newName = null);
-    int SeedMissingTemplates();
+    Task<string> CreateTemplateFromSeedAsync(string templateName, string? newName = null);
+    Task<int> SeedMissingTemplatesAsync();
 }

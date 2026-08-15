@@ -25,13 +25,13 @@ public sealed class StartupTasks : IStartupTasks
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     
-    public void Run()
+    public async Task Run()
     {
         if (_libraryPaths.ToSeed)
         {
             try
             {
-                int added = _library.SeedMissingTemplates();
+                int added = await _library.SeedMissingTemplatesAsync();
                 _logger.LogInformation("New library — added {Count} bundled example template(s).", added);
             }
             catch (Exception ex)

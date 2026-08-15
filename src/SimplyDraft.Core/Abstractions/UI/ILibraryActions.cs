@@ -14,11 +14,11 @@ public interface ILibraryActions
     Task NewChildAsync(LibraryItem? target);
 
     void Open(LibraryItem? item);
-    void Duplicate(LibraryItem? item);
+    Task DuplicateAsync(LibraryItem? item);
     Task RenameAsync(LibraryItem? item);
     Task DeleteAsync(LibraryItem? item);
 
-    void MoveToTrash(LibraryItem item);
+    Task MoveToTrashAsync(LibraryItem item);
     Task ExportAsync(LibraryItem? item);
     Task BatchAsync(LibraryItem? item);
     void Reveal(LibraryItem? item);

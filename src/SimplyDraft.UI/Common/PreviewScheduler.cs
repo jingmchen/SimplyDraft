@@ -56,9 +56,6 @@ public sealed class PreviewScheduler<TIn, TOut> : IDisposable
             try { await Task.Delay(_delayMs, cts.Token); }
             catch (TaskCanceledException) { return; }
 
-            // Compute runs on a thread-pool thread: an unguarded throw here became an UNOBSERVED task
-            // exception (process-terminating under ThrowUnobservedTaskExceptions) and silently dropped
-            // the render. Catch it and surface via the UI thread instead.
             TOut output;
 
             try
@@ -69,8 +66,7 @@ public sealed class PreviewScheduler<TIn, TOut> : IDisposable
             {
                 DispatcherHelper.PostOnUIThread(() =>
                 {
-                    if (!cts.IsCancellationRequested)
-                        Report(ex);
+                    if (!cts.IsCancellationRequested) Report(ex);
                 });
                 return;
             }

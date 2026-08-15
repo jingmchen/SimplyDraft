@@ -12,10 +12,6 @@ internal static class AtomicFile
             encoderShouldEmitUTF8Identifier: false,
             throwOnInvalidBytes: true);
     
-    // Method overloading, first method for writes outside of Atomic File Writer cls
-    internal static void WriteTo(string path, string contents, Encoding? encoding = null)
-        => WriteTo(path, contents, encoding, cleanupFailed: null);
-    
     internal static void WriteTo(
         string path,
         string contents,
@@ -47,6 +43,19 @@ internal static class AtomicFile
         {
             if (!TryDelete(tempPath))
                 cleanupFailed?.Invoke(tempPath);
+        }
+    }
+
+    internal static bool TryDelete(string path)
+    {
+        try
+        {
+            File.Delete(path);
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 
@@ -89,19 +98,6 @@ internal static class AtomicFile
         }
 
         File.Move(tempPath, destinationPath, overwrite: true);
-    }
-
-    private static bool TryDelete(string path)
-    {
-        try
-        {
-            File.Delete(path);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     [UnsupportedOSPlatform("windows")]

@@ -145,7 +145,7 @@ public sealed partial class GenerateChildWindowViewModel : ObservableObject, IDi
 
         try
         {
-            var path = _library.CreateBakedChild(_template.FilePath, ChildName, output.Result.Text, _template.Fm);
+            var path = await _library.CreateBakedChildAsync(_template.FilePath, ChildName, output.Result.Text, _template.Fm);
             LogCreateChildSuccess(ChildName, TemplateName, path);
             return path;
         }
