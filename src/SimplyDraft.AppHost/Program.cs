@@ -32,6 +32,7 @@ internal sealed class Program
     {
         var appInfo = new AppInfo(typeof(Program).Assembly);
         var appPaths = new AppPaths(appInfo);
+        var fileWriter = new AtomicFileWriter();
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
@@ -51,6 +52,7 @@ internal sealed class Program
 
             var settings = new AppSettingsProvider(
                 logger: bootstrapLoggerFactory.CreateLogger<AppSettingsProvider>(),
+                fileWriter: fileWriter,
                 appPaths: appPaths);
             
             using IHost host = BuildHost(args, appPaths, settings);
