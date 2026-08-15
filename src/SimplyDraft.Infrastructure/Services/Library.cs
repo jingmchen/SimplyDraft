@@ -22,13 +22,15 @@ public sealed partial class Library : ILibrary
     private const int MaxInputDepth = 8;
     private readonly IScriptingEngine _scripting;
     private readonly ILibraryPaths _libraryPaths;
+    private readonly IAtomicFileWriter _fileWriter;
     private readonly ILogger<Library> _logger;
     private static Assembly _assembly => typeof(Library).Assembly; // Bundle sample files with this dll instead of apphost
 
-    public Library(IScriptingEngine scripting, ILibraryPaths libraryPaths, ILogger<Library> logger)
+    public Library(IScriptingEngine scripting, ILibraryPaths libraryPaths, IAtomicFileWriter fileWriter, ILogger<Library> logger)
     {
         _scripting = scripting ?? throw new ArgumentNullException(nameof(scripting));
         _libraryPaths = libraryPaths ?? throw new ArgumentNullException(nameof(libraryPaths));
+        _fileWriter = fileWriter ?? throw new ArgumentNullException(nameof(fileWriter));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -57,7 +59,7 @@ public sealed partial class Library : ILibrary
             FileNameSanitizer.Sanitize(name),
             InfrastructureConstants.FileExtension.Template);
         
-        AtomicFile.WriteTo(path, FrontMatterParser.Write(fm, ""));
+        _fileWriter.WriteToAsync(path, FrontMatterParser.Write(fm, ""));
 
         return path;
     }
@@ -75,7 +77,7 @@ public sealed partial class Library : ILibrary
     }
 
     public void SaveTemplate(TemplateDocument doc)
-        => AtomicFile.WriteTo(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
+        => _fileWriter.WriteToAsync(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
     
     public string CreateChild(string templatePath, string name)
     {
@@ -92,7 +94,7 @@ public sealed partial class Library : ILibrary
         foreach (var kv in template.Fm.Variables)
             fm.Values[kv.Key] = kv.Value;
         
-        AtomicFile.WriteTo(path, FrontMatterParser.Write(fm, ""));
+        _fileWriter.WriteToAsync(path, FrontMatterParser.Write(fm, ""));
 
         return path;
     }
@@ -114,7 +116,7 @@ public sealed partial class Library : ILibrary
 
         string body = generatedText.Replace("{", "{{").Replace("}", "}}");
 
-        AtomicFile.WriteTo(path, FrontMatterParser.Write(fm, body));
+        _fileWriter.WriteToAsync(path, FrontMatterParser.Write(fm, body));
 
         return path;
     }
@@ -133,7 +135,7 @@ public sealed partial class Library : ILibrary
     }
 
     public void SaveChild(ChildDocument doc)
-        => AtomicFile.WriteTo(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
+        => _fileWriter.WriteToAsync(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
     
     public string Duplicate(LibraryItem item)
     {
@@ -145,7 +147,7 @@ public sealed partial class Library : ILibrary
         fm.Name = newName;
         string target = DirectoryHelper.MakeUniquePath(directory, FileNameSanitizer.Sanitize(newName), extension);
 
-        AtomicFile.WriteTo(target, FrontMatterParser.Write(fm, body));
+        _fileWriter.WriteToAsync(target, FrontMatterParser.Write(fm, body));
 
         return target;
     }
@@ -155,7 +157,7 @@ public sealed partial class Library : ILibrary
         var (fm, body, _) = FrontMatterParser.Parse(File.ReadAllText(item.FilePath));
         fm.Name = newName;
 
-        AtomicFile.WriteTo(item.FilePath, FrontMatterParser.Write(fm, body));
+        _fileWriter.WriteToAsync(item.FilePath, FrontMatterParser.Write(fm, body));
 
         string directory = Path.GetDirectoryName(item.FilePath)!;
         string extension = Path.GetExtension(item.FilePath);
@@ -353,7 +355,7 @@ public sealed partial class Library : ILibrary
             if (File.Exists(target))
                 continue;
             
-            AtomicFile.WriteTo(target, ReadResource(resource));
+            _fileWriter.WriteToAsync(target, ReadResource(resource));
             added++;
         }
         return added;
@@ -376,7 +378,7 @@ public sealed partial class Library : ILibrary
                 if (resolved != null && DirectoryHelper.PathsEqual(resolved, oldTemplatePath))
                 {
                     fm.TemplatePath = DirectoryHelper.MakeRelativePath(f, newTemplatePath);
-                    AtomicFile.WriteTo(f, FrontMatterParser.Write(fm, body));
+                    _fileWriter.WriteToAsync(f, FrontMatterParser.Write(fm, body));
                 }
             }
             catch { }
@@ -465,7 +467,7 @@ public sealed partial class Library : ILibrary
             FileNameSanitizer.Sanitize(fileBaseName),
             InfrastructureConstants.FileExtension.Template);
         
-        AtomicFile.WriteTo(path, ReadResource(resource));
+        _fileWriter.WriteToAsync(path, ReadResource(resource));
         return path;
     }
 
@@ -478,7 +480,7 @@ public sealed partial class Library : ILibrary
             FileNameSanitizer.Sanitize(newName),
             InfrastructureConstants.FileExtension.Template);
         
-        AtomicFile.WriteTo(path, FrontMatterParser.Write(fm, body));
+        _fileWriter.WriteToAsync(path, FrontMatterParser.Write(fm, body));
         return path;
     }
 

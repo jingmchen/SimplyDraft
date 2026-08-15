@@ -14,6 +14,7 @@ public sealed partial class AppSettingsProvider : IAppSettingsProvider
 {
     public AppSettings Current { get; private set; } = null!;
     private readonly ILogger<AppSettingsProvider> _logger;
+    private readonly IAtomicFileWriter _fileWriter;
     private readonly object _gate = new();
     private readonly string _settingsPath;
     private static readonly JsonSerializerOptions _jsonOptions = new()
@@ -27,9 +28,10 @@ public sealed partial class AppSettingsProvider : IAppSettingsProvider
     private const int MinAutoSaveMins = 1;
     private const int MaxAutoSaveMins = 5;
 
-    public AppSettingsProvider(ILogger<AppSettingsProvider> logger, IAppPaths appPaths)
+    public AppSettingsProvider(ILogger<AppSettingsProvider> logger, IAtomicFileWriter fileWriter, IAppPaths appPaths)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _fileWriter = fileWriter ?? throw new ArgumentNullException(nameof(fileWriter));
         _settingsPath = appPaths.UserAppSettingsFile ?? throw new ArgumentNullException(nameof(appPaths));
 
         var dir = Path.GetDirectoryName(_settingsPath);
@@ -96,7 +98,7 @@ public sealed partial class AppSettingsProvider : IAppSettingsProvider
 
         try
         {
-            AtomicFile.WriteTo(_settingsPath, json);
+            _fileWriter.WriteToAsync(_settingsPath, json);
         }
         catch (Exception ex)
         {

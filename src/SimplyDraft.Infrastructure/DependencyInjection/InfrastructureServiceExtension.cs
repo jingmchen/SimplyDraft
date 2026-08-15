@@ -12,6 +12,7 @@ public static class InfrastructureServiceExtension
     {
         ArgumentNullException.ThrowIfNull(services);
         
+        services.AddSingleton<IAtomicFileWriter, AtomicFileWriter>();
         services.AddSingleton<IDocumentExporter, DocxExporter>();
         services.AddSingleton<IDocumentExporter, TxtExporter>();
         services.AddSingleton<ILibrary, Library>();
