@@ -59,11 +59,22 @@ public sealed partial class GenerateChildWindow : Window
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(GenerateChildWindowViewModel.ScriptText)) return;
-        if (ScriptEditor.Text == _viewModel.ScriptText) return;
+        if (e.PropertyName != nameof(GenerateChildWindowViewModel.ScriptText))
+            return;
+        
+        if (ScriptEditor.Text == _viewModel.ScriptText)
+            return;
+        
         _syncing = true;
-        try { ScriptEditor.Text = _viewModel.ScriptText; }
-        finally { _syncing = false; }
+
+        try
+        {
+            ScriptEditor.Text = _viewModel.ScriptText;
+        }
+        finally
+        {
+            _syncing = false;
+        }
     }
 
     private void OnClosed(object? sender, EventArgs e)

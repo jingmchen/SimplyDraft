@@ -151,8 +151,14 @@ public sealed partial class EditorWindow : Window, IDisposable
         
         _syncingEditors = true;
         
-        try { editor.Text = text; }
-        finally { _syncingEditors = false; }
+        try
+        {
+            editor.Text = text;
+        }
+        finally
+        {
+            _syncingEditors = false;
+        }
     }
 
     private void OnPaletteChanged()

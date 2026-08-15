@@ -132,8 +132,14 @@ public sealed partial class LibraryActions : ILibraryActions
             return;
         }
 
-        try { _window.OpenEditor(item); }
-        catch (Exception ex) { StatusReported?.Invoke($"Couldn't open \"{item.Name}\": {ex.Message}"); }
+        try
+        {
+            _window.OpenEditor(item);
+        }
+        catch (Exception ex)
+        {
+            StatusReported?.Invoke($"Couldn't open \"{item.Name}\": {ex.Message}");
+        }
     }
 
     public async Task DuplicateAsync(LibraryItem? item)
@@ -271,8 +277,14 @@ public sealed partial class LibraryActions : ILibraryActions
             return;
         }
         
-        try { FileRevealer.Reveal(item.FilePath); }
-        catch (Exception ex) { StatusReported?.Invoke("Couldn't reveal the file: " + ex.Message); }
+        try
+        {
+            FileRevealer.Reveal(item.FilePath);
+        }
+        catch (Exception ex)
+        {
+            StatusReported?.Invoke("Couldn't reveal the file: " + ex.Message);
+        }
     }
 
     // ─── PRIVATE METHODS ───────────────────────
