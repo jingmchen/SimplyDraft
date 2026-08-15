@@ -3,6 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.Core.Export;
 using SimplyDraft.UI.Factories;
@@ -35,8 +36,8 @@ public static class UIServiceExtension
         services.AddSingleton<ILibraryActions, LibraryActions>();
         services.AddSingleton<IExportService, ExportService>();
         services.AddSingleton<ConsoleLogService>();
-        services.AddSingleton<IConsoleLogService>(GetConsoleLogService);
-        services.AddSingleton<ILoggerProvider>(GetConsoleLogService);
+        services.AddSingleton<IConsoleLogService>(sp => sp.GetRequiredService<ConsoleLogService>());
+        services.AddSingleton<ILogEventSink>(sp => sp.GetRequiredService<ConsoleLogService>());
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IFilePickerService, FilePickerService>();        
         services.AddSingleton<IWindowService, WindowService>();
@@ -54,9 +55,6 @@ public static class UIServiceExtension
         services.AddSingleton<IWindowFactory<SettingsWindow>, SettingsWindowFactory>();
         return services;
     }
-
-    private static ConsoleLogService GetConsoleLogService(IServiceProvider provider)
-        => provider.GetRequiredService<ConsoleLogService>();
     
     private static IServiceCollection AddMisc(this IServiceCollection services)
     {

@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.UI.Views;
+using SimplyDraft.UI.Utils;
 
 namespace SimplyDraft.UI;
 
@@ -41,7 +42,7 @@ public sealed partial class App : Application
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                Dispatcher.UIThread.Post(RunStartupFlow);
+                DispatcherHelper.PostOnUIThread(RunStartupFlow);
             }
         }
 

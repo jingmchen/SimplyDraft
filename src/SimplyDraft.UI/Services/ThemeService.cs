@@ -15,6 +15,7 @@ using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.Core.Enums;
 using SimplyDraft.UI.Common.Editor;
 using SimplyDraft.UI.Constants;
+using SimplyDraft.UI.Utils;
 
 namespace SimplyDraft.UI.Services;
 
@@ -89,15 +90,20 @@ public sealed class ThemeService : IThemeService
         ThrowIfNotInitialized();
         ThrowIfDisposed();
 
-        if (theme == CurrentTheme && accent == CurrentAccent) return;
+        if (theme == CurrentTheme && accent == CurrentAccent)
+            return;
 
-        InvokeOnUiThread(() => ApplyCore(theme, accent, fireEvent: true, persist: true));
+        DispatcherHelper.PostOnUIThread(()
+            => ApplyCore(theme, accent, fireEvent: true, persist: true));
     }
 
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+        
         _isDisposed = true;
+        
         if (_platformSettings is not null)
             _platformSettings.ColorValuesChanged -= OnSystemThemeChanged;
     }
@@ -106,7 +112,8 @@ public sealed class ThemeService : IThemeService
     // Core implementation
     private void ApplyCore(AppTheme theme, AppAccent accent, bool fireEvent, bool persist = true)
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
 
         CurrentTheme = theme;
         CurrentAccent = accent;
@@ -145,19 +152,13 @@ public sealed class ThemeService : IThemeService
         _settings.Save();
     }
 
-    private static void InvokeOnUiThread(Action action)
-    {
-        if (Dispatcher.UIThread.CheckAccess())
-            action();
-        else
-            Dispatcher.UIThread.Post(action);
-    }
-
     private void OnSystemThemeChanged(object? sender, PlatformColorValues e)
     {
-        if (_isDisposed || CurrentTheme != AppTheme.System) return;
+        if (_isDisposed || CurrentTheme != AppTheme.System)
+            return;
 
-        InvokeOnUiThread(() => ApplyCore(AppTheme.System, CurrentAccent, fireEvent: true, persist: true));
+        DispatcherHelper.PostOnUIThread(()
+            => ApplyCore(AppTheme.System, CurrentAccent, fireEvent: true, persist: true));
     }
     
     private static AppTheme GetSystemTheme()

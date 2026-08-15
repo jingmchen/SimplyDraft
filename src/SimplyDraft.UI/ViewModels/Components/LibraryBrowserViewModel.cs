@@ -7,6 +7,7 @@ using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.Core.Domains.Library;
 using SimplyDraft.Core.Enums;
+using SimplyDraft.UI.Utils;
 
 namespace SimplyDraft.UI.ViewModels.Components;
 
@@ -82,7 +83,7 @@ public sealed partial class LibraryBrowserViewModel : ObservableObject, IHoverTr
 
     partial void OnSearchTextChanged(string value) => ApplyFilter();
 
-    private void OnWatcherChanged() => Dispatcher.UIThread.Post(Refresh);
+    private void OnWatcherChanged() => DispatcherHelper.PostOnUIThread(Refresh);
 
     private void ApplyFilter()
     {

@@ -1,6 +1,7 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
 using Avalonia.Threading;
+using SimplyDraft.UI.Utils;
 
 namespace SimplyDraft.UI.Common;
 
@@ -66,14 +67,18 @@ public sealed class PreviewScheduler<TIn, TOut> : IDisposable
             }
             catch (Exception ex)
             {
-                Dispatcher.UIThread.Post(() => { if (!cts.IsCancellationRequested) Report(ex); });
+                DispatcherHelper.PostOnUIThread(() =>
+                {
+                    if (!cts.IsCancellationRequested)
+                        Report(ex);
+                });
                 return;
             }
 
             if (cts.IsCancellationRequested)
                 return;
             
-            Dispatcher.UIThread.Post(() =>
+            DispatcherHelper.PostOnUIThread(() =>
             {
                 if (cts.IsCancellationRequested)
                     return;
