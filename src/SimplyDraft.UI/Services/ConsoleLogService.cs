@@ -33,7 +33,7 @@ public sealed class ConsoleLogService : IConsoleLogService, ILogEventSink
         
         DispatcherHelper.PostOnUIThread(() =>
         {
-            Entries.Add(DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture) + "  " + message);
+            Entries.Add($"{logEvent.Timestamp:HH:mm:ss}  {message}");
             while (Entries.Count > Cap)
                 Entries.RemoveAt(0);
         });
