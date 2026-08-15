@@ -17,11 +17,13 @@ public sealed class AtomicFileWriter : IAtomicFileWriter
         OperatingSystem.IsWindows()
             ? StringComparer.OrdinalIgnoreCase
             : StringComparer.Ordinal;
-
-    public Task WriteToAsync(string path, string contents, Encoding? encoding = null)
+    
+    public Task QueueWrite(string path, string contents, Encoding? encoding = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         ArgumentNullException.ThrowIfNull(contents);
+
+        string fullPath = Path.GetFullPath(path);
 
         var completion = new TaskCompletionSource<bool>(
             TaskCreationOptions.RunContinuationsAsynchronously
@@ -30,7 +32,7 @@ public sealed class AtomicFileWriter : IAtomicFileWriter
         AtomicWriteRequest request = new(contents, encoding, completion);
 
         ChannelWriter<AtomicWriteRequest> writer = _queues.GetOrAdd(
-            path,
+            fullPath,
             path => new Lazy<ChannelWriter<AtomicWriteRequest>>(() => CreateQueue(path))).Value;
 
         if (!writer.TryWrite(request))

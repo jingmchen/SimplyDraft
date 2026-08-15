@@ -92,13 +92,13 @@ public sealed partial class AppSettingsProvider : IAppSettingsProvider
         Save();
     }
 
-    private void WriteToDisk(AppSettings settings)
+    private async Task WriteToDisk(AppSettings settings)
     {
         var json = JsonSerializer.Serialize(settings, _jsonOptions);
 
         try
         {
-            _fileWriter.WriteToAsync(_settingsPath, json);
+            await _fileWriter.QueueWrite(_settingsPath, json);
         }
         catch (Exception ex)
         {

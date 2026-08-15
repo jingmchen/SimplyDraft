@@ -59,7 +59,7 @@ public sealed partial class Library : ILibrary
             FileNameSanitizer.Sanitize(name),
             InfrastructureConstants.FileExtension.Template);
         
-        _fileWriter.WriteToAsync(path, FrontMatterParser.Write(fm, ""));
+        _fileWriter.QueueWrite(path, FrontMatterParser.Write(fm, ""));
 
         return path;
     }
@@ -77,7 +77,7 @@ public sealed partial class Library : ILibrary
     }
 
     public void SaveTemplate(TemplateDocument doc)
-        => _fileWriter.WriteToAsync(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
+        => _fileWriter.QueueWrite(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
     
     public string CreateChild(string templatePath, string name)
     {
@@ -94,7 +94,7 @@ public sealed partial class Library : ILibrary
         foreach (var kv in template.Fm.Variables)
             fm.Values[kv.Key] = kv.Value;
         
-        _fileWriter.WriteToAsync(path, FrontMatterParser.Write(fm, ""));
+        _fileWriter.QueueWrite(path, FrontMatterParser.Write(fm, ""));
 
         return path;
     }
@@ -116,7 +116,7 @@ public sealed partial class Library : ILibrary
 
         string body = generatedText.Replace("{", "{{").Replace("}", "}}");
 
-        _fileWriter.WriteToAsync(path, FrontMatterParser.Write(fm, body));
+        _fileWriter.QueueWrite(path, FrontMatterParser.Write(fm, body));
 
         return path;
     }
@@ -135,7 +135,7 @@ public sealed partial class Library : ILibrary
     }
 
     public void SaveChild(ChildDocument doc)
-        => _fileWriter.WriteToAsync(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
+        => _fileWriter.QueueWrite(doc.FilePath, FrontMatterParser.Write(doc.Fm, doc.Body));
     
     public string Duplicate(LibraryItem item)
     {
@@ -147,7 +147,7 @@ public sealed partial class Library : ILibrary
         fm.Name = newName;
         string target = DirectoryHelper.MakeUniquePath(directory, FileNameSanitizer.Sanitize(newName), extension);
 
-        _fileWriter.WriteToAsync(target, FrontMatterParser.Write(fm, body));
+        _fileWriter.QueueWrite(target, FrontMatterParser.Write(fm, body));
 
         return target;
     }
@@ -157,7 +157,7 @@ public sealed partial class Library : ILibrary
         var (fm, body, _) = FrontMatterParser.Parse(File.ReadAllText(item.FilePath));
         fm.Name = newName;
 
-        _fileWriter.WriteToAsync(item.FilePath, FrontMatterParser.Write(fm, body));
+        _fileWriter.QueueWrite(item.FilePath, FrontMatterParser.Write(fm, body));
 
         string directory = Path.GetDirectoryName(item.FilePath)!;
         string extension = Path.GetExtension(item.FilePath);
@@ -355,7 +355,7 @@ public sealed partial class Library : ILibrary
             if (File.Exists(target))
                 continue;
             
-            _fileWriter.WriteToAsync(target, ReadResource(resource));
+            _fileWriter.QueueWrite(target, ReadResource(resource));
             added++;
         }
         return added;
@@ -378,7 +378,7 @@ public sealed partial class Library : ILibrary
                 if (resolved != null && DirectoryHelper.PathsEqual(resolved, oldTemplatePath))
                 {
                     fm.TemplatePath = DirectoryHelper.MakeRelativePath(f, newTemplatePath);
-                    _fileWriter.WriteToAsync(f, FrontMatterParser.Write(fm, body));
+                    _fileWriter.QueueWrite(f, FrontMatterParser.Write(fm, body));
                 }
             }
             catch { }
@@ -467,7 +467,7 @@ public sealed partial class Library : ILibrary
             FileNameSanitizer.Sanitize(fileBaseName),
             InfrastructureConstants.FileExtension.Template);
         
-        _fileWriter.WriteToAsync(path, ReadResource(resource));
+        _fileWriter.QueueWrite(path, ReadResource(resource));
         return path;
     }
 
@@ -480,7 +480,7 @@ public sealed partial class Library : ILibrary
             FileNameSanitizer.Sanitize(newName),
             InfrastructureConstants.FileExtension.Template);
         
-        _fileWriter.WriteToAsync(path, FrontMatterParser.Write(fm, body));
+        _fileWriter.QueueWrite(path, FrontMatterParser.Write(fm, body));
         return path;
     }
 

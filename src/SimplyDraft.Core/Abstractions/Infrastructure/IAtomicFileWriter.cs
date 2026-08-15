@@ -6,5 +6,5 @@ namespace SimplyDraft.Core.Abstractions.Infrastructure;
 
 public interface IAtomicFileWriter
 {
-    Task WriteToAsync(string path, string contents, Encoding? encoding = null);
+    Task QueueWrite(string path, string contents, Encoding? encoding = null);
 }
