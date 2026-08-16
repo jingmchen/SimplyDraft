@@ -95,8 +95,8 @@ internal sealed class Program
 
         builder.Services.AddSerilog((services, configuration) => configuration
             .MinimumLevel.Is(level)
-            .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+            .MinimumLevel.Override("System", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .Enrich.FromLogContext()
             .WriteTo.Debug(
                 formatter: new ExpressionTemplate(LoggerFormat))

@@ -10,17 +10,21 @@ using Avalonia.Threading;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.UI.Views;
 using SimplyDraft.UI.Utils;
+using SimplyDraft.Core.Abstractions.Infrastructure;
 
 namespace SimplyDraft.UI;
 
 public sealed partial class App : Application
 {
     private readonly IServiceProvider _services;
+    private readonly IAtomicFileAsync _fileWriter;
     private readonly ILogger<App> _logger;
+    private bool _shutdownInProgress;
 
     public App(IServiceProvider services)
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
+        _fileWriter = _services.GetRequiredService<IAtomicFileAsync>();
         _logger = _services.GetRequiredService<ILogger<App>>();
     }
 
@@ -42,6 +46,7 @@ public sealed partial class App : Application
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                desktop.ShutdownRequested += OnShutdownRequested;
                 DispatcherHelper.PostOnUIThread(RunStartupFlow);
             }
         }
@@ -67,6 +72,29 @@ public sealed partial class App : Application
         desktop.MainWindow = mainWindow;
         mainWindow.Show();
         desktop.ShutdownMode = ShutdownMode.OnLastWindowClose;
+    }
+
+    private async void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
+    {
+        e.Cancel = true;
+
+        if (_shutdownInProgress)
+            return;
+        
+        _shutdownInProgress = true;
+
+        try
+        {
+            await _fileWriter.FlushAsync();
+        }
+        finally
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.ShutdownRequested -= OnShutdownRequested;
+                desktop.Shutdown();
+            }
+        }
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
