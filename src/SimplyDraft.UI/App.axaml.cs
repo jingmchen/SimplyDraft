@@ -19,7 +19,6 @@ public sealed partial class App : Application
     private readonly IServiceProvider _services;
     private readonly IAtomicFileAsync _fileWriter;
     private readonly ILogger<App> _logger;
-    private bool _shutdownInProgress;
 
     public App(IServiceProvider services)
     {
@@ -46,7 +45,7 @@ public sealed partial class App : Application
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.ShutdownMode = ShutdownMode.OnLastWindowClose;
-                desktop.ShutdownRequested += OnShutdownRequested;
+                desktop.Exit += OnExit;
                 DispatcherHelper.PostOnUIThread(RunTermsConditionGate);
             }
         }
@@ -73,28 +72,8 @@ public sealed partial class App : Application
         mainWindow.Show();
     }
 
-    private async void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
-    {
-        e.Cancel = true;
-
-        if (_shutdownInProgress)
-            return;
-        
-        _shutdownInProgress = true;
-
-        try
-        {
-            await _fileWriter.FlushAsync();
-        }
-        finally
-        {
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.ShutdownRequested -= OnShutdownRequested;
-                desktop.Shutdown();
-            }
-        }
-    }
+    private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
+        => _fileWriter.FlushAsync().GetAwaiter().GetResult();
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
