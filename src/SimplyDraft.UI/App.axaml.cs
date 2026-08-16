@@ -45,15 +45,16 @@ public sealed partial class App : Application
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                desktop.ShutdownMode = ShutdownMode.OnLastWindowClose;
                 desktop.ShutdownRequested += OnShutdownRequested;
-                DispatcherHelper.PostOnUIThread(RunStartupFlow);
+                DispatcherHelper.PostOnUIThread(RunTermsConditionGate);
             }
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private async void RunStartupFlow()
+    private async void RunTermsConditionGate()
     {
         var terms = _services.GetRequiredService<ITermsService>();
         bool accepted = await terms.EnsureAcceptedAsync();
@@ -70,7 +71,6 @@ public sealed partial class App : Application
         var mainWindow = _services.GetRequiredService<MainWindow>();
         desktop.MainWindow = mainWindow;
         mainWindow.Show();
-        desktop.ShutdownMode = ShutdownMode.OnLastWindowClose;
     }
 
     private async void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
