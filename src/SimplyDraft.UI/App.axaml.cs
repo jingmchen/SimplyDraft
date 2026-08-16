@@ -7,10 +7,10 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.UI.Views;
 using SimplyDraft.UI.Utils;
-using SimplyDraft.Core.Abstractions.Infrastructure;
 
 namespace SimplyDraft.UI;
 
