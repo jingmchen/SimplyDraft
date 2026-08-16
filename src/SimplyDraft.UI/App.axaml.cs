@@ -26,6 +26,8 @@ public sealed partial class App : Application
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _fileWriter = _services.GetRequiredService<IAtomicFileAsync>();
         _logger = _services.GetRequiredService<ILogger<App>>();
+
+        Dispatcher.UIThread.UnhandledException += OnDispatcherUnhandledException;
     }
 
     public override void Initialize()
@@ -35,8 +37,6 @@ public sealed partial class App : Application
     {
         if (_services is { } services)
         {
-            Dispatcher.UIThread.UnhandledException += OnDispatcherUnhandledException;
-
             var startupTasks = _services.GetRequiredService<IStartupTasks>();
             startupTasks.Run();
 
