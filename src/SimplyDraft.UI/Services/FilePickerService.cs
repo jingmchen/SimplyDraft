@@ -12,7 +12,7 @@ public sealed class FilePickerService : IFilePickerService
     public async Task<string?> PickFileAsync(string title, IReadOnlyList<FileFilter> filters)
     {
         if (UIWindows.Active is not { } owner)
-            return null;
+            throw new InvalidOperationException("File Picker invoked with no active application window.");
         
         var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
@@ -31,7 +31,7 @@ public sealed class FilePickerService : IFilePickerService
     public async Task<string?> PickFolderAsync(string title)
     {
         if (UIWindows.Active is not { } owner)
-            return null;
+            throw new InvalidOperationException("File Picker invoked with no active application window.");
         
         var folders = await owner.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
