@@ -7,4 +7,5 @@ public interface IUriPaths
     string ThemeTemplate {get;}
     string AccentTemplate {get;}
     string StyleTemplate {get;}
+    string TermsCondition {get;}
 }

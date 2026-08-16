@@ -12,21 +12,29 @@ public sealed class UriPaths : IUriPaths
     public string ThemeTemplate {get;}
     public string AccentTemplate {get;}
     public string StyleTemplate {get;}
+    public string TermsCondition {get;}
     
-    public UriPaths(Assembly assembly, IAppInfo appInfo)
+    public UriPaths(IAppInfo appInfo)
     {
-        ArgumentNullException.ThrowIfNull(assembly);
         ArgumentNullException.ThrowIfNull(appInfo);
-        
-        var assemblyName = assembly.GetName().Name ?? appInfo.Product;
+
+        var assemblyName = typeof(UriPaths).Assembly.GetName().Name ?? $"{appInfo.Product}.UI";
 
         ThemeTemplate =
-            $"avares://{assemblyName}.UI/{UIConstants.Bundled.FolderName.Assets}/{UIConstants.Bundled.FolderName.Themes}/{{0}}Theme.axaml";
+            $"avares://{assemblyName}/{UIConstants.Bundled.FolderName.Assets}/" +
+            $"{UIConstants.Bundled.FolderName.Themes}/{{0}}Theme.axaml";
         
         AccentTemplate =
-            $"avares://{assemblyName}.UI/{UIConstants.Bundled.FolderName.Assets}/{UIConstants.Bundled.FolderName.Accents}/{{0}}Accent.axaml";
+            $"avares://{assemblyName}/{UIConstants.Bundled.FolderName.Assets}/" +
+            $"{UIConstants.Bundled.FolderName.Accents}/{{0}}Accent.axaml";
         
         StyleTemplate =
-            $"avares://{assemblyName}.UI/{UIConstants.Bundled.FolderName.Assets}/{UIConstants.Bundled.FolderName.Styles}/{{0}}.axaml";
+            $"avares://{assemblyName}/{UIConstants.Bundled.FolderName.Assets}/" +
+            $"{UIConstants.Bundled.FolderName.Styles}/{{0}}.axaml";
+        
+        TermsCondition =
+            $"avares://{assemblyName}/{UIConstants.Bundled.FolderName.Assets}/" +
+            $"{UIConstants.Bundled.FolderName.Markdowns}/" +
+            $"{UIConstants.Bundled.FileName.TermsConditions}";
     }
 }

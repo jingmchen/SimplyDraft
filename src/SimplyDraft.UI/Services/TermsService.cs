@@ -8,12 +8,14 @@ using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.UI.Constants;
 using SimplyDraft.UI.Views.Dialogs;
+using Avalonia.Media;
 
 namespace SimplyDraft.UI.Services;
 
 public sealed partial class TermsService : ITermsService
 {
     private readonly IAppSettingsProvider _settings;
+    private readonly IUriPaths _paths;
     private readonly ILogger<TermsService> _logger;
     private string? _termsText;
     private string? _termsHash;
@@ -22,9 +24,10 @@ public sealed partial class TermsService : ITermsService
         => TryGetTerms(out _, out var hash)
            && !string.Equals(_settings.Current.TermsSection.AcceptedTermsHash, hash, StringComparison.Ordinal);
     
-    public TermsService(IAppSettingsProvider settings, ILogger<TermsService> logger)
+    public TermsService(IAppSettingsProvider settings, IUriPaths paths, ILogger<TermsService> logger)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        _paths = paths ?? throw new ArgumentNullException(nameof(paths));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -72,7 +75,7 @@ public sealed partial class TermsService : ITermsService
             _loadAttempted = true;
             _termsText = LoadBundledTerms();
             if (_termsText is null)
-                LogTermsUnavailable(TermsUri());
+                LogTermsUnavailable(_paths.TermsCondition);
             else
                 _termsHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(_termsText)));
         }
@@ -82,11 +85,11 @@ public sealed partial class TermsService : ITermsService
         return _termsText is not null;
     }
 
-    private static string? LoadBundledTerms()
+    private string? LoadBundledTerms()
     {
         try
         {
-            using var stream = AssetLoader.Open(new Uri(TermsUri()));
+            using var stream = AssetLoader.Open(new Uri(_paths.TermsCondition));
             using var reader = new StreamReader(stream, Encoding.UTF8);
             return reader.ReadToEnd();
         }
@@ -95,11 +98,6 @@ public sealed partial class TermsService : ITermsService
             return null;
         }
     }
-
-    private static string TermsUri()
-        => $"avares://{typeof(TermsService).Assembly.GetName().Name}/" +
-           $"{UIConstants.Bundled.FolderName.Assets}/{UIConstants.Bundled.FolderName.Markdowns}/" +
-           $"{UIConstants.Bundled.FileName.TermsConditions}";
     
     [LoggerMessage(
         EventId = 7001,
