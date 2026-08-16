@@ -53,6 +53,10 @@ internal static class AtomicFile
             File.Delete(path);
             return true;
         }
+        catch (DirectoryNotFoundException)
+        {
+            return true;
+        }
         catch
         {
             return false;

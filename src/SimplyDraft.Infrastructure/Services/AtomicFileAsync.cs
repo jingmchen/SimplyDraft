@@ -12,7 +12,7 @@ public sealed class AtomicFileAsync : IAtomicFileAsync
     private readonly ConcurrentDictionary<string, Task> _queue = new(PathComparer);
     private readonly ConcurrentDictionary<string, byte> _pendingCleanup = new(PathComparer);
     private static readonly StringComparer PathComparer =
-        OperatingSystem.IsWindows()
+        OperatingSystem.IsWindows() || OperatingSystem.IsMacOS()
             ? StringComparer.OrdinalIgnoreCase
             : StringComparer.Ordinal;
     
@@ -25,12 +25,13 @@ public sealed class AtomicFileAsync : IAtomicFileAsync
         ArgumentNullException.ThrowIfNull(contents);
 
         return EnqueueAsync(path, fullPath =>
+        {
             AtomicFile.WriteTo(
                 path: fullPath,
                 contents: contents,
                 encoding: encoding,
-                cleanupFailed: AddToCleanup
-            ));
+                cleanupFailed: AddToCleanup);
+        });
     }
 
     public Task MoveAsync(string sourcePath, string destinationPath, bool overwrite = false)
@@ -38,11 +39,10 @@ public sealed class AtomicFileAsync : IAtomicFileAsync
         ArgumentException.ThrowIfNullOrWhiteSpace(sourcePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(destinationPath);
 
-        string fullDestination = Path.GetFullPath(destinationPath);
-
         return EnqueueAsync(
             sourcePath,
-            fullPath => File.Move(fullPath, fullDestination, overwrite));
+            destinationPath,
+            (fullSource, fullDestination) => File.Move(fullSource, fullDestination, overwrite));
     }
 
     public Task DeleteAsync(string path)
@@ -58,6 +58,35 @@ public sealed class AtomicFileAsync : IAtomicFileAsync
         => Task.WhenAll(_queue.Values.ToArray());
 
     // ─── PRIVATE METHODS ───────────────────────
+    private async Task EnqueueAsync(string sourcePath, string destinationPath, Action<string, string> operation)
+    {
+        string fullSource = Path.GetFullPath(sourcePath);
+        string fullDestination = Path.GetFullPath(destinationPath);
+
+        if (PathComparer.Equals(fullSource, fullDestination))
+        {
+            await EnqueueAsync(fullSource, _ => operation(fullSource, fullDestination)).ConfigureAwait(false);
+            return;
+        }
+
+        (string first, string second) = PathComparer.Compare(fullSource, fullDestination) <= 0
+            ? (fullSource, fullDestination)
+            : (fullDestination, fullSource);
+        
+        var firstDone = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        try
+        {
+            await SwitchQueue(first, firstDone.Task).ConfigureAwait(false);
+            await EnqueueAsync(second, _ => operation(fullSource, fullDestination)).ConfigureAwait(false);
+        }
+        finally
+        {
+            firstDone.SetResult();
+            _queue.TryRemove(KeyValuePair.Create(first, firstDone.Task));
+        }
+    }
+
     private async Task EnqueueAsync(string path, Action<string> operation)
     {
         string fullPath = Path.GetFullPath(path);
