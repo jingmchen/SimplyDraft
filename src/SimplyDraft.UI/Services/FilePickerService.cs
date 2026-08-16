@@ -19,7 +19,7 @@ public sealed class FilePickerService : IFilePickerService
             Title = title,
             AllowMultiple = false,
             FileTypeFilter = filters
-                .Select(f => new FilePickerFileType(f.Name){Patterns = f.Patterns.ToArray()})
+                .Select(f => new FilePickerFileType(f.Name){Patterns = f.Patterns})
                 .ToArray()
         });
 
