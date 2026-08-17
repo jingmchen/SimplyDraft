@@ -4,7 +4,7 @@ using SimplyDraft.Core.Enums;
 
 namespace SimplyDraft.Core.Configuration.AppSettings;
 
-public sealed record ExportSettings
+public sealed class ExportSettings
 {
     public DocumentKind DefaultFormat {get; set;} = DocumentKind.Docx;
     public bool TxtBom {get; set;}

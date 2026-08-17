@@ -6,7 +6,7 @@ using SimplyDraft.Core.Enums;
 
 namespace SimplyDraft.Core.Configuration.AppSettings;
 
-public sealed record GenerationSettings
+public sealed class GenerationSettings
 {
     public MissingVariablePolicy Policy {get; set;} = MissingVariablePolicy.ErrorOnExport;
     public CultureMode FormatCulture {get; set;} = CultureMode.System;

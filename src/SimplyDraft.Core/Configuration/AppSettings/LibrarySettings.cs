@@ -2,7 +2,7 @@
 
 namespace SimplyDraft.Core.Configuration.AppSettings;
 
-public sealed record LibrarySettings
+public sealed class LibrarySettings
 {
     public int TrashPurgeDays {get; set;} = 7;
 }

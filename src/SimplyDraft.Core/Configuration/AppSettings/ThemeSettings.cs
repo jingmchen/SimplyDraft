@@ -4,7 +4,7 @@ using SimplyDraft.Core.Enums;
 
 namespace SimplyDraft.Core.Configuration.AppSettings;
 
-public sealed record ThemeSettings
+public sealed class ThemeSettings
 {
     public AppTheme Theme {get; set;} = AppTheme.Light;
     public AppAccent Accent {get; set;} = AppAccent.Black;

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace SimplyDraft.Core.Configuration.AppSettings;
 
-public sealed record LoggingSettings
+public sealed class LoggingSettings
 {
     public LogLevel MinimumLevel {get; set;} = LogLevel.Information;
     public int RetainedFileCountLimit {get; set;} = 7;

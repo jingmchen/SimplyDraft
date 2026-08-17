@@ -2,7 +2,7 @@
 
 namespace SimplyDraft.Core.Configuration.UserStateSettings;
 
-public sealed record UserStateSettings
+public sealed class UserStateSettings
 {
     public TermsSettings Terms {get; set;} = new();
 }
