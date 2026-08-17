@@ -20,6 +20,5 @@ public interface ILibraryActions
 
     Task MoveToTrashAsync(LibraryItem item);
     Task ExportAsync(LibraryItem? item);
-    Task BatchAsync(LibraryItem? item);
     void Reveal(LibraryItem? item);
 }

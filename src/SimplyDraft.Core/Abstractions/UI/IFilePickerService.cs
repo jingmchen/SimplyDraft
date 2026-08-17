@@ -1,6 +1,6 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
-using SimplyDraft.Core.Domains.UI;
+using SimplyDraft.Core.Domains.FilePicker;
 
 namespace SimplyDraft.Core.Abstractions.UI;
 

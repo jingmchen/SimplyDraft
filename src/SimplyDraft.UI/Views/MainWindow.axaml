@@ -33,9 +33,6 @@
         <MenuItem Header="_Export…"
                   Command="{Binding ExportCommand}" />
 
-        <MenuItem Header="_Batch generate…"
-                  Command="{Binding BatchCommand}" />
-
         <Separator />
 
         <MenuItem Header="_Settings…"
@@ -179,9 +176,6 @@
 
             <MenuItem Header="Export…"
                       Command="{Binding ExportCommand}" />
-
-            <MenuItem Header="Batch generate…"
-                      Command="{Binding BatchCommand}" />
 
             <Separator />
 

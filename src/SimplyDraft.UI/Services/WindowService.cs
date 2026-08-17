@@ -10,18 +10,15 @@ namespace SimplyDraft.UI.Services;
 
 public sealed class WindowService : IWindowService
 {
-    private readonly IWindowFactory<BatchCreateWindow> _batchCreateWindowFactory;
     private readonly IWindowFactory<EditorWindow> _editorWindowFactory;
     private readonly IWindowFactory<GenerateChildWindow> _generateChildWindowFactory;
     private readonly IWindowFactory<SettingsWindow> _settingsWindowFactory;
 
     public WindowService(
-        IWindowFactory<BatchCreateWindow> batchCreateWindowFactory,
         IWindowFactory<EditorWindow> editorWindowFactory,
         IWindowFactory<GenerateChildWindow> generateChildWindowFactory,
         IWindowFactory<SettingsWindow> settingsWindowFactory)
     {
-        _batchCreateWindowFactory = batchCreateWindowFactory ?? throw new ArgumentNullException(nameof(batchCreateWindowFactory));
         _editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
         _generateChildWindowFactory = generateChildWindowFactory ?? throw new ArgumentNullException(nameof(generateChildWindowFactory));
         _settingsWindowFactory = settingsWindowFactory ?? throw new ArgumentNullException(nameof(settingsWindowFactory));
@@ -47,14 +44,4 @@ public sealed class WindowService : IWindowService
 
     public async Task<bool> OpenSettingsAsync()
         => UIWindows.Active is { } owner && await _settingsWindowFactory.Create().ShowDialog<bool>(owner);
-    
-    public async Task OpenBatchAsync(TemplateDocument tmplate)
-    {
-        if (UIWindows.Active is not { } owner)
-            return;
-        
-        var window = _batchCreateWindowFactory.Create();
-        window.Load(tmplate);
-        await window.ShowDialog(owner);
-    }
 }

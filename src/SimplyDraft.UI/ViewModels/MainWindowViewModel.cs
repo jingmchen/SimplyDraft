@@ -82,9 +82,6 @@ public sealed partial class MainWindowViewModel : ObservableObject
     private async Task ExportAsync() => await _libraryActions.ExportAsync(Library.Target);
 
     [RelayCommand]
-    private async Task BatchAsync() => await _libraryActions.BatchAsync(Library.Target);
-
-    [RelayCommand]
     private void Reveal() => _libraryActions.Reveal(Library.Target);
 
     [RelayCommand]

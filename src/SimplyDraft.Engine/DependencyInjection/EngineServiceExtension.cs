@@ -15,7 +15,6 @@ public static class EngineServiceExtension
         services.AddSingleton<IScriptingEngine, ScriptingEngine>();
         services.AddSingleton<IMarkupEngine, MarkupEngine>();
         services.AddSingleton<IRenderEngine, RenderEngine>();
-        services.AddSingleton<IBatchGenerator, BatchGenerator>();
         return services;
     }
 }

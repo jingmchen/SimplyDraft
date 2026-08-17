@@ -250,25 +250,6 @@ public sealed partial class LibraryActions : ILibraryActions
         }
     }
 
-    public async Task BatchAsync(LibraryItem? item)
-    {
-        if (item is null || item.Kind != LibraryItemKind.Template)
-        {
-            StatusReported?.Invoke("Select a template to run batch generation.");
-            return;
-        }
-        try
-        {
-            var tpl = _library.LoadTemplate(item.FilePath);
-            await _window.OpenBatchAsync(tpl);
-            Changed?.Invoke();
-        }
-        catch (Exception ex)
-        {
-            StatusReported?.Invoke("Batch generate failed: " + ex.Message);
-        }
-    }
-
     public void Reveal(LibraryItem? item)
     {
         if (item is null)

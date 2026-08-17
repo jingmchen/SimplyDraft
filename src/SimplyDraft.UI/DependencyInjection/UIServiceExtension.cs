@@ -49,7 +49,6 @@ public static class UIServiceExtension
 
     private static IServiceCollection AddFactories(this IServiceCollection services)
     {
-        services.AddSingleton<IWindowFactory<BatchCreateWindow>, BatchCreateWindowFactory>();
         services.AddSingleton<IWindowFactory<EditorWindow>, EditorWindowFactory>();
         services.AddSingleton<IWindowFactory<GenerateChildWindow>, GenerateChildWindowFactory>();
         services.AddSingleton<IWindowFactory<SettingsWindow>, SettingsWindowFactory>();

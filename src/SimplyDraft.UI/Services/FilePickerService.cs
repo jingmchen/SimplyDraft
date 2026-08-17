@@ -2,7 +2,7 @@
 
 using Avalonia.Platform.Storage;
 using SimplyDraft.Core.Abstractions.UI;
-using SimplyDraft.Core.Domains.UI;
+using SimplyDraft.Core.Domains.FilePicker;
 using SimplyDraft.UI.Common;
 
 namespace SimplyDraft.UI.Services;
