@@ -3,7 +3,7 @@
 using System.Globalization;
 using System.Text;
 using SimplyDraft.Core.Domains;
-using SimplyDraft.Core.Domains.Document.Segments;
+using SimplyDraft.Core.Domains.Documents.Segments;
 using SimplyDraft.Core.Domains.Generation;
 using SimplyDraft.Core.Domains.Scripting;
 using SimplyDraft.Core.Domains.Scripting.Expressions;

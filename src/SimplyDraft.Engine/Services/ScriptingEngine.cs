@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using SimplyDraft.Core.Abstractions.Engine;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Domains;
-using SimplyDraft.Core.Domains.Document.Segments;
+using SimplyDraft.Core.Domains.Documents.Segments;
 using SimplyDraft.Core.Domains.Documents;
 using SimplyDraft.Core.Domains.Generation;
 using SimplyDraft.Core.Domains.Library;

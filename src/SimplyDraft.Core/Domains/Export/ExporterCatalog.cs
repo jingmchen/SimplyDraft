@@ -3,7 +3,7 @@
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Enums;
 
-namespace SimplyDraft.Core.Export;
+namespace SimplyDraft.Core.Domains.Export;
 
 public sealed class ExporterCatalog
 {

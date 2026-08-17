@@ -3,7 +3,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using SimplyDraft.Core.Domains;
-using SimplyDraft.Core.Domains.Document.Segments;
+using SimplyDraft.Core.Domains.Documents.Segments;
 using SimplyDraft.Core.Enums;
 using SimplyDraft.Core.Exceptions;
 using SimplyDraft.Engine.Constants;

@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog.Core;
 using SimplyDraft.Core.Abstractions.UI;
-using SimplyDraft.Core.Export;
+using SimplyDraft.Core.Domains.Export;
 using SimplyDraft.UI.Factories;
 using SimplyDraft.UI.Services;
 using SimplyDraft.UI.ViewModels;
