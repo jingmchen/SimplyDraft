@@ -2,6 +2,7 @@
 
 using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Infrastructure;
+using SimplyDraft.Core.Logging;
 using SimplyDraft.Infrastructure.Constants;
 
 namespace SimplyDraft.Infrastructure.Services;
@@ -85,7 +86,7 @@ public sealed partial class LibraryWatcher : ILibraryWatcher
     }
 
     [LoggerMessage(
-        EventId = 3001,
+        EventId = LogEventIDs.Infrastructure.LibraryWatcher.FailedToCreateWatcher,
         Level = LogLevel.Warning,
         Message = "Unable to create LibraryWatcher for {Path}")]
     private partial void LogFailedToCreateWatcher(Exception ex, string path);

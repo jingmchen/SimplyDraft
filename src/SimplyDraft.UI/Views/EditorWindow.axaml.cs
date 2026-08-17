@@ -8,7 +8,9 @@ using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Engine;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
+using SimplyDraft.Core.Configuration.AppSettings;
 using SimplyDraft.Core.Domains.Library;
+using SimplyDraft.Core.Logging;
 using SimplyDraft.UI.Common;
 using SimplyDraft.UI.Common.Editor;
 using SimplyDraft.UI.ViewModels;
@@ -21,7 +23,7 @@ public sealed partial class EditorWindow : Window, IDisposable
     private const int ContentEditorWidth = 78;
     private readonly EditorWindowViewModel _viewModel;
     private readonly IRenderEngine _renderer;
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly ILogger<EditorWindow> _logger;
     private readonly ThemeMenuController _themeMenu;
     private bool _forceClose;
@@ -31,7 +33,7 @@ public sealed partial class EditorWindow : Window, IDisposable
     public EditorWindow(
         EditorWindowViewModel viewModel,
         IRenderEngine renderer,
-        IAppSettingsProvider settings,
+        ISettingsProvider<AppSettings> settings,
         IThemeService theme,
         ILogger<EditorWindow> logger)
     {
@@ -85,8 +87,8 @@ public sealed partial class EditorWindow : Window, IDisposable
         
         ScriptEditor.TextChanged += OnScriptEditorTextChanged;
         ContentEditor.TextChanged += OnContentEditorTextChanged;
-        ContentEditor.WordWrap = _settings.Current.EditorSection.WordWrap;
-        WordWrapToggle.IsChecked = _settings.Current.EditorSection.WordWrap;
+        ContentEditor.WordWrap = _settings.Current.Editor.WordWrap;
+        WordWrapToggle.IsChecked = _settings.Current.Editor.WordWrap;
         ContentEditor.Options.ShowColumnRulers = true;
 
         ContentEditor.Options.ColumnRulerPositions =
@@ -201,7 +203,7 @@ public sealed partial class EditorWindow : Window, IDisposable
 
         try
         {
-            _settings.Current.EditorSection = _settings.Current.EditorSection with { WordWrap = on };
+            _settings.Current.Editor = _settings.Current.Editor with { WordWrap = on };
             _settings.Save();
         }
         catch (Exception ex)
@@ -234,7 +236,7 @@ public sealed partial class EditorWindow : Window, IDisposable
         => Math.Max(40, (int)Math.Round(481.89 / (0.49 * Math.Max(6, sizePt))));
     
     [LoggerMessage(
-        EventId = 1001,
+        EventId = LogEventIDs.UI.EditorWindow.UnableToSaveSettings,
         Level = LogLevel.Error,
         Message = "Could not save settings.")]
     private partial void LogUnableToSaveSettings(Exception ex);

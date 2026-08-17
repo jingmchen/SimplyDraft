@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using SimplyDraft.Core.Abstractions.Engine;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
+using SimplyDraft.Core.Configuration.AppSettings;
 using SimplyDraft.Core.Domains;
 using SimplyDraft.Core.Domains.Documents;
 using SimplyDraft.Core.Domains.Editor;
@@ -14,6 +15,7 @@ using SimplyDraft.Core.Domains.Markup;
 using SimplyDraft.Core.Domains.UI.Inputs;
 using SimplyDraft.Core.Domains.UI.Outputs;
 using SimplyDraft.Core.Enums;
+using SimplyDraft.Core.Logging;
 using SimplyDraft.Engine.Scripting;
 using SimplyDraft.Engine.Templates;
 using SimplyDraft.Engine.Utils;
@@ -29,7 +31,7 @@ public sealed partial class GenerateChildWindowViewModel : ObservableObject, IDi
     private readonly IMarkupEngine _markup;
     private readonly ILibrary _library;
     private readonly IDialogService _dialog;
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly ILogger<GenerateChildWindowViewModel> _logger;
     private PreviewScheduler<ChildGenerationInput, ChildGenerationOutput>? _preview;
     private string _contentPart = "";
@@ -84,7 +86,7 @@ public sealed partial class GenerateChildWindowViewModel : ObservableObject, IDi
         IMarkupEngine markup,
         ILibrary library,
         IDialogService dialog,
-        IAppSettingsProvider settings,
+        ISettingsProvider<AppSettings> settings,
         ILogger<GenerateChildWindowViewModel> logger)
     {
         _scripting = scripting ?? throw new ArgumentNullException(nameof(scripting));
@@ -260,9 +262,9 @@ public sealed partial class GenerateChildWindowViewModel : ObservableObject, IDi
             BodySplitter.Join(ScriptText, _contentPart),
             values,
             new DocInfo(ChildName, _template.DisplayName, DateTime.Now, DateTime.Now),
-            _settings.Current.GenerationSection.Policy,
+            _settings.Current.Generation.Policy,
             mode,
-            _settings.Current.GenerationSection.Culture,
+            _settings.Current.Generation.Culture,
             new Dictionary<string, string>(_template.Fm.Types, StringComparer.OrdinalIgnoreCase));
     }
 
@@ -310,13 +312,13 @@ public sealed partial class GenerateChildWindowViewModel : ObservableObject, IDi
     private void OnPreviewError(Exception ex) => StatusText = "Preview failed: " + ex.Message;
 
     [LoggerMessage(
-        EventId = 9001,
+        EventId = LogEventIDs.UI.GenerateChildWindowViewModel.CreateChildSuccess,
         Level = LogLevel.Information,
         Message = "Generated child \"{Child}\" from \"{Template}\" -> {Path}")]
     private partial void LogCreateChildSuccess(string Child, string Template, string path);
 
     [LoggerMessage(
-        EventId = 9002,
+        EventId = LogEventIDs.UI.GenerateChildWindowViewModel.CreateChildFailed,
         Level = LogLevel.Error,
         Message = "Generate failed for \"{Child}\"")]
     private partial void LogCreateChildFailed(Exception ex, string Child);

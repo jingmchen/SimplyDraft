@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Engine;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
+using SimplyDraft.Core.Configuration.AppSettings;
 using SimplyDraft.UI.ViewModels;
 using SimplyDraft.UI.Views;
 
@@ -17,7 +18,7 @@ public sealed class EditorWindowFactory : IWindowFactory<EditorWindow>
     private readonly IExportService _exportService;
     private readonly ILibrary _library;
     private readonly IDialogService _dialog;
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly IThemeService _theme;
     private readonly ILogger<EditorWindow> _viewLogger;
     private readonly ILogger<EditorWindowViewModel> _viewModelLogger;
@@ -29,7 +30,7 @@ public sealed class EditorWindowFactory : IWindowFactory<EditorWindow>
         IExportService exportService,
         ILibrary library,
         IDialogService dialog,
-        IAppSettingsProvider settings,
+        ISettingsProvider<AppSettings> settings,
         IThemeService theme,
         ILogger<EditorWindow> viewLogger,
         ILogger<EditorWindowViewModel> viewModelLogger)

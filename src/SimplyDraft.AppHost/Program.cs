@@ -91,7 +91,7 @@ internal sealed class Program
             ContentRootPath = AppContext.BaseDirectory
         });
 
-        var level = Enum.Parse<LogEventLevel>(appSettings.Current.LoggingSection.MinimumLevel.ToString());
+        var level = Enum.Parse<LogEventLevel>(appSettings.Current.Logging.MinimumLevel.ToString());
 
         builder.Services.AddSerilog((services, configuration) => configuration
             .MinimumLevel.Is(level)

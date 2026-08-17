@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
+using SimplyDraft.Core.Configuration.AppSettings;
 
 namespace SimplyDraft.UI.Services;
 
@@ -10,13 +11,13 @@ public sealed class StartupTasks : IStartupTasks
 {
     private readonly ILibrary _library;
     private readonly ILibraryPaths _libraryPaths;
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly ILogger<StartupTasks> _logger;
 
     public StartupTasks(
         ILibrary library,
         ILibraryPaths libraryPaths,
-        IAppSettingsProvider settings,
+        ISettingsProvider<AppSettings> settings,
         ILogger<StartupTasks> logger)
     {
         _library = library ?? throw new ArgumentNullException(nameof(library));
@@ -42,7 +43,7 @@ public sealed class StartupTasks : IStartupTasks
 
         try
         {
-            _library.PurgeTrash(_settings.Current.LibrarySection.TrashPurgeDays);
+            _library.PurgeTrash(_settings.Current.Library.TrashPurgeDays);
         }
         catch (Exception ex)
         {

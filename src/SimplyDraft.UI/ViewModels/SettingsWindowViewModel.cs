@@ -3,13 +3,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Infrastructure;
+using SimplyDraft.Core.Configuration.AppSettings;
 using SimplyDraft.Core.Enums;
 
 namespace SimplyDraft.UI.ViewModels;
 
 public sealed partial class SettingsWindowViewModel : ObservableObject
 {
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly ILogger<SettingsWindowViewModel> _logger;
     public IReadOnlyList<DocumentKind> Formats {get;} = [DocumentKind.Txt, DocumentKind.Docx];
     public IReadOnlyList<MissingVariablePolicy> Policies {get;} =
@@ -35,16 +36,16 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
     [ObservableProperty]
     public partial string StatusText {get; set;} = "";
 
-    public SettingsWindowViewModel(IAppSettingsProvider settings, ILogger<SettingsWindowViewModel> logger)
+    public SettingsWindowViewModel(ISettingsProvider<AppSettings> settings, ILogger<SettingsWindowViewModel> logger)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        Policy = _settings.Current.GenerationSection.Policy;
-        Culture = _settings.Current.GenerationSection.FormatCulture;
-        DefaultFormat = _settings.Current.ExportSection.DefaultFormat;
-        NewLine = _settings.Current.ExportSection.TxtNewLine;
-        TxtBom = _settings.Current.ExportSection.TxtBom;
+        Policy = _settings.Current.Generation.Policy;
+        Culture = _settings.Current.Generation.FormatCulture;
+        DefaultFormat = _settings.Current.Export.DefaultFormat;
+        NewLine = _settings.Current.Export.TxtNewLine;
+        TxtBom = _settings.Current.Export.TxtBom;
         StatusText = "";
     }
 
@@ -53,14 +54,14 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         try
         {
             var s = _settings.Current;
-            s.ExportSection = s.ExportSection with
+            s.Export = s.Export with
             {
                 DefaultFormat = DefaultFormat,
                 TxtNewLine = NewLine,
                 TxtBom = TxtBom
             };
 
-            s.GenerationSection = s.GenerationSection with
+            s.Generation = s.Generation with
             {
                 Policy = Policy,
                 FormatCulture = Culture

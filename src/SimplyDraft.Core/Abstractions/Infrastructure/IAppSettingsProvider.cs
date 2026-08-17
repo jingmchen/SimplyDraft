@@ -1,12 +1,10 @@
 // Copyright (c) Tan Jing Ming. Use of this software is governed by LICENSE.md.
 
-using SimplyDraft.Core.Configuration;
-
 namespace SimplyDraft.Core.Abstractions.Infrastructure;
 
-public interface IAppSettingsProvider
+public interface ISettingsProvider<T> where T : class
 {
-    AppSettings Current {get;}
+    T Current {get;}
     void Save();
     void Reload();
 }

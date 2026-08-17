@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Engine;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
+using SimplyDraft.Core.Configuration.AppSettings;
 using SimplyDraft.UI.ViewModels;
 using SimplyDraft.UI.Views;
 
@@ -16,7 +17,7 @@ public sealed class GenerateChildWindowFactory : IWindowFactory<GenerateChildWin
     private readonly IRenderEngine _renderer;
     private readonly ILibrary _library;
     private readonly IDialogService _dialog;
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly ILogger<GenerateChildWindowViewModel> _viewModelLogger;
 
     public GenerateChildWindowFactory(
@@ -25,7 +26,7 @@ public sealed class GenerateChildWindowFactory : IWindowFactory<GenerateChildWin
         IRenderEngine renderer,
         ILibrary library,
         IDialogService dialog,
-        IAppSettingsProvider settings,
+        ISettingsProvider<AppSettings> settings,
         ILogger<GenerateChildWindowViewModel> viewModelLogger)
     {
         _scripting = scripting ?? throw new ArgumentNullException(nameof(scripting));

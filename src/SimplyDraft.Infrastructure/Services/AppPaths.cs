@@ -8,9 +8,11 @@ namespace SimplyDraft.Infrastructure.Services;
 public sealed class AppPaths : IAppPaths
 {
     public string AppDataFolder {get;}
+    public string UserStateFolder {get;}
     public string LogsFolder {get;}
     public string BundledAppSettingsFile {get;}
     public string UserAppSettingsFile {get;}
+    public string UserStateSettingsFile {get;}
     public string LatestLogFile {get;}
 
     public AppPaths(IAppInfo appInfo)
@@ -24,6 +26,13 @@ public sealed class AppPaths : IAppPaths
         
         Directory.CreateDirectory(AppDataFolder);
         
+        UserStateFolder =
+            Path.Combine(
+                AppDataFolder,
+                InfrastructureConstants.UserData.FolderName.UserState);
+        
+        Directory.CreateDirectory(UserStateFolder);
+
         LogsFolder =
             Path.Combine(
                 AppDataFolder,
@@ -40,6 +49,11 @@ public sealed class AppPaths : IAppPaths
             Path.Combine(
                 AppDataFolder,
                 InfrastructureConstants.UserData.FileName.AppSettings);
+        
+        UserStateSettingsFile =
+            Path.Combine(
+                UserStateFolder,
+                InfrastructureConstants.UserData.FileName.UserStateSettings);
         
         LatestLogFile =
             Path.Combine(

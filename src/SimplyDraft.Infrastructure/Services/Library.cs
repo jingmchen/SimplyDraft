@@ -10,6 +10,7 @@ using SimplyDraft.Core.Domains;
 using SimplyDraft.Core.Domains.Documents;
 using SimplyDraft.Core.Domains.Library;
 using SimplyDraft.Core.Enums;
+using SimplyDraft.Core.Logging;
 using SimplyDraft.Engine.Templates;
 using SimplyDraft.Engine.Utils;
 using SimplyDraft.Infrastructure.Constants;
@@ -526,7 +527,7 @@ public sealed partial class Library : ILibrary
             : [];
     
     [LoggerMessage(
-        EventId = 2001,
+        EventId = LogEventIDs.Infrastructure.Library.UnableToDeleteFile,
         Level = LogLevel.Warning,
         Message = "Unable to delete file at: {Path}")]
     private partial void LogUnableToDeleteFile(Exception ex, string path);

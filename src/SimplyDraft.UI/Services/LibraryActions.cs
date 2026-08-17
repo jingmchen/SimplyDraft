@@ -3,8 +3,10 @@
 using Microsoft.Extensions.Logging;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
+using SimplyDraft.Core.Configuration.AppSettings;
 using SimplyDraft.Core.Domains.Library;
 using SimplyDraft.Core.Enums;
+using SimplyDraft.Core.Logging;
 using SimplyDraft.UI.Common;
 
 namespace SimplyDraft.UI.Services;
@@ -15,7 +17,7 @@ public sealed partial class LibraryActions : ILibraryActions
     private readonly ILibrary _library;
     private readonly IDialogService _dialog;
     private readonly IWindowService _window;
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly ILogger<LibraryActions> _logger;
     public event Action? Changed;
     public event Action<string>? StatusReported;
@@ -26,7 +28,7 @@ public sealed partial class LibraryActions : ILibraryActions
         ILibrary library,
         IDialogService dialog,
         IWindowService window,
-        IAppSettingsProvider settings,
+        ISettingsProvider<AppSettings> settings,
         ILogger<LibraryActions> logger)
     {
         _exportService = exportService ?? throw new ArgumentNullException(nameof(exportService));
@@ -191,7 +193,7 @@ public sealed partial class LibraryActions : ILibraryActions
         }
 
         var idx = await _dialog.ChooseAsync("Delete",
-            $"Move \"{item.Name}\" to the library trash?\n\n(Items are kept in .trash for {_settings.Current.LibrarySection.TrashPurgeDays} days.)",
+            $"Move \"{item.Name}\" to the library trash?\n\n(Items are kept in .trash for {_settings.Current.Library.TrashPurgeDays} days.)",
             "Cancel", "Delete");
         
         if (idx != 1)
@@ -239,7 +241,7 @@ public sealed partial class LibraryActions : ILibraryActions
         try
         {
             var (gen, fm, name) = _exportService.GenerateItem(item, GenerationMode.Export);
-            var path = await _exportService.ExportAsync(name, _settings.Current.ExportSection.DefaultFormat, gen, fm,
+            var path = await _exportService.ExportAsync(name, _settings.Current.Export.DefaultFormat, gen, fm,
                 Path.GetDirectoryName(item.FilePath));
             if (path != null)
                 StatusReported?.Invoke("Exported to " + path);
@@ -273,13 +275,13 @@ public sealed partial class LibraryActions : ILibraryActions
         => new(path, kind, name, tref, _library.GetTimestamps(path).Modified, false);
 
     [LoggerMessage(
-        EventId = 3001,
+        EventId = LogEventIDs.UI.LibraryActions.GeneratedChildNotScanned,
         Level = LogLevel.Warning,
         Message = "Generated child was written to {Path} but Library.Scan().")]
     private partial void LogGeneratedChildNotScanned(string path);
 
     [LoggerMessage(
-        EventId = 3002,
+        EventId = LogEventIDs.UI.LibraryActions.GeneratedChildWrongKind,
         Level = LogLevel.Warning,
         Message = "Generated child at {Path} is scanned but classified as {Kind} instead of Child — it will not appear under the Children section.")]
     private partial void LogGeneratedChildWrongKind(string path, LibraryItemKind kind);

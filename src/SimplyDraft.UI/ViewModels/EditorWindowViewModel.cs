@@ -10,6 +10,7 @@ using SimplyDraft.Core.Abstractions.Engine;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.Core.Common;
+using SimplyDraft.Core.Configuration.AppSettings;
 using SimplyDraft.Core.Domains;
 using SimplyDraft.Core.Domains.Documents;
 using SimplyDraft.Core.Domains.Editor;
@@ -20,6 +21,7 @@ using SimplyDraft.Core.Domains.UI;
 using SimplyDraft.Core.Domains.UI.Inputs;
 using SimplyDraft.Core.Domains.UI.Outputs;
 using SimplyDraft.Core.Enums;
+using SimplyDraft.Core.Logging;
 using SimplyDraft.Engine.Templates;
 using SimplyDraft.Engine.Utils;
 using SimplyDraft.UI.Common;
@@ -38,7 +40,7 @@ public sealed partial class EditorWindowViewModel : ObservableObject, IDisposabl
     private readonly IExportService _exportService;
     private readonly ILibrary _library;
     private readonly IDialogService _dialog;
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly ILogger<EditorWindowViewModel> _logger;
     private readonly VariableRowSet _rows = new();
     private readonly PreviewScheduler<EditorGenerationInput, EditorGenerationOutput> _preview;
@@ -102,7 +104,7 @@ public sealed partial class EditorWindowViewModel : ObservableObject, IDisposabl
         IExportService exportService,
         ILibrary library,
         IDialogService dialog,
-        IAppSettingsProvider settings,
+        ISettingsProvider<AppSettings> settings,
         ILogger<EditorWindowViewModel> logger)
     {
         _scripting = scripting ?? throw new ArgumentNullException(nameof(scripting));
@@ -409,8 +411,8 @@ public sealed partial class EditorWindowViewModel : ObservableObject, IDisposabl
                 true,
                 FullTemplateBody,
                 doc,
-                _settings.Current.GenerationSection.Policy,
-                mode, _settings.Current.GenerationSection.Culture,
+                _settings.Current.Generation.Policy,
+                mode, _settings.Current.Generation.Culture,
                 new Dictionary<string, string>(_fm.Types, StringComparer.OrdinalIgnoreCase),
                 ExpandIncludes: true,
                 PreviewInputs: Variables.Select(r => r.Name).ToArray());
@@ -420,9 +422,9 @@ public sealed partial class EditorWindowViewModel : ObservableObject, IDisposabl
             false,
             _childBody,
             doc,
-            _settings.Current.GenerationSection.Policy,
+            _settings.Current.Generation.Policy,
             mode,
-            _settings.Current.GenerationSection.Culture,
+            _settings.Current.Generation.Culture,
             new Dictionary<string, string>(_fm.Types, StringComparer.OrdinalIgnoreCase),
             ExpandIncludes: false);
     }
@@ -521,19 +523,19 @@ public sealed partial class EditorWindowViewModel : ObservableObject, IDisposabl
         => new($@"(?<!\{{)\{{{Regex.Escape(name)}\}}(?!\}})", RegexOptions.IgnoreCase);
     
     [LoggerMessage(
-        EventId = 9001,
+        EventId = LogEventIDs.UI.EditorWindowViewModel.SavedSuccess,
         Level = LogLevel.Information,
         Message = "Saved at {DateTime}.")]
     private partial void LogSavedSuccess(string dateTime);
 
     [LoggerMessage(
-        EventId = 9002,
+        EventId = LogEventIDs.UI.EditorWindowViewModel.SavedFailed,
         Level = LogLevel.Error,
         Message = "Save failed for \"{itemName}\"")]
     private partial void LogSavedFailed(Exception ex, string itemName);
 
     [LoggerMessage(
-        EventId = 9003,
+        EventId = LogEventIDs.UI.EditorWindowViewModel.ExportFailed,
         Level = LogLevel.Error,
         Message = "Export failed for \"{itemName}\"")]
     private partial void LogExportFailed(Exception ex, string itemName);

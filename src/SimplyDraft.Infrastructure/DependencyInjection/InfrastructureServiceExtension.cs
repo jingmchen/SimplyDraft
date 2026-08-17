@@ -2,6 +2,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimplyDraft.Core.Abstractions.Infrastructure;
+using SimplyDraft.Core.Configuration.AppSettings;
+using SimplyDraft.Core.Configuration.UserStateSettings;
 using SimplyDraft.Infrastructure.Services;
 
 namespace SimplyDraft.Infrastructure.DependencyInjection;
@@ -20,7 +22,8 @@ public static class InfrastructureServiceExtension
         services.AddSingleton<IAppInfo, AppInfo>();
         services.AddSingleton<IAppPaths, AppPaths>();
         services.AddSingleton<ILibraryPaths, LibraryPaths>();
-        services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
+        services.AddSingleton<ISettingsProvider<AppSettings>, AppSettingsProvider>();
+        services.AddSingleton<ISettingsProvider<UserStateSettings>, UserStateSettingsProvider>();
         return services;
     }
 }

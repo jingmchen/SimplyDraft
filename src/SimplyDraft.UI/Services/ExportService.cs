@@ -6,6 +6,7 @@ using SimplyDraft.Core.Abstractions.Engine;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
 using SimplyDraft.Core.Common;
+using SimplyDraft.Core.Configuration.AppSettings;
 using SimplyDraft.Core.Domains.Documents;
 using SimplyDraft.Core.Domains.Export;
 using SimplyDraft.Core.Domains.Generation;
@@ -23,7 +24,7 @@ public sealed class ExportService : IExportService
     private readonly ExportOptions _exportOptions;
     private readonly ILibrary _library;
     private readonly IDialogService _dialog;
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly ILogger<ExportService> _logger;
 
     public ExportService(
@@ -31,7 +32,7 @@ public sealed class ExportService : IExportService
         ExporterCatalog exporterCatalog,
         ILibrary library,
         IDialogService dialog,
-        IAppSettingsProvider settings,
+        ISettingsProvider<AppSettings> settings,
         ILogger<ExportService> logger)
     {
         _scriptingEngine = scriptingEngine ?? throw new ArgumentNullException(nameof(scriptingEngine));
@@ -43,8 +44,8 @@ public sealed class ExportService : IExportService
 
         _exportOptions = new ExportOptions
         {
-            NewLine = _settings.Current.ExportSection.TxtNewLine,
-            WriteBom = _settings.Current.ExportSection.TxtBom
+            NewLine = _settings.Current.Export.TxtNewLine,
+            WriteBom = _settings.Current.Export.TxtBom
         };
     }
 
@@ -110,6 +111,6 @@ public sealed class ExportService : IExportService
             _library,
             item,
             mode,
-            _settings.Current.GenerationSection.Policy,
-            _settings.Current.GenerationSection.Culture);
+            _settings.Current.Generation.Policy,
+            _settings.Current.Generation.Culture);
 }

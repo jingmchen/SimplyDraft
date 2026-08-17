@@ -9,9 +9,9 @@ using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Styling;
-using Avalonia.Threading;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
+using SimplyDraft.Core.Configuration.AppSettings;
 using SimplyDraft.Core.Enums;
 using SimplyDraft.UI.Common.Editor;
 using SimplyDraft.UI.Constants;
@@ -21,7 +21,7 @@ namespace SimplyDraft.UI.Services;
 
 public sealed class ThemeService : IThemeService
 {
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<AppSettings> _settings;
     private readonly ILogger<ThemeService> _logger;
     private IPlatformSettings? _platformSettings;
     private ResourceDictionary? _themeSlot;
@@ -36,7 +36,7 @@ public sealed class ThemeService : IThemeService
     public AppAccent CurrentAccent {get; private set;}
     public event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
     
-    public ThemeService(IAppSettingsProvider settings, ILogger<ThemeService> logger, IUriPaths uriPaths)
+    public ThemeService(ISettingsProvider<AppSettings> settings, ILogger<ThemeService> logger, IUriPaths uriPaths)
     {
         ArgumentNullException.ThrowIfNull(uriPaths);
         
@@ -59,8 +59,8 @@ public sealed class ThemeService : IThemeService
 
         ThrowIfAppNotReady();
 
-        CurrentTheme = _settings.Current.ThemeSection.Theme;
-        CurrentAccent = _settings.Current.ThemeSection.Accent;
+        CurrentTheme = _settings.Current.Theme.Theme;
+        CurrentAccent = _settings.Current.Theme.Accent;
 
         _themeSlot = new ResourceDictionary();
         _accentSlot = new ResourceDictionary();
@@ -147,8 +147,8 @@ public sealed class ThemeService : IThemeService
 
     private void Persist()
     {
-        _settings.Current.ThemeSection.Theme = CurrentTheme;
-        _settings.Current.ThemeSection.Accent = CurrentAccent;
+        _settings.Current.Theme.Theme = CurrentTheme;
+        _settings.Current.Theme.Accent = CurrentAccent;
         _settings.Save();
     }
 

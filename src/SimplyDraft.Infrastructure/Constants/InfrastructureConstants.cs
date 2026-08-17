@@ -22,6 +22,7 @@ internal static class InfrastructureConstants
         internal static class FileName
         {
             internal const string AppSettings = "appsettings.json";
+            internal const string UserStateSettings = "userstate.json";
             internal const string LatestLog = "latest.log";
             internal const string ArchivedLog = "archived.log";
         }
@@ -29,6 +30,7 @@ internal static class InfrastructureConstants
         internal static class FolderName
         {
             internal const string Logs = "logs";
+            internal const string UserState = "state";
             internal const string DocumentsParent = "Documents";
             internal const string Templates = "Templates";
             internal const string Children = "Children";

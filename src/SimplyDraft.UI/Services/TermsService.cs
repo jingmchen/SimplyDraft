@@ -6,52 +6,47 @@ using Microsoft.Extensions.Logging;
 using Avalonia.Platform;
 using SimplyDraft.Core.Abstractions.Infrastructure;
 using SimplyDraft.Core.Abstractions.UI;
-using SimplyDraft.UI.Constants;
+using SimplyDraft.Core.Configuration.UserStateSettings;
+using SimplyDraft.Core.Logging;
 using SimplyDraft.UI.Views.Dialogs;
-using Avalonia.Media;
 
 namespace SimplyDraft.UI.Services;
 
 public sealed partial class TermsService : ITermsService
 {
-    private readonly IAppSettingsProvider _settings;
+    private readonly ISettingsProvider<UserStateSettings> _settings;
     private readonly IUriPaths _paths;
     private readonly ILogger<TermsService> _logger;
-    private string? _termsText;
-    private string? _termsHash;
-    private bool _loadAttempted;
-    public bool IsAcceptanceRequired
-        => TryGetTerms(out _, out var hash)
-           && !string.Equals(_settings.Current.TermsSection.AcceptedTermsHash, hash, StringComparison.Ordinal);
     
-    public TermsService(IAppSettingsProvider settings, IUriPaths paths, ILogger<TermsService> logger)
+    public TermsService(ISettingsProvider<UserStateSettings> settings, IUriPaths paths, ILogger<TermsService> logger)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _paths = paths ?? throw new ArgumentNullException(nameof(paths));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    // ─── PUBLIC METHODS ────────────────────────
     public async Task<bool> EnsureAcceptedAsync()
     {
-        if (!TryGetTerms(out var terms, out var hash))
+        var text = LoadBundledTermsConditions()
+            ?? throw new InvalidDataException($"Bundled Terms Conditions invalid or not found.");
+
+        var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text)));
+
+        if (string.Equals(_settings.Current.Terms.AcceptedTermsHash, hash, StringComparison.Ordinal))
             return true;
         
-        if (string.Equals(_settings.Current.TermsSection.AcceptedTermsHash, hash, StringComparison.Ordinal))
-            return true;
-        
-        // Standalone: this gate runs BEFORE the main window exists — the dialog is the first window.
-        bool accepted = await TermsDialog.ShowStandaloneAsync(terms);
+        bool accepted = await TermsDialog.ShowStandaloneAsync(text);
 
         if (!accepted)
         {
             LogTermsDeclined(hash);
             return false;
         }
-
-        var section = _settings.Current.TermsSection;
-        section.AcceptedTermsHash = hash;
-        section.AcceptedAtUtc = DateTime.UtcNow;
-        section.AcceptedBy = Environment.UserName;
+        
+        _settings.Current.Terms.AcceptedTermsHash = hash;
+        _settings.Current.Terms.AcceptedAtUtc = DateTime.UtcNow;
+        _settings.Current.Terms.AcceptedBy = Environment.UserName;
 
         try
         {
@@ -59,33 +54,15 @@ public sealed partial class TermsService : ITermsService
         }
         catch (Exception ex)
         {
-            // The acceptance still holds for this session and is in the audit log below;
-            // without the persisted hash the user is simply asked again next launch.
             LogUnableToPersistAcceptance(ex);
         }
 
-        LogTermsAccepted(hash, Environment.UserName, Environment.MachineName);
+        LogTermsAccepted(hash);
         return true;
     }
 
-    private bool TryGetTerms(out string terms, out string hash)
-    {
-        if (!_loadAttempted)
-        {
-            _loadAttempted = true;
-            _termsText = LoadBundledTerms();
-            if (_termsText is null)
-                LogTermsUnavailable(_paths.TermsCondition);
-            else
-                _termsHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(_termsText)));
-        }
-
-        terms = _termsText ?? "";
-        hash = _termsHash ?? "";
-        return _termsText is not null;
-    }
-
-    private string? LoadBundledTerms()
+    // ─── PRIVATE METHODS ───────────────────────
+    private string? LoadBundledTermsConditions()
     {
         try
         {
@@ -93,32 +70,33 @@ public sealed partial class TermsService : ITermsService
             using var reader = new StreamReader(stream, Encoding.UTF8);
             return reader.ReadToEnd();
         }
-        catch
+        catch (Exception ex)
         {
+            LogTermsUnavailable(ex, _paths.TermsCondition);
             return null;
         }
     }
     
     [LoggerMessage(
-        EventId = 7001,
+        EventId = LogEventIDs.UI.TermsService.TermsAccepted,
         Level = LogLevel.Information,
-        Message = "Terms and Conditions accepted (version {TermsHash}) by {User} on {Machine}.")]
-    private partial void LogTermsAccepted(string termsHash, string user, string machine);
+        Message = "Terms and Conditions (version {TermsHash}) accepted.")]
+    private partial void LogTermsAccepted(string termsHash);
 
     [LoggerMessage(
-        EventId = 7002,
+        EventId = LogEventIDs.UI.TermsService.TermsDeclined,
         Level = LogLevel.Warning,
-        Message = "Terms and Conditions (version {TermsHash}) were declined — shutting down.")]
+        Message = "Terms and Conditions (version {TermsHash}) declined — shutting down application.")]
     private partial void LogTermsDeclined(string termsHash);
 
     [LoggerMessage(
-        EventId = 7003,
+        EventId = LogEventIDs.UI.TermsService.TermsUnavailable,
         Level = LogLevel.Error,
-        Message = "Bundled Terms and Conditions could not be loaded from {Uri} — continuing without the gate.")]
-    private partial void LogTermsUnavailable(string uri);
-    
+        Message = "Bundled Terms and Conditions could not be loaded from {Uri} — shutting down application.")]
+    private partial void LogTermsUnavailable(Exception ex, string uri);
+
     [LoggerMessage(
-        EventId = 7004,
+        EventId = LogEventIDs.UI.TermsService.UnableToPersistAcceptance,
         Level = LogLevel.Error,
         Message = "Could not persist the Terms and Conditions acceptance — the user will be asked again next launch.")]
     private partial void LogUnableToPersistAcceptance(Exception ex);
