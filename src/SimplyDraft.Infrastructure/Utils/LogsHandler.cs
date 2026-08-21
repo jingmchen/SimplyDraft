@@ -35,7 +35,7 @@ public sealed class LogsHandler
         
         for (var i = 1; File.Exists(candidate); i++)
         {
-            candidate = Path.Combine(_logsFolderPath, $"{archiveLogBaseName}-{date}{i}{archiveLogExt}");
+            candidate = Path.Combine(_logsFolderPath, $"{archiveLogBaseName}-{date}({i}){archiveLogExt}");
         }
 
         try
