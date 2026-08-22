@@ -203,7 +203,7 @@ public sealed partial class EditorWindow : Window, IDisposable
 
         try
         {
-            _settings.Current.Editor = _settings.Current.Editor with { WordWrap = on };
+            _settings.Current.Editor = new EditorSettings{ WordWrap = on};
             _settings.Save();
         }
         catch (Exception ex)

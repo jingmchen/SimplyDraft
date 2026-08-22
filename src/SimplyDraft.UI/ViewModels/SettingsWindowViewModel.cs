@@ -54,14 +54,14 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         try
         {
             var s = _settings.Current;
-            s.Export = s.Export with
+            s.Export = new ExportSettings
             {
                 DefaultFormat = DefaultFormat,
                 TxtNewLine = NewLine,
                 TxtBom = TxtBom
             };
 
-            s.Generation = s.Generation with
+            s.Generation = new GenerationSettings
             {
                 Policy = Policy,
                 FormatCulture = Culture
